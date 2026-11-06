@@ -50,6 +50,9 @@ export function Navbar() {
           <Link href="#team" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             Team
           </Link>
+          <Link href="#faq" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+            FAQ
+          </Link>
         </nav>
 
         {/* Right Actions: Theme Toggle & Join Button */}
@@ -118,6 +121,13 @@ export function Navbar() {
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
             Team
+          </Link>
+          <Link
+            href="#faq"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
+          >
+            FAQ
           </Link>
         </div>
       )}
