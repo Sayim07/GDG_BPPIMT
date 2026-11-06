@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Team } from "@/components/sections/team";
-import { CommunityBanner } from "@/components/sections/community-banner";
 
 export const metadata: Metadata = {
   title: "Team",
@@ -26,9 +25,6 @@ export default function TeamPage() {
 
       {/* Main Team Section */}
       <Team />
-
-      {/* Community Banner */}
-      <CommunityBanner />
     </div>
   );
 }

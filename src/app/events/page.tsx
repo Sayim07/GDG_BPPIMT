@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Events } from "@/components/sections/events";
-import { CommunityBanner } from "@/components/sections/community-banner";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -26,9 +25,6 @@ export default function EventsPage() {
 
       {/* Main Events Section */}
       <Events />
-
-      {/* Community Banner */}
-      <CommunityBanner />
     </div>
   );
 }
