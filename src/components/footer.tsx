@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import chapterConfig from "@/data/chapter.json";
 import { ChapterConfig } from "@/types/schema";
 
@@ -12,12 +13,13 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Brand Info */}
           <div className="flex items-center gap-3">
-            <svg className="w-6 h-6" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M48 64L20 96L48 128" stroke="#4285F4" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M144 64L172 96L144 128" stroke="#EA4335" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M112 52L80 140" stroke="#FBBC04" strokeWidth="16" strokeLinecap="round"/>
-              <circle cx="96" cy="96" r="8" fill="#34A853"/>
-            </svg>
+            <Image
+              src="/images/gdg-logo.png"
+              alt="GDG on Campus BPPIMT Logo"
+              width={34}
+              height={20}
+              className="object-contain w-auto h-5"
+            />
             <span className="font-semibold text-sm text-text-primary">
               Google Developer Groups on Campus • {chapter.chapterName}
             </span>

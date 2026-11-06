@@ -41,13 +41,27 @@ export const metadata: Metadata = {
   description:
     "Official community portal for Google Developer Groups on Campus at B.P. Poddar Institute of Management and Technology, Kolkata.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png" },
+    ],
   },
   openGraph: {
     title: "GDG on Campus BPPIMT",
     description: "Connect, Learn, Grow with Google Developer Groups on Campus BPPIMT.",
     url: "https://gdgbppimt.vercel.app",
     siteName: "GDG on Campus BPPIMT",
+    images: [
+      {
+        url: "/images/gdg-logo-square.png",
+        width: 512,
+        height: 512,
+        alt: "GDG on Campus BPPIMT Logo",
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
