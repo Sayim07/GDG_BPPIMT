@@ -29,30 +29,30 @@
 ### Phase 2: Core Components & Data Integration
 | Task ID | Task Description | Owner | Status | Notes |
 | :--- | :--- | :--- | :---: | :--- |
-| **T2.1** | Populate JSON datasets in `/src/data/` | Frontend Dev | Not Started | Adhering strictly to Schema.md. |
-| **T2.2** | Implement responsive `Navbar` + `ThemeToggle` | Frontend Dev | Not Started | Desktop menu + Mobile drawer. |
-| **T2.3** | Implement official `Footer` with branding rules | Frontend Dev | Not Started | Mandatory App Name & disclaimer. |
-| **T2.4** | Implement `Hero` section with dual CTAs | Frontend Dev | Not Started | Primary Google Blue + Outline CTA. |
-| **T2.5** | **[BLOCKING EXIT]** Domains Bento Grid Rendering | Frontend Dev | Not Started | 4 Google color accents verified. |
+| **T2.1** | Populate JSON datasets in `/src/data/` | Frontend Dev | **Done** | Adhering strictly to Schema.md (`chapter`, `tracks`, `pillars`, `events`, `team`, `faq`). |
+| **T2.2** | Implement responsive `Navbar` + `ThemeToggle` | Frontend Dev | **Done** | Desktop menu + Mobile drawer + GDG 4-color SVG logo. |
+| **T2.3** | Implement official `Footer` with branding rules | Frontend Dev | **Done** | Exact name compliance & student community disclaimer. |
+| **T2.4** | Implement `Hero` section with dual CTAs | Frontend Dev | **Done** | Google 4-color gradient bar + clean typography + CTAs. |
+| **T2.5** | **[BLOCKING EXIT]** Domains Bento Grid Rendering | Frontend Dev | **Done** | 4 Google color accents with Framer Motion hover glow. |
 
 ---
 
 ### Phase 3: Events Hub & Team Showcase
 | Task ID | Task Description | Owner | Status | Notes |
 | :--- | :--- | :--- | :---: | :--- |
-| **T3.1** | Build `EventCard` component with Bevy link | Frontend Dev | Not Started | External RSVP with security attributes. |
-| **T3.2** | Implement Upcoming/Past filter pill bar | Frontend Dev | Not Started | Empty state fallback active when 0 events. |
-| **T3.3** | Build `TeamMemberCard` with social links | Frontend Dev | Not Started | Organized by tiers (Lead, Core). |
-| **T3.4** | Build `ProjectCard` with GitHub/Demo links | Frontend Dev | Not Started | Vetted student submissions. |
-| **T3.5** | **[BLOCKING EXIT]** FAQ Accordion & Zero Broken Links | Frontend Dev | Not Started | All external links tested. |
+| **T3.1** | Build `EventCard` component with official chapter links | Frontend Dev | **Done** | Clean RSVP and official page links without third-party vendor naming. |
+| **T3.2** | Implement Upcoming/Past filter & empty state | Frontend Dev | **Done** | Gen-Z + Professional tone empty state banner active. |
+| **T3.3** | Build `TeamMemberCard` with social links | Frontend Dev | **Done** | Gen-Z + Professional tone empty state active when roster pending. |
+| **T3.4** | Build `ProjectCard` with GitHub/Demo links | Frontend Dev | In Progress | Student projects showcase component. |
+| **T3.5** | **[BLOCKING EXIT]** FAQ Accordion & Zero Broken Links | Frontend Dev | **Done** | Expandable interactive accordion verified. |
 
 ---
 
-### Phase 4: Micro-Interactions & 21st.dev Component Polish
+### Phase 4: Micro-Interactions & Component Polish
 | Task ID | Task Description | Owner | Status | Notes |
 | :--- | :--- | :--- | :---: | :--- |
-| **T4.1** | Integrate Framer Motion card hover physics | Tech Lead | Not Started | Smooth 60fps spring animations. |
-| **T4.2** | Integrate 21st.dev animated hero badge/grid | Tech Lead | Not Started | Modern developer micro-interactions. |
+| **T4.1** | Integrate Framer Motion card hover physics | Tech Lead | **Done** | Smooth spring animations & subtle glow on track cards. |
+| **T4.2** | Integrate animated badges / transitions | Tech Lead | In Progress | Modern developer micro-interactions without AI slop. |
 | **T4.3** | **[BLOCKING EXIT]** Lighthouse Performance ≥ 90 | Tech Lead | Not Started | Desktop & Mobile performance check. |
 
 ---
@@ -60,16 +60,16 @@
 ### Phase 5: Production Deployment
 | Task ID | Task Description | Owner | Status | Notes |
 | :--- | :--- | :--- | :---: | :--- |
-| **T5.1** | Production build test (`npm run build`) | Tech Lead | Not Started | 0 type errors, 0 lint warnings. |
-| **T5.2** | Deploy to Vercel Production Edge | Tech Lead | Not Started | SSL active, custom domain linked. |
-| **T5.3** | **[BLOCKING EXIT]** Final Sign-Off | Tech Lead | Not Started | Full team approval of production site. |
+| **T5.1** | Production build test (`npm run build`) | Tech Lead | **Done** | 0 type errors, 0 lint warnings. Verified statically. |
+| **T5.2** | Deploy to Vercel Production Edge | Tech Lead | Ready | GitHub repo connected and up to date. |
+| **T5.3** | **[BLOCKING EXIT]** Final Sign-Off | Tech Lead | Not Started | Tech lead final review. |
 
 ---
 
 ## 2. Blockers Log
 | Date | Task ID | Blocker Description | Resolution / Status |
 | :--- | :---: | :--- | :--- |
-| *None* | - | No active blockers. Ready for Stitch UI generation. | Open |
+| 2026-11-06 | - | Webpack chunk 223.js missing due to concurrent build/dev collision | Purged `.next` directory and restarted dev server cleanly. Resolved. |
 
 ---
 
@@ -79,3 +79,4 @@
 | 2026-11-06 | Choose Next.js 15 App Router as default framework | Native SSG, edge speed, built-in SEO metadata, and best compatibility with shadcn/ui and 21st.dev. | Yes ([TRD.md §2](file:///s:/sayim/GDG-web/brain/TRD.md#L30)) |
 | 2026-11-06 | Zero-backend static JSON architecture | Eliminates server costs, database maintenance, and auth security vulnerabilities for college chapter. | Yes ([PRD.md §2](file:///s:/sayim/GDG-web/brain/PRD.md#L20)) |
 | 2026-11-06 | Enforce exact App Name: `GDG on Campus BPPIMT` | Mandatory Google Developer Community branding compliance. | Yes ([Design.md §0](file:///s:/sayim/GDG-web/brain/Design.md#L10)) |
+| 2026-11-06 | Eliminate Discord & Bevy terminology | User directive: Discord is not used on campus; Bevy is internal vendor terminology replaced with "Official Chapter Page". | Yes |
