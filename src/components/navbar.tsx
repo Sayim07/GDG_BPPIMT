@@ -3,22 +3,22 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
 import { ChapterConfig } from "@/types/schema";
+import { BubbleMenu } from "@/components/ui/bubble-menu";
 
 export function Navbar() {
   const chapter = chapterConfig as ChapterConfig;
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-surface-page border-b border-border-subtle transition-colors">
+    <header className="relative z-50 w-full bg-surface-page border-b border-border-subtle transition-colors">
       <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo & Name */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -41,33 +41,14 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/#about" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-            About
-          </Link>
-          <Link href="/#tracks" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-            Tracks
-          </Link>
-          <Link href="/events" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-            Events
-          </Link>
-          <Link href="/team" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-            Team
-          </Link>
-          <Link href="/#faq" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-            FAQ
-          </Link>
-        </nav>
-
-        {/* Right Actions: Theme Toggle & Join Button */}
+        {/* Right Actions: Theme Toggle, Join Button & Bubble Menu */}
         <div className="flex items-center gap-3">
           {/* Theme Toggle Button */}
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Toggle Theme"
-              className="w-9 h-9 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors cursor-pointer"
             >
               {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -79,63 +60,16 @@ export function Navbar() {
               href={chapter.communityUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover shadow-sm transition-all"
+              className="inline-flex items-center justify-center px-4 sm:px-5 py-2 rounded-full bg-primary text-white text-xs sm:text-sm font-medium hover:bg-primary-hover shadow-sm transition-all"
             >
               Join Chapter
             </Link>
           )}
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-text-secondary hover:bg-surface-subtle"
-            aria-label="Toggle Navigation Menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Bubble Menu Hamburger in Right Top Corner */}
+          <BubbleMenu />
         </div>
       </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border-subtle bg-surface-page px-4 py-4 space-y-3">
-          <Link
-            href="/#about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
-          >
-            About
-          </Link>
-          <Link
-            href="/#tracks"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
-          >
-            Tracks
-          </Link>
-          <Link
-            href="/events"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
-          >
-            Events
-          </Link>
-          <Link
-            href="/team"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
-          >
-            Team
-          </Link>
-          <Link
-            href="/#faq"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
-          >
-            FAQ
-          </Link>
-        </div>
-      )}
     </header>
   );
 }
