@@ -21,16 +21,9 @@ export function Hero() {
 
       <section className="w-full py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
-          {/* Chapter Descriptor (Clean semantic text, no artificial floating capsule pill) */}
-          {chapter.badge && (
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-text-tertiary mb-4">
-              {chapter.badge}
-            </p>
-          )}
-
           {/* Main Headline */}
           {chapter.headline && (
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-text-primary max-w-3xl leading-tight">
+            <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-text-primary max-w-4xl leading-tight">
               {chapter.headline}
             </h1>
           )}
