@@ -88,7 +88,7 @@ export function Events() {
               href={chapter.communityUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline transition-colors"
             >
               <span>View Official Chapter Page</span>
               <ArrowUpRight className="w-4 h-4" />

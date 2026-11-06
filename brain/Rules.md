@@ -17,78 +17,62 @@ When a specification or implementation conflict arises between documents, resolv
 
 ---
 
-## 2. App Naming Rule
-The application name is **`GDG on Campus BPPIMT`**.
-- It must be used identically in UI headers, metadata tab titles (`<title>`), OpenGraph tags, README, and documentation.
-- **FORBIDDEN:** Do not use "GDSC BPPIMT", "GDG-B", "GDG BPPIMT Chapter", or "Google Student Club".
-- See [Design.md §0](file:///s:/sayim/GDG-web/brain/Design.md#L10) for framework title implementation snippet.
+## 2. App Naming & Brand Rules
+1. **Exact App Name:** **`GDG on Campus BPPIMT`**.
+   - It must be used identically in metadata tab titles (`<title>`), OpenGraph tags, README, and documentation.
+   - **FORBIDDEN:** Do not use "GDSC BPPIMT", "GDG-B", "GDG BPPIMT Chapter", or "Google Student Club".
+2. **Navbar Brand Header:**
+   - Top Line: **`Google Developer Group`**
+   - Bottom Sub-line: **`B.P. Poddar Institute of Management and Technology`**
+3. **Typography Mandate:**
+   - **USE ONLY Product Sans / Google Sans** across the entire website. Generic AI sans fonts (Inter, Geist, SF Pro) are strictly forbidden. Preloaded locally via WOFF2 in `/public/fonts/`.
 
 ---
 
-## 3. Hard Scope Boundaries (Strict "DO NOT" List)
-1. **NO CUSTOM BACKEND / DATABASE:** Do not write Node.js Express servers, Python Flask/FastAPI backends, or connect to MongoDB, PostgreSQL, Supabase, or Firebase for MVP. All content is stored in local static JSON contracts (see [Schema.md §2](file:///s:/sayim/GDG-web/brain/Schema.md#L20)).
-2. **NO CUSTOM AUTH / SESSION MANAGEMENT:** Do not build user login, signup, passwords, or JWT auth. Event RSVPs link externally to the official Google Developer platform (Bevy).
+## 3. Strict Git Policy
+- **DO NOT AUTO-COMMIT OR AUTO-PUSH:** The AI agent must NEVER automatically execute `git commit` or `git push`.
+- All changes must remain in the local working directory for the user/Tech Lead to inspect, review, and commit themselves.
+
+---
+
+## 4. Forbidden Channels & Internal Terminology
+1. **NO DISCORD:** Discord is strictly forbidden. Do not mention, render icons for, or link to Discord anywhere in JSX, schemas, or markdown.
+2. **NO "BEVY" TERMINOLOGY:** "Bevy" is internal white-label software naming used by Google. It must NEVER be shown to users. Use user-friendly terms: **"Official Chapter Page"** or **"Get Official Updates"**.
+3. **COMMUNITY LINKS:** Active channels are WhatsApp, LinkedIn, GitHub, and the Google Community Dev chapter page.
+
+---
+
+## 5. Anti-AI Slop Mandate (Design Standards)
+AI coding assistants commonly generate predictable "AI slop" patterns. The following are strictly forbidden in this codebase:
+- ❌ **No "Pillsbury Capsule Badges":** Never put floating `rounded-full px-3 py-1 text-xs` badges with emoji or colored dots above titles. Use clean semantic uppercase tracking typography.
+- ❌ **No Centered Hero Text Overload:** Never use the generic "capsule badge + giant bold text + 2-line subtitle + dual split button" layout.
+- ❌ **No Nested Card Inception:** Never put cards inside cards inside cards with soft shadows (`shadow-sm`, `hover:shadow-md`). Use flat Google Material 3 surfaces with clean 1px borders (`#E8EAED` / `#3C4043`).
+- ❌ **No Fake Neon Glows or Mesh Gradients:** Never use `shadow-[0_8px_30px_rgb(...)]` or purple/indigo mesh gradients.
+- ❌ **No Aggressive Glassmorphism:** Never use blurry `backdrop-blur-md bg-white/10` on navbars or headers. Surfaces must be solid, crisp, and high-performance.
+- ❌ **No Framer Motion Scroll Over-Easing:** Never place repetitive `initial={{ opacity: 0, y: 15 / 20 }}` scroll-trigger animations across sections. Pages must render instantly and naturally.
+- ❌ **No Magnetic Button Scaling:** Never use `hover:scale-105 duration-200` hover distortion.
+
+---
+
+## 6. Hard Scope Boundaries (Strict "DO NOT" List)
+1. **NO CUSTOM BACKEND / DATABASE:** Do not write Node.js Express servers, Python Flask backends, or connect to MongoDB, PostgreSQL, Supabase, or Firebase for MVP. All content is stored in local static JSON contracts.
+2. **NO CUSTOM AUTH / SESSION MANAGEMENT:** Do not build user login, signup, passwords, or JWT auth. Event RSVPs link externally to the official Google Developer platform.
 3. **NO PAID TOOLS OR APIS:** Every tool, icon, library, and hosting provider must be 100% free / open source.
-4. **NO HEAVY 3D / CANVAS BLOAT:** Do not import Three.js, Spline, or heavy canvas particle libraries. Use Framer Motion, Tailwind CSS, and SVG for micro-animations.
+4. **NO HEAVY 3D / CANVAS BLOAT:** Do not import Three.js, Spline, or heavy canvas particle libraries.
 
 ---
 
-## 4. Non-Negotiable Technical Rules
-
-### Rule 1: Zero AI Slop & Clean Design Standard
-- **Required:** Use structured Tailwind spacing, subtle border colors (`#E2E8F0` / `#1E293B`), Google brand accents (`#4285F4`, `#EA4335`, `#FBBC04`, `#34A853`), and tactile micro-interactions with shadcn/ui and Framer Motion.
-- **Forbidden:** Generic neon purple/violet mesh backgrounds, unstyled generic cards, stock corporate handshake photos, or giant unreadable hero text.
-
-### Rule 2: Strict Schema Adherence
-- **Required:** All UI components rendering events, team, domains, projects, and FAQs must import and consume types defined in `@/types/schema.ts` matching [Schema.md §2](file:///s:/sayim/GDG-web/brain/Schema.md#L20).
-- **Forbidden:** Renaming fields for convenience (e.g. changing `rsvpUrl` to `link` or `domainId` to `category` is forbidden).
-
-### Rule 3: Mobile-First Zero Layout Shift
-- **Required:** Test all layouts at 360px width. Mobile navigation must use a responsive drawer. All images must have explicit dimensions via `next/image` to prevent Cumulative Layout Shift (CLS = 0).
-- **Forbidden:** Unresponsive tables, fixed desktop widths > 100vw, or hidden critical navigation on mobile.
+## 7. Developer Tooling Boundaries
+- **Agentation:** Integrated strictly for local development debugging (`NODE_ENV === 'development'` and `localhost` / `127.0.0.1`). It must never render or leak on production Vercel builds.
 
 ---
 
-## 5. Fallback & Error-Handling Protocol
-Every dynamic data consumer component must handle the following states:
-1. **Empty Collection:** If `events.json` has 0 upcoming events, render the empty state card specified in [AppFlow.md §4](file:///s:/sayim/GDG-web/brain/AppFlow.md#L95).
-2. **Missing Media:** If an avatar or thumbnail image fails to load, render a graceful SVG monogram with the member's initials.
-3. **External Link Attributes:** Every external link (Bevy, GitHub, Discord, LinkedIn) must include `target="_blank"` and `rel="noopener noreferrer"`.
-
----
-
-## 6. Grounded Talking Points (For Faculty, Leads & Visitors)
-
-| Question | Grounded Answer | Reference |
-| :--- | :--- | :--- |
-| *"Why doesn't the website have a sign-up or login form?"* | "We intentionally integrate with Google's official Bevy platform (`gdg.community.dev`) for official RSVP tracking and member privacy, keeping our campus site ultra-fast, static, and zero-maintenance." | [PRD.md §2](file:///s:/sayim/GDG-web/brain/PRD.md#L20) |
-| *"How do you keep hosting and server costs zero?"* | "The site is built with Next.js 15 Static Site Generation (SSG) and deployed to global edge CDNs (Vercel / GitHub Pages), delivering sub-second load times without any monthly server fees." | [TRD.md §2](file:///s:/sayim/GDG-web/brain/TRD.md#L30) |
-| *"How can students get their projects featured on the site?"* | "Students submit projects to the tech team; once vetted against our project contract, they are added to `projects.json` via a pull request." | [Schema.md §2.3](file:///s:/sayim/GDG-web/brain/Schema.md#L115) |
-
----
-
-## 7. Code Conventions & Standards
-- **Language & Style:** TypeScript in strict mode (`"strict": true`). No `any` types permitted.
-- **Imports:** Use absolute path aliases (`@/components/...`, `@/data/...`, `@/types/...`).
-- **CSS:** Tailwind CSS utility classes; avoid inline styles. Extract repeated token combinations to `components/ui/`.
-- **Icons:** Use `lucide-react` exclusively for iconography.
-- **Logging:** Use `console.error` only inside error boundary handlers; no stray `console.log` statements in production components.
-
----
-
-## 8. "When the Coding Tool is Unsure" Protocol
-If a prompt or task is ambiguous:
-1. **Do not silently invent** libraries, fields, or endpoints.
-2. State the exact point of ambiguity clearly to the user.
-3. Propose the option that best fits the existing architecture in `TRD.md` and `Schema.md`.
-4. Await user confirmation before proceeding.
-
----
-
-## 9. Definition of Done (DoD) per Feature
+## 8. Definition of Done (DoD) per Feature
 A feature is complete if and only if:
 - [ ] TypeScript compiles with zero errors (`tsc --noEmit`).
-- [ ] The feature renders cleanly in both Dark and Light themes.
-- [ ] It looks polished and responsive on mobile (360px viewport).
-- [ ] Data conforms 100% to schemas in [Schema.md](file:///s:/sayim/GDG-web/brain/Schema.md).
-- [ ] Corresponding row in [Tracker.md](file:///s:/sayim/GDG-web/brain/Tracker.md) is updated to **Done**.
+- [ ] The feature renders cleanly in both Light and Google Material Dark themes.
+- [ ] Tested and verified on mobile (360px viewport).
+- [ ] Uses only **Product Sans / Google Sans** typography.
+- [ ] Zero AI slop patterns present.
+- [ ] Code is left in working directory for Tech Lead review (no unauthorized git push).
+- [ ] Corresponding row in [Tracker.md](file:///s:/sayim/GDG-web/brain/Tracker.md) is updated.

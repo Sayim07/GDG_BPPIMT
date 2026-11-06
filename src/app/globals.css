@@ -14,14 +14,15 @@
 }
 
 .dark {
-  --surface-page: #0E1217;
-  --surface-card: #181D24;
-  --surface-subtle: #222832;
-  --border-subtle: #2A313C;
-  --border-strong: #384250;
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-tertiary: #64748B;
+  /* Authentic Google Material Dark Theme Palette (No Slate/Zinc generic AI defaults) */
+  --surface-page: #202124;
+  --surface-card: #292A2D;
+  --surface-subtle: #35363A;
+  --border-subtle: #3C4043;
+  --border-strong: #5F6368;
+  --text-primary: #E8EAED;
+  --text-secondary: #9AA0A6;
+  --text-tertiary: #80868B;
 }
 
 html {
@@ -31,7 +32,7 @@ html {
 body {
   background-color: var(--surface-page);
   color: var(--text-primary);
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-product-sans), "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
