@@ -62,7 +62,8 @@ AI coding assistants commonly generate predictable "AI slop" patterns. The follo
 
 ---
 
-## 7. Developer Tooling Boundaries
+## 7. Developer Tooling & Quality Skills
+- **Impeccable Skill (`pbakaus/impeccable`):** Integrated in `.gemini/skills/impeccable` and `.agents/skills/impeccable`. Governs frontend craft, typography pairing with Product Sans / Google Sans, anti-pattern detection, and commands (`critique`, `polish`, `typeset`, `audit`, `distill`).
 - **Agentation:** Integrated strictly for local development debugging (`NODE_ENV === 'development'` and `localhost` / `127.0.0.1`). It must never render or leak on production Vercel builds.
 
 ---
