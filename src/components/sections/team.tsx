@@ -1,19 +1,16 @@
-"use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Linkedin, Github, Twitter, Users, ArrowUpRight } from "lucide-react";
 import teamData from "@/data/team.json";
 import chapterConfig from "@/data/chapter.json";
 import { TeamMember, ChapterConfig } from "@/types/schema";
 
 const badgeColorMap = {
-  blue: "bg-blue-50 dark:bg-blue-950/40 text-gdg-blue",
-  red: "bg-red-50 dark:bg-red-950/40 text-gdg-red",
-  yellow: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
-  green: "bg-emerald-50 dark:bg-emerald-950/40 text-gdg-green",
+  blue: "text-gdg-blue bg-blue-50 dark:bg-blue-950/30",
+  red: "text-gdg-red bg-red-50 dark:bg-red-950/30",
+  yellow: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30",
+  green: "text-gdg-green bg-emerald-50 dark:bg-emerald-950/30",
 };
 
 export function Team() {
@@ -25,39 +22,26 @@ export function Team() {
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-14">
-          <span className="text-xs uppercase tracking-widest text-text-tertiary font-semibold">
-            Leadership
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1">
-            Chapter Leads
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">
+            Chapter Leadership
+          </p>
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1.5">
+            Organizers & Leads
           </h2>
           <p className="text-sm text-text-secondary mt-2">
-            The student organizers driving GDG on Campus BPPIMT
+            The student team driving GDG on Campus BPPIMT
           </p>
         </div>
 
         {/* Dynamic Content: Empty State vs Real Team */}
         {members.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="w-full bg-surface-page border border-border-subtle rounded-3xl p-8 sm:p-12 text-center shadow-sm relative overflow-hidden"
-          >
-            {/* Subtle Google Green/Red Gradient Accent */}
-            <div className="absolute top-0 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-gdg-green to-transparent" />
-
-            <div className="max-w-xl mx-auto flex flex-col items-center">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-gdg-green flex items-center justify-center mb-5 shadow-sm">
-                <Users className="w-7 h-7" />
+          <div className="w-full bg-surface-page border border-border-subtle rounded-2xl p-8 sm:p-14 text-center">
+            <div className="max-w-lg mx-auto flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-surface-subtle flex items-center justify-center text-text-secondary mb-5">
+                <Users className="w-5 h-5 text-primary" />
               </div>
 
-              <span className="inline-block px-3.5 py-1 rounded-full bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary mb-3">
-                Squad Assembling...
-              </span>
-
-              <h3 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
+              <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
                 The crew will arrive soon to your feed.
               </h3>
 
@@ -65,37 +49,33 @@ export function Team() {
                 From tech leads building the architecture to domain mentors guiding AI, Cloud & Web — the team driving GDG on Campus BPPIMT is finalizing preparations. The official roster reveal will drop shortly!
               </p>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-                {chapter.socials?.linkedin && (
+              {chapter.socials?.linkedin && (
+                <div className="mt-8">
                   <Link
                     href={chapter.socials.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover shadow-sm transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
                   >
                     <span>Connect on LinkedIn</span>
                     <ArrowUpRight className="w-4 h-4" />
                   </Link>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          </motion.div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {members.map((member, idx) => {
               const badgeClass = member.badgeColor ? badgeColorMap[member.badgeColor] : badgeColorMap.blue;
 
               return (
-                <motion.div
+                <div
                   key={member.id || idx}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  className="bg-surface-page border border-border-subtle rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-border-strong transition-all duration-200 flex flex-col items-center text-center group"
+                  className="bg-surface-page border border-border-subtle hover:border-border-strong rounded-2xl p-6 transition-colors flex flex-col items-center text-center group"
                 >
-                  {/* Avatar (Image or Initial Monogram Fallback) */}
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-border-subtle shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center bg-surface-subtle">
+                  {/* Avatar */}
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 border border-border-subtle flex items-center justify-center bg-surface-subtle">
                     {member.avatarUrl ? (
                       <Image
                         src={member.avatarUrl}
@@ -105,38 +85,43 @@ export function Team() {
                         sizes="96px"
                       />
                     ) : (
-                      <span className="text-2xl font-bold text-primary">
+                      <span className="font-heading text-2xl font-bold text-text-secondary">
                         {member.name.charAt(0)}
                       </span>
                     )}
                   </div>
 
                   {/* Name & Role */}
-                  {member.name && (
-                    <h3 className="text-base font-semibold text-text-primary">
-                      {member.name}
-                    </h3>
-                  )}
-                  {member.role && (
-                    <span className={`inline-block px-3 py-1 mt-1.5 rounded-full text-xs font-medium ${badgeClass}`}>
-                      {member.role}
+                  <h3 className="font-heading text-lg font-bold text-text-primary">
+                    {member.name}
+                  </h3>
+                  <p className="text-xs text-text-secondary mt-1">
+                    {member.role}
+                  </p>
+
+                  {/* Domain Tag */}
+                  {member.domain && (
+                    <span className={`inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold mt-3 ${badgeClass}`}>
+                      {member.domain}
                     </span>
                   )}
-                  {member.tagline && (
-                    <p className="text-xs text-text-tertiary mt-2">
-                      {member.tagline}
+
+                  {/* Bio */}
+                  {member.bio && (
+                    <p className="text-xs text-text-tertiary mt-3 line-clamp-2 leading-relaxed">
+                      {member.bio}
                     </p>
                   )}
 
-                  {/* Socials */}
-                  {member.socials && (member.socials.linkedin || member.socials.github || member.socials.twitter) && (
+                  {/* Social Links */}
+                  {member.socials && (
                     <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border-subtle w-full justify-center">
                       {member.socials.linkedin && (
                         <Link
                           href={member.socials.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-8 h-8 rounded-full bg-surface-subtle flex items-center justify-center text-text-secondary hover:text-primary transition-colors"
+                          className="text-text-tertiary hover:text-text-primary transition-colors"
                           aria-label={`${member.name} LinkedIn`}
                         >
                           <Linkedin className="w-4 h-4" />
@@ -147,7 +132,7 @@ export function Team() {
                           href={member.socials.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-8 h-8 rounded-full bg-surface-subtle flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors"
+                          className="text-text-tertiary hover:text-text-primary transition-colors"
                           aria-label={`${member.name} GitHub`}
                         >
                           <Github className="w-4 h-4" />
@@ -158,7 +143,7 @@ export function Team() {
                           href={member.socials.twitter}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-8 h-8 rounded-full bg-surface-subtle flex items-center justify-center text-text-secondary hover:text-primary transition-colors"
+                          className="text-text-tertiary hover:text-text-primary transition-colors"
                           aria-label={`${member.name} Twitter`}
                         >
                           <Twitter className="w-4 h-4" />
@@ -166,7 +151,7 @@ export function Team() {
                       )}
                     </div>
                   )}
-                </motion.div>
+                </div>
               );
             })}
           </div>

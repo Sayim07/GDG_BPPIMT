@@ -44,12 +44,12 @@
 ### Phase 3: Events Hub & Team Showcase
 - **Owner:** Frontend Developer
 - **Tasks:**
-  - [ ] Build `EventCard` component with date formatting, speaker info, and RSVP Bevy redirect.
+  - [ ] Build `EventCard` component with date formatting, speaker info, and RSVP redirect.
   - [ ] Implement filter pill bar (`All`, `Upcoming`, `Past`) with empty-state fallback handling.
   - [ ] Build `TeamMemberCard` with social icons (GitHub, LinkedIn) and tier grouping.
   - [ ] Build `ProjectCard` showcasing student open source with GitHub and demo links.
-  - [ ] Build `FAQ` accordion component using shadcn/ui primitives.
-- **Exit Criteria:** Filter tabs update event list without page reload; clicking RSVP links opens official Bevy page in a new tab with `rel="noopener noreferrer"`.
+  - [ ] Build `FAQ` accordion component using accessible primitives.
+- **Exit Criteria:** Filter tabs update event list without page reload; clicking RSVP links opens official chapter page in a new tab with `rel="noopener noreferrer"`.
 
 ---
 
@@ -122,6 +122,6 @@ export const cardHoverVariants = {
 
 ### "Never Cut" List (Non-Negotiable Core)
 - 🔒 **App Name & Brand Compliance:** `GDG on Campus BPPIMT` in title, header, and footer.
-- 🔒 **Hero Section with Join CTA:** Must allow students to immediately join Discord/WhatsApp.
+- 🔒 **Hero Section with Join CTA:** Must allow students to immediately join the WhatsApp community.
 - 🔒 **Events Section with RSVP:** The primary operational purpose of the campus website.
 - 🔒 **Mobile Responsiveness:** Must look flawless on mobile viewports.

@@ -1,20 +1,35 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { AgentationProvider } from "@/components/dev/agentation-provider";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+const productSans = localFont({
+  src: [
+    {
+      path: "../../public/fonts/ProductSans-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/ProductSans-Italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/ProductSans-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/ProductSans-BoldItalic.woff2",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-product-sans",
   display: "swap",
 });
 
@@ -44,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={productSans.variable}>
       <body className="min-h-screen bg-surface-page text-text-primary antialiased flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Navbar />

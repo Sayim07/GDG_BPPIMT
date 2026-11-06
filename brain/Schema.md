@@ -53,7 +53,7 @@ export interface EventItem {
     role: string;                  // Title/Organization: e.g. "GDE, Cloud & ML"
     avatarUrl: string;             // Relative path or verified HTTPS image
   };
-  rsvpUrl: string;                 // Official Bevy or registration link
+  rsvpUrl: string;                 // Official chapter page or event registration link
   status: "upcoming" | "past";     // Event timeline state
   tags: string[];                  // Keywords: ["Google Cloud", "GenAI", "Hands-on"]
 }

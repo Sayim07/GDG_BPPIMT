@@ -40,8 +40,8 @@ const config: Config = {
         "3xl": "1.5rem",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "monospace"],
+        heading: ["var(--font-product-sans)", "Google Sans", "Product Sans", "sans-serif"],
+        sans: ["var(--font-product-sans)", "Google Sans", "Product Sans", "sans-serif"],
       },
     },
   },
