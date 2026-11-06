@@ -1,25 +1,61 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { useTheme } from "next-themes";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
 import statsData from "@/data/stats.json";
 import { ChapterConfig, StatItem } from "@/types/schema";
+import { ShapeGrid } from "@/components/ui/shape-grid";
 
 export function Hero() {
   const chapter = chapterConfig as ChapterConfig;
   const stats = (statsData as StatItem[]) || [];
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
-    <div className="relative w-full bg-surface-page border-b border-border-subtle">
+    <div className="relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between bg-surface-page border-b border-border-subtle overflow-hidden">
+      {/* Interactive ShapeGrid Background Effect - Hero Section Only */}
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        <ShapeGrid
+          shape="square"
+          cellSize={44}
+          lineWidth={1}
+          direction="diagonal"
+          speed={0.2}
+          lineColor={isDark ? "rgba(255, 255, 255, 0.08)" : "#e8eaed"}
+          hoverColor={isDark ? "#8ab4f8" : "#4285F4"}
+          hoverFillColor={isDark ? "rgba(138, 180, 248, 0.12)" : "rgba(66, 133, 244, 0.08)"}
+          fillOpacity={0.16}
+          rainbow={true}
+          radius={1.8}
+          trail={0.5}
+          glow={isDark ? 0.45 : 0.25}
+          twinkle={0.06}
+          fade={0.85}
+          clickCascade={true}
+          intro={true}
+        />
+      </div>
+
       {/* Authentic Google 4-Color Accent Bar */}
-      <div className="w-full grid grid-cols-4 h-1">
+      <div className="relative z-10 w-full grid grid-cols-4 h-1">
         <div className="bg-gdg-blue h-full" />
         <div className="bg-gdg-red h-full" />
         <div className="bg-gdg-yellow h-full" />
         <div className="bg-gdg-green h-full" />
       </div>
 
-      <section className="w-full py-16 sm:py-24 lg:py-28 px-4 sm:px-6 lg:px-8">
+      {/* Main Centered Hero Content */}
+      <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
           {/* Main Headline */}
           {chapter.headline && (
@@ -35,12 +71,12 @@ export function Hero() {
             </p>
           )}
 
-          {/* Action CTAs: Focused primary action with clean secondary navigation */}
+          {/* Action CTAs */}
           {chapter.primaryCtaText && chapter.primaryCtaUrl && (
-            <div className="flex items-center justify-center gap-6 mt-8">
+            <div className="flex items-center justify-center gap-6 mt-10">
               <Link
                 href={chapter.primaryCtaUrl}
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover shadow-sm transition-all"
               >
                 <span>{chapter.primaryCtaText}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -55,7 +91,7 @@ export function Hero() {
             </div>
           )}
 
-          {/* Stats Metrics (Clean inline typography, no nested card container) */}
+          {/* Stats Metrics (if provided) */}
           {stats.length > 0 && (
             <div className="mt-16 pt-10 border-t border-border-subtle w-full max-w-2xl grid grid-cols-3 gap-6 text-center">
               {stats.map((stat, idx) => (
@@ -72,6 +108,14 @@ export function Hero() {
           )}
         </div>
       </section>
+
+      {/* Subtle Scroll Hint at Bottom of Full-Page Hero */}
+      <div className="relative z-10 w-full pb-8 flex flex-col items-center justify-center text-text-tertiary pointer-events-none select-none">
+        <span className="text-[11px] font-medium tracking-widest uppercase opacity-60">
+          Scroll to explore
+        </span>
+        <ChevronDown className="w-4 h-4 mt-1 opacity-50 animate-bounce" />
+      </div>
     </div>
   );
 }
