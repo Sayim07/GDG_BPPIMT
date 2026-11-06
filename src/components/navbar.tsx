@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
@@ -21,15 +22,17 @@ export function Navbar() {
     <header className="relative z-50 w-full bg-surface-page border-b border-border-subtle transition-colors">
       <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo & Name */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <div className="flex items-center">
-            {/* Authentic GDG 4-Color Brackets */}
-            <svg className="w-8 h-8" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M48 64L20 96L48 128" stroke="#4285F4" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M144 64L172 96L144 128" stroke="#EA4335" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M112 52L80 140" stroke="#FBBC04" strokeWidth="16" strokeLinecap="round"/>
-              <circle cx="96" cy="96" r="8" fill="#34A853"/>
-            </svg>
+            {/* Official GDG Logo */}
+            <Image
+              src="/images/gdg-logo.png"
+              alt="GDG on Campus BPPIMT Logo"
+              width={42}
+              height={25}
+              priority
+              className="object-contain w-auto h-7 sm:h-8"
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-sm sm:text-base tracking-tight text-text-primary leading-tight">
