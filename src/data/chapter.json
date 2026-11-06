@@ -10,9 +10,5 @@
   "secondaryCtaText": "Join Us",
   "secondaryCtaUrl": "#join",
   "communityUrl": "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
-  "socials": {
-    "whatsapp": "https://chat.whatsapp.com",
-    "linkedin": "https://linkedin.com",
-    "github": "https://github.com"
-  }
+  "socials": {}
 }
