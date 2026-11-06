@@ -31,9 +31,14 @@ export function Navbar() {
               <circle cx="96" cy="96" r="8" fill="#34A853"/>
             </svg>
           </div>
-          <span className="font-semibold text-base sm:text-lg tracking-tight text-text-primary">
-            {chapter.name}
-          </span>
+          <div className="flex flex-col">
+            <span className="font-bold text-sm sm:text-base tracking-tight text-text-primary leading-tight">
+              Google Developer Group
+            </span>
+            <span className="text-[10px] sm:text-xs text-text-secondary font-medium tracking-normal leading-tight">
+              {chapter.chapterName || "B.P. Poddar Institute of Management and Technology"}
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
