@@ -1,89 +1,15 @@
 import React from "react";
-import { Users, Code, TrendingUp, ArrowRight } from "lucide-react";
-import pillarsData from "@/data/pillars.json";
-import { PillarItem } from "@/types/schema";
-
-const iconMap = {
-  connect: Users,
-  learn: Code,
-  grow: TrendingUp,
-};
-
-const colorConfig = {
-  blue: {
-    accent: "bg-gdg-blue",
-    text: "text-gdg-blue",
-    iconBg: "bg-blue-50 dark:bg-blue-950/30",
-  },
-  red: {
-    accent: "bg-gdg-red",
-    text: "text-gdg-red",
-    iconBg: "bg-red-50 dark:bg-red-950/30",
-  },
-  green: {
-    accent: "bg-gdg-green",
-    text: "text-gdg-green",
-    iconBg: "bg-emerald-50 dark:bg-emerald-950/30",
-  },
-};
 
 export function Pillars() {
-  const items = (pillarsData as PillarItem[]) || [];
-
-  if (!items || items.length === 0) {
-    return null;
-  }
-
   return (
-    <section id="about" className="w-full py-20 px-4 sm:px-6 lg:px-8 bg-surface-page transition-colors">
-      <div className="max-w-6xl mx-auto">
-        {/* Editorial Section Header */}
-        <div className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">
-            Community Pillars
-          </p>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1.5">
-            Connect. Learn. Grow.
-          </h2>
-        </div>
-
-        {/* Flat Material Cards (No artificial shadows or floating glows) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {items.map((item, idx) => {
-            const Icon = item.icon ? iconMap[item.icon] : Users;
-            const colors = item.accentColor ? colorConfig[item.accentColor] : colorConfig.blue;
-
-            return (
-              <div
-                key={item.id || idx}
-                className="bg-surface-card border border-border-subtle hover:border-border-strong rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-150 group"
-              >
-                <div>
-                  {/* Subtle Accent Line */}
-                  <div className={`w-8 h-1 rounded-full ${colors.accent} mb-6`} />
-
-                  {item.title && (
-                    <h3 className="font-heading text-xl font-bold text-text-primary mb-2.5">
-                      {item.title}
-                    </h3>
-                  )}
-                  {item.description && (
-                    <p className="text-sm text-text-secondary leading-relaxed">
-                      {item.description}
-                    </p>
-                  )}
-                </div>
-
-                {item.ctaText && (
-                  <div className={`mt-8 pt-4 border-t border-border-subtle flex items-center justify-between text-xs font-semibold ${colors.text} tracking-wider uppercase`}>
-                    <span>{item.ctaText}</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+    <section
+      id="about"
+      className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-surface-page border-b border-border-subtle transition-colors"
+    >
+      <div className="max-w-6xl mx-auto text-center">
+        <h2 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-text-primary">
+          GDG <span className="text-gdg-blue inline-block mx-1.5 sm:mx-2">•</span> BPPIMT, KOLKATA
+        </h2>
       </div>
     </section>
   );
