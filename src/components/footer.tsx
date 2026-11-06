@@ -25,16 +25,6 @@ export function Footer() {
 
           {/* Social Links (Dynamic) */}
           <div className="flex items-center gap-6">
-            {chapter.socials.discord && (
-              <Link
-                href={chapter.socials.discord}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-text-secondary hover:text-primary transition-colors"
-              >
-                Discord
-              </Link>
-            )}
             {chapter.socials.whatsapp && (
               <Link
                 href={chapter.socials.whatsapp}
@@ -72,7 +62,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-sm text-text-secondary hover:text-primary transition-colors"
               >
-                Bevy Platform
+                Google Community Page
               </Link>
             )}
           </div>

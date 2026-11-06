@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { MessageSquare, MessageCircle, GraduationCap } from "lucide-react";
+import { MessageCircle, GraduationCap } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
 import { ChapterConfig } from "@/types/schema";
 
@@ -10,7 +10,7 @@ export function CommunityBanner() {
   const chapter = chapterConfig as ChapterConfig;
 
   // If no community links exist, return null
-  if (!chapter.socials?.whatsapp && !chapter.socials?.discord) {
+  if (!chapter.socials?.whatsapp) {
     return null;
   }
 
@@ -39,18 +39,7 @@ export function CommunityBanner() {
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover shadow-sm transition-all text-center"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>Join WhatsApp</span>
-            </Link>
-          )}
-          {chapter.socials.discord && (
-            <Link
-              href={chapter.socials.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-surface-page text-text-primary text-sm font-medium border border-border-subtle shadow-sm hover:bg-surface-subtle transition-all text-center"
-            >
-              <MessageSquare className="w-4 h-4 text-text-secondary" />
-              <span>Join Discord</span>
+              <span>Join WhatsApp Community</span>
             </Link>
           )}
         </div>

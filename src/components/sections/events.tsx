@@ -32,7 +32,7 @@ export function Events() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover transition-colors"
             >
-              <span>View chapter on Bevy</span>
+              <span>View Official Chapter Page</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           )}
@@ -76,18 +76,7 @@ export function Events() {
                     className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover shadow-sm transition-all"
                   >
                     <Bell className="w-4 h-4" />
-                    <span>Get Notified on Bevy</span>
-                  </Link>
-                )}
-                {chapter.socials?.discord && (
-                  <Link
-                    href={chapter.socials.discord}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-surface-page text-text-primary text-sm font-medium border border-border-subtle shadow-sm hover:bg-surface-subtle transition-all"
-                  >
-                    <span>Hop on Discord</span>
-                    <ArrowUpRight className="w-4 h-4 text-text-secondary" />
+                    <span>Get Official Updates</span>
                   </Link>
                 )}
               </div>

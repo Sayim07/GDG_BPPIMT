@@ -77,17 +77,6 @@ export function Team() {
                     <ArrowUpRight className="w-4 h-4" />
                   </Link>
                 )}
-                {chapter.socials?.discord && (
-                  <Link
-                    href={chapter.socials.discord}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-surface-card text-text-primary text-sm font-medium border border-border-subtle shadow-sm hover:bg-surface-subtle transition-all"
-                  >
-                    <span>Meet us on Discord</span>
-                    <ArrowUpRight className="w-4 h-4 text-text-secondary" />
-                  </Link>
-                )}
               </div>
             </div>
           </motion.div>
