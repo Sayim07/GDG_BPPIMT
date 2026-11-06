@@ -1,0 +1,20 @@
+{
+  "name": "GDG on Campus BPPIMT",
+  "chapterName": "B.P. Poddar Institute of Management and Technology",
+  "chapterId": "gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india",
+  "badge": "Google Developer Groups • BPPIMT Chapter",
+  "headline": "Building the developer community at BPPIMT",
+  "subtitle": "A student-led community to connect, learn, and build with Google technologies and modern developer tools.",
+  "primaryCtaText": "View Events",
+  "primaryCtaUrl": "#events",
+  "secondaryCtaText": "Join Us",
+  "secondaryCtaUrl": "#join",
+  "communityUrl": "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
+  "socials": {
+    "discord": "https://discord.gg",
+    "whatsapp": "https://chat.whatsapp.com",
+    "linkedin": "https://linkedin.com",
+    "github": "https://github.com"
+  }
+}
+

@@ -1,0 +1,91 @@
+import React from "react";
+import Link from "next/link";
+import chapterConfig from "@/data/chapter.json";
+import { ChapterConfig } from "@/types/schema";
+
+export function Footer() {
+  const chapter = chapterConfig as ChapterConfig;
+
+  return (
+    <footer className="w-full bg-surface-card border-t border-border-subtle transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Brand Info */}
+          <div className="flex items-center gap-3">
+            <svg className="w-6 h-6" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M48 64L20 96L48 128" stroke="#4285F4" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M144 64L172 96L144 128" stroke="#EA4335" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M112 52L80 140" stroke="#FBBC04" strokeWidth="16" strokeLinecap="round"/>
+              <circle cx="96" cy="96" r="8" fill="#34A853"/>
+            </svg>
+            <span className="font-semibold text-sm text-text-primary">
+              Google Developer Groups on Campus • {chapter.chapterName}
+            </span>
+          </div>
+
+          {/* Social Links (Dynamic) */}
+          <div className="flex items-center gap-6">
+            {chapter.socials.discord && (
+              <Link
+                href={chapter.socials.discord}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-text-secondary hover:text-primary transition-colors"
+              >
+                Discord
+              </Link>
+            )}
+            {chapter.socials.whatsapp && (
+              <Link
+                href={chapter.socials.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-text-secondary hover:text-primary transition-colors"
+              >
+                WhatsApp
+              </Link>
+            )}
+            {chapter.socials.linkedin && (
+              <Link
+                href={chapter.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-text-secondary hover:text-primary transition-colors"
+              >
+                LinkedIn
+              </Link>
+            )}
+            {chapter.socials.github && (
+              <Link
+                href={chapter.socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-text-secondary hover:text-primary transition-colors"
+              >
+                GitHub
+              </Link>
+            )}
+            {chapter.communityUrl && (
+              <Link
+                href={chapter.communityUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-text-secondary hover:text-primary transition-colors"
+              >
+                Bevy Platform
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Disclaimer & Copyright */}
+        <div className="mt-8 pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-tertiary">
+          <p>
+            {chapter.name} is an independent student community. Not sponsored by Google LLC directly.
+          </p>
+          <p>© 2026 {chapter.name}. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}

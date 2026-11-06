@@ -1,0 +1,27 @@
+[
+  {
+    "id": "who-can-join",
+    "question": "Who can join GDG on Campus BPPIMT?",
+    "answer": "Any student enrolled at B.P. Poddar Institute of Management and Technology, regardless of their department (CSE, IT, ECE, EE, MCA, BCA) or academic year. Beginners and experienced coders are equally welcome!"
+  },
+  {
+    "id": "are-events-free",
+    "question": "Are the workshops and events free to attend?",
+    "answer": "Yes, 100% free! All GDG on Campus workshops, hackathons, cloud study jams, and speaker sessions are completely free of cost for our student community."
+  },
+  {
+    "id": "cloud-credits-certificates",
+    "question": "How do I earn Google Cloud skill badges and certificates?",
+    "answer": "When you attend our official Google Cloud Study Jams or hands-on workshops, you receive complimentary access to Google Cloud Skills Boost labs, official digital skill badges, and completion certificates."
+  },
+  {
+    "id": "beginner-friendly",
+    "question": "I am a complete beginner in programming. Can I still participate?",
+    "answer": "Absolutely! We organize foundational tracks from day zero — including Git/GitHub basics, web fundamentals, and introductory Python/AI — paired with peer mentorship."
+  },
+  {
+    "id": "join-core-team",
+    "question": "How can I join the Core Team or become a Domain Lead?",
+    "answer": "Core team recruitments and volunteer calls are announced each semester on our official Discord and WhatsApp channels. Active contributors to chapter open-source projects are given priority."
+  }
+]

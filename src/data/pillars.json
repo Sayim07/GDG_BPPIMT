@@ -1,0 +1,27 @@
+[
+  {
+    "id": "connect",
+    "title": "Connect",
+    "description": "Meet passionate student developers, alumni, and industry mentors from across the tech landscape.",
+    "ctaText": "Network with peers",
+    "icon": "connect",
+    "accentColor": "blue"
+  },
+  {
+    "id": "learn",
+    "title": "Learn",
+    "description": "Hands-on workshops, cloud study jams, and hackathon prep designed to build deep practical knowledge.",
+    "ctaText": "Hands-on tracks",
+    "icon": "learn",
+    "accentColor": "red"
+  },
+  {
+    "id": "grow",
+    "title": "Grow",
+    "description": "Build real open-source projects, gain leadership experience, and level up your engineering skills.",
+    "ctaText": "Ship production code",
+    "icon": "grow",
+    "accentColor": "green"
+  }
+]
+

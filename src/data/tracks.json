@@ -1,0 +1,35 @@
+[
+  {
+    "id": "web-cloud",
+    "title": "Web & Cloud",
+    "description": "Modern full-stack frameworks, Google Cloud Platform, Kubernetes, and Firebase scalable backends.",
+    "icon": "cloud",
+    "accentColor": "blue",
+    "tags": ["GCP", "Next.js", "Firebase"]
+  },
+  {
+    "id": "ai-ml",
+    "title": "AI & Machine Learning",
+    "description": "TensorFlow, Gemini APIs, fine-tuning LLMs, computer vision, and responsible AI system architecture.",
+    "icon": "ai",
+    "accentColor": "red",
+    "tags": ["Gemini 1.5", "TensorFlow", "Keras"]
+  },
+  {
+    "id": "android-mobile",
+    "title": "Android & Mobile",
+    "description": "Native Kotlin, Jetpack Compose UI, and cross-platform multiplatform application delivery using Flutter.",
+    "icon": "mobile",
+    "accentColor": "yellow",
+    "tags": ["Kotlin", "Compose", "Flutter"]
+  },
+  {
+    "id": "oss-security",
+    "title": "Open Source & Security",
+    "description": "Git workflows, cybersecurity fundamentals, Linux administration, and Google Summer of Code prep.",
+    "icon": "security",
+    "accentColor": "green",
+    "tags": ["GSoC", "Git", "Infosec"]
+  }
+]
+
