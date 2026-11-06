@@ -59,6 +59,8 @@ export interface TeamMember {
   id: string;
   name: string;
   role: string;
+  domain?: string;
+  bio?: string;
   tagline?: string;
   avatarUrl?: string;
   badgeColor?: "blue" | "red" | "yellow" | "green";
