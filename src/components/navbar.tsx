@@ -43,19 +43,19 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="#about" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+          <Link href="/#about" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             About
           </Link>
-          <Link href="#tracks" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+          <Link href="/#tracks" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             Tracks
           </Link>
-          <Link href="#events" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+          <Link href="/events" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             Events
           </Link>
-          <Link href="#team" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+          <Link href="/team" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             Team
           </Link>
-          <Link href="#faq" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+          <Link href="/#faq" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
             FAQ
           </Link>
         </nav>
@@ -100,35 +100,35 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-border-subtle bg-surface-page px-4 py-4 space-y-3">
           <Link
-            href="#about"
+            href="/#about"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
             About
           </Link>
           <Link
-            href="#tracks"
+            href="/#tracks"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
             Tracks
           </Link>
           <Link
-            href="#events"
+            href="/events"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
             Events
           </Link>
           <Link
-            href="#team"
+            href="/team"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
             Team
           </Link>
           <Link
-            href="#faq"
+            href="/#faq"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-text-secondary hover:text-primary"
           >
