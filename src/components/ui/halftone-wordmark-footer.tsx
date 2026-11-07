@@ -61,6 +61,9 @@ const DEFAULT_COLUMNS: FooterColumn[] = [
         href: "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
       },
       { label: "GitHub", href: "https://github.com/Sayim07/GDG_BPPIMT" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/gdg-bppimt/" },
+      { label: "WhatsApp", href: "https://chat.whatsapp.com/invite/gdg-bppimt" },
+      { label: "Instagram", href: "https://www.instagram.com/gdg_bppimt" },
     ],
   },
 ];
@@ -117,27 +120,37 @@ const HWF_CSS = `
 }
 .hwf-top {
   position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: space-between;
-  gap: 32px; padding: clamp(24px, 4vw, 44px) clamp(20px, 4vw, 48px) 0;
+  gap: 32px; padding: clamp(28px, 4vw, 44px) clamp(20px, 4vw, 48px) clamp(24px, 3.5vw, 36px);
+  background: var(--hwf-top-bg);
+  border-bottom: 1px solid var(--hwf-border);
   font-size: 11px; letter-spacing: .15em; text-transform: uppercase; line-height: 1.75;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
-.hwf-brand strong { display: block; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; }
-.hwf-brand span { opacity: .6; text-transform: none; letter-spacing: normal; font-size: 12px; }
+.hwf-brand strong { display: block; font-weight: 700; font-size: 14px; letter-spacing: 0.05em; color: var(--hwf-ink); }
+.hwf-brand span { display: block; margin-top: 4px; color: var(--hwf-muted); text-transform: none; letter-spacing: normal; font-size: 12px; font-weight: 400; }
 .hwf-nav { display: flex; flex-wrap: wrap; gap: clamp(24px, 4vw, 56px); }
-.hwf-col h3 { margin: 0 0 8px 0; font: inherit; opacity: .45; font-weight: 600; }
-.hwf-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.hwf-col a, .hwf-up {
-  color: inherit; text-decoration: none; opacity: .75; background: none; border: 0; padding: 0;
+.hwf-col h3 { margin: 0 0 10px 0; font: inherit; color: var(--hwf-muted); font-weight: 700; letter-spacing: 0.12em; }
+.hwf-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.hwf-col a {
+  color: var(--hwf-link); text-decoration: none; background: none; border: 0; padding: 0;
   font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;
   background-image: linear-gradient(currentColor, currentColor); background-size: 0% 1px;
-  background-repeat: no-repeat; background-position: 0 100%; transition: opacity .25s ease, background-size .35s ease;
+  background-repeat: no-repeat; background-position: 0 100%; transition: color .2s ease, background-size .35s ease;
 }
-.hwf-col a:hover, .hwf-up:hover { opacity: 1; background-size: 100% 1px; }
-.hwf-col a:focus-visible, .hwf-up:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; opacity: 1; }
+.hwf-col a:hover { color: var(--hwf-accent); background-size: 100% 1px; }
+.hwf-col a:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
 .hwf-rule {
   position: relative; z-index: 2; display: flex; justify-content: flex-end; align-items: center; gap: 16px;
-  margin: clamp(16px, 2.5vw, 28px) clamp(20px, 4vw, 48px) 0; padding-top: 12px;
-  border-top: 0.5px solid var(--hwf-border);
+  margin: 0 clamp(20px, 4vw, 48px); padding-top: 14px;
   font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+}
+.hwf-up {
+  color: var(--hwf-muted); text-decoration: none; background: none; border: 0; padding: 0;
+  font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;
+  font-weight: 600; transition: color .2s ease;
+}
+.hwf-up:hover {
+  color: var(--hwf-accent);
 }
 .hwf-hint {
   position: absolute; bottom: 12px; right: 24px; z-index: 2;
@@ -171,13 +184,21 @@ export function HalftoneWordmarkFooter({
     return isDark
       ? {
           background: "#131314",
+          topBackground: "#1A1B1E",
           ink: "#E8EAED",
-          border: "rgba(255, 255, 255, 0.1)",
+          muted: "#9AA0A6",
+          link: "#BDC1C6",
+          accent: "#8AB4F8",
+          border: "rgba(255, 255, 255, 0.12)",
         }
       : {
           background: "#FFFFFF",
+          topBackground: "#F8F9FA", // Soft faded Google Material surface
           ink: "#202124",
-          border: "rgba(0, 0, 0, 0.08)",
+          muted: "#5F6368",
+          link: "#3C4043",
+          accent: "#1A73E8",
+          border: "#DADCE0", // Clean, visible divider line
         };
   }, [isDark]);
 
@@ -674,7 +695,11 @@ export function HalftoneWordmarkFooter({
           height,
           minHeight: height || "100dvh",
           "--hwf-bg": colors.background,
+          "--hwf-top-bg": colors.topBackground,
           "--hwf-ink": colors.ink,
+          "--hwf-muted": colors.muted,
+          "--hwf-link": colors.link,
+          "--hwf-accent": colors.accent,
           "--hwf-border": colors.border,
         } as React.CSSProperties
       }
