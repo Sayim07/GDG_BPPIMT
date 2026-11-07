@@ -11,9 +11,12 @@ export interface ChapterConfig {
   secondaryCtaUrl?: string;
   communityUrl: string;
   socials: {
+    community?: string;
     whatsapp?: string;
     linkedin?: string;
     github?: string;
+    instagram?: string;
+    twitter?: string;
   };
 }
 

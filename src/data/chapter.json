@@ -10,5 +10,12 @@
   "secondaryCtaText": "Join Us",
   "secondaryCtaUrl": "#join",
   "communityUrl": "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
-  "socials": {}
+  "socials": {
+    "community": "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
+    "linkedin": "https://www.linkedin.com/company/gdg-bppimt/",
+    "github": "https://github.com/Sayim07/GDG_BPPIMT",
+    "whatsapp": "https://chat.whatsapp.com/invite/gdg-bppimt",
+    "instagram": "https://www.instagram.com/gdg_bppimt",
+    "twitter": "https://x.com/gdg_bppimt"
+  }
 }
