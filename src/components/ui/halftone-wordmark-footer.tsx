@@ -106,6 +106,7 @@ function hwfWarmth(x: number, y: number, hx: number, hy: number, span: number): 
 const HWF_CSS = `
 .hwf-root {
   position: relative; width: 100%; overflow: hidden; isolation: isolate;
+  min-height: 100dvh;
   background: var(--hwf-bg); color: var(--hwf-ink); -webkit-font-smoothing: antialiased;
   border-top: 1px solid var(--hwf-border);
   transition: background-color 0.25s ease, color 0.25s ease;
@@ -255,58 +256,89 @@ export function HalftoneWordmarkFooter({
 
       if (!mLogo || !mText) return;
 
-      // Available vertical space for the interactive halftone artwork
-      const availTop = Math.min(130, h * 0.24);
-      const availBottom = h - 35;
-      const availH = Math.max(120, availBottom - availTop);
-
-      // 1. Resolve clean font family for Canvas 2D (Canvas silently ignores var(--...) strings)
-      let canvasFont = '"Product Sans", "Google Sans", system-ui, sans-serif';
-      try {
-        const computed = getComputedStyle(document.body).fontFamily;
-        if (computed) {
-          const sanitized = computed.replace(/var\([^)]+\),?\s*/g, "").trim();
-          if (sanitized) {
-            canvasFont = `${sanitized}, "Product Sans", "Google Sans", system-ui, sans-serif`;
-          }
-        }
-      } catch {
-        // Fallback to Product Sans stack
+      // Available vertical space for the interactive halftone artwork on full-page frame
+      const ruleEl = root.querySelector(".hwf-rule") as HTMLElement | null;
+      let topUIBottom = 160;
+      if (ruleEl) {
+        topUIBottom = Math.round(ruleEl.getBoundingClientRect().bottom - rect.top) + 20;
       }
+      const availTop = Math.max(140, Math.min(topUIBottom, Math.round(h * 0.3)));
+      const availBottom = h - Math.max(24, Math.round(h * 0.05));
+      const availH = Math.max(140, availBottom - availTop);
 
-      // 2. Calculate typography layout for the wordmark
+      // 1. Resolve bold high-impact font family for Canvas 2D (like 21st.dev bold wordmark)
+      const canvasFont = 'Impact, "Arial Black", "Product Sans", "Google Sans", system-ui, sans-serif';
+
+      // 2. Calculate typography layout for the wordmark to fill the page width and height
       const word = o.wordmark || "GDG • BPPIMT, KOLKATA";
-      mText.font = `bold 100px ${canvasFont}`;
-      const measure100 = mText.measureText(word).width || 800;
-      // Target width is ~88% of screen width (min 300, max 1050px)
-      const targetW = Math.max(300, Math.min(w * 0.88, 1050));
-      const fontSize = Math.max(28, (targetW / measure100) * 100);
-      mText.font = `bold ${Math.round(fontSize)}px ${canvasFont}`;
-      const box = mText.measureText(word);
-      const cap = box.actualBoundingBoxAscent || fontSize * 0.72;
+      mText.font = `900 100px ${canvasFont}`;
+      const measure100 = mText.measureText(word).width || 850;
 
-      // 3. Logo sizing proportional to canvas
-      let logoH = Math.min(h * 0.18, 75);
+      // Target width: Fill ~95% to 97% of page width, leaving clean edge padding
+      const maxFillW = Math.max(300, w - Math.max(24, Math.round(w * 0.04)));
+      let fontSize = (maxFillW / measure100) * 100;
+
+      // 3. Size GDG Logo proportionally to match the bold expanded wordmark
+      let logoH = Math.min(Math.round(availH * 0.36), Math.max(70, Math.round(fontSize * 1.05)));
       let logoW = logoH * (692 / 406);
       if (logoImg.complete && logoImg.naturalWidth > 0 && logoImg.naturalHeight > 0) {
         logoW = logoH * (logoImg.naturalWidth / logoImg.naturalHeight);
       }
-      const logoTextGap = Math.max(14, fontSize * 0.24);
+      const logoTextGap = Math.max(16, Math.round(availH * 0.04));
 
-      // 4. Pin wordmark snug to the bottom edge with minimal gap (zero extra dead space)
-      const bottomPadding = 8;
-      const textBaseline = h - bottomPadding;
-      const logoY = textBaseline - cap - logoTextGap - logoH;
-      const logoX = (w - logoW) / 2;
-      const textX = (w - box.width) / 2;
+      // 4. Calculate vertical stretch & cap height to fill vertical space like 21st.dev
+      mText.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
+      const box = mText.measureText(word);
+      const naturalCap = box.actualBoundingBoxAscent || fontSize * 0.78;
+      const naturalDescent = box.actualBoundingBoxDescent || fontSize * 0.16;
 
-      // 5. Draw GDG Logo on maskLogo
+      // Vertical space target: allow text to expand vertically while strictly staying in frame
+      const targetTextH = Math.max(naturalCap, (availH - logoH - logoTextGap) * 0.62);
+      let textScaleY = Math.min(1.45, Math.max(1.0, targetTextH / naturalCap));
+
+      // Calculate total effective artwork height with vertical scaling
+      let effectiveCap = naturalCap * textScaleY;
+      let effectiveDescent = naturalDescent * textScaleY;
+      let totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
+
+      // Safety check: Ensure total artwork never overflows availH
+      if (totalArtworkH > availH * 0.88) {
+        const vScale = (availH * 0.88) / totalArtworkH;
+        fontSize = Math.round(fontSize * vScale);
+        logoH = Math.round(logoH * vScale);
+        logoW = Math.round(logoW * vScale);
+        textScaleY = Math.max(1.0, textScaleY * vScale);
+        mText.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
+        effectiveCap = (box.actualBoundingBoxAscent || fontSize * 0.78) * textScaleY;
+        effectiveDescent = (box.actualBoundingBoxDescent || fontSize * 0.16) * textScaleY;
+        totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
+      }
+
+      // Re-measure box at final font size
+      const finalBox = mText.measureText(word);
+
+      // 5. Center-aligned framing within available vertical space
+      const availCenter = availTop + (availBottom - availTop) * 0.5;
+      let logoY = Math.round(availCenter - totalArtworkH / 2);
+      if (logoY < availTop + 10) logoY = availTop + 10;
+      if (logoY + totalArtworkH > availBottom) {
+        logoY = availBottom - totalArtworkH;
+      }
+      const textBaseline = Math.round(logoY + logoH + logoTextGap + effectiveCap);
+      const logoX = Math.round((w - logoW) / 2);
+      const textX = Math.round((w - finalBox.width) / 2);
+
+      // 6. Draw GDG Logo on maskLogo
       if (logoImg.complete && logoImg.naturalWidth > 0) {
         mLogo.drawImage(logoImg, logoX, logoY, logoW, logoH);
       }
 
-      // 6. Render Google 4-Color Gradient for the Wordmark Text on maskText
-      const textGrad = mText.createLinearGradient(textX, 0, textX + box.width, 0);
+      // 7. Render Google 4-Color Gradient for Wordmark Text on maskText with vertical scale
+      mText.save();
+      mText.translate(textX, textBaseline);
+      mText.scale(1, textScaleY);
+
+      const textGrad = mText.createLinearGradient(0, 0, finalBox.width, 0);
       textGrad.addColorStop(0.0, "#4285F4"); // Google Blue
       textGrad.addColorStop(0.32, "#EA4335"); // Google Red
       textGrad.addColorStop(0.68, "#FBBC04"); // Google Yellow
@@ -314,7 +346,8 @@ export function HalftoneWordmarkFooter({
 
       mText.fillStyle = textGrad;
       mText.textBaseline = "alphabetic";
-      mText.fillText(word, textX, textBaseline);
+      mText.fillText(word, 0, 0);
+      mText.restore();
 
       const imgLogo = mLogo.getImageData(0, 0, w, h).data;
       const imgText = mText.getImageData(0, 0, w, h).data;
@@ -639,6 +672,7 @@ export function HalftoneWordmarkFooter({
       style={
         {
           height,
+          minHeight: height || "100dvh",
           "--hwf-bg": colors.background,
           "--hwf-ink": colors.ink,
           "--hwf-border": colors.border,

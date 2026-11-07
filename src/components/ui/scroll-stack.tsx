@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import {
   Children,
@@ -198,8 +198,9 @@ export const ScrollStack = ({
       const tops = slots.map(slot => slot.getBoundingClientRect().top);
       const lastPin = stackTop + (slots.length - 1) * offset;
       const padTop = windowed ? 0 : stackTop;
-      const endHeight =
-        settings.holdDistance + (windowed ? 0 : Math.max(0, viewHeight - lastPin - heights[heights.length - 1]));
+      const endHeight = windowed
+        ? Math.max(settings.holdDistance, viewHeight)
+        : settings.holdDistance + Math.max(0, viewHeight - lastPin - heights[heights.length - 1]);
 
       let moved = write('padTop', padTop, value => {
         inner.style.paddingTop = `${value}px`;
