@@ -19,7 +19,7 @@ export function CardsGlassBackground() {
       <GlassTiles
         isDark={isDark}
         columns={15}
-        speed={0.65}
+        speed={0.85}
         className="w-full h-full"
       />
     </div>

@@ -34,38 +34,44 @@ vec3 light(vec2 p){
   vec3 col = vec3(0.0);
   float aspect = uRes.x / uRes.y;
 
+  // Gentle rhythmic breathing pulses for each Google color wave
+  float pBlue   = 0.72 + 0.28 * sin(t * 1.8 + p.x * 2.2);
+  float pRed    = 0.72 + 0.28 * sin(t * 2.1 + p.x * 2.6 + 1.8);
+  float pYellow = 0.72 + 0.28 * sin(t * 1.6 + p.x * 2.4 + 3.6);
+  float pGreen  = 0.72 + 0.28 * sin(t * 2.3 + p.x * 2.8 + 5.2);
+
   // 1. Google Blue Wave (broad, silky flowing ribbon across upper-mid)
-  float yBlue = 0.55 + 0.28 * sin(p.x * 0.75 + t * 0.22) + 0.12 * sin(p.x * 1.8 - t * 0.28);
-  float wBlue = exp(-pow((p.y - yBlue) / 0.15, 2.0));
-  col += C_BLUE * wBlue * 1.1;
+  float yBlue = 0.55 + 0.28 * sin(p.x * 0.75 + t * 0.32) + 0.12 * sin(p.x * 1.8 - t * 0.38);
+  float wBlue = exp(-pow((p.y - yBlue) / 0.16, 2.0));
+  col += C_BLUE * wBlue * pBlue * 1.15;
 
   // 2. Google Red Wave (diagonal counter wave through mid-lower)
-  float yRed = 0.45 + 0.30 * sin(p.x * 0.90 + t * 0.18 + 2.09) + 0.10 * sin(p.x * 1.6 - t * 0.24 + 1.2);
-  float wRed = exp(-pow((p.y - yRed) / 0.14, 2.0));
-  col += C_RED * wRed * 1.0;
+  float yRed = 0.45 + 0.30 * sin(p.x * 0.90 + t * 0.28 + 2.09) + 0.10 * sin(p.x * 1.6 - t * 0.34 + 1.2);
+  float wRed = exp(-pow((p.y - yRed) / 0.15, 2.0));
+  col += C_RED * wRed * pRed * 1.05;
 
   // 3. Google Yellow Flow (warm undulating ambient flow)
-  float yYellow = 0.50 + 0.26 * sin(p.x * 1.10 + t * 0.24 + 4.18) + 0.08 * sin(p.x * 2.1 - t * 0.30 + 3.0);
-  float wYellow = exp(-pow((p.y - yYellow) / 0.13, 2.0));
-  col += C_YELLOW * wYellow * 0.95;
+  float yYellow = 0.50 + 0.26 * sin(p.x * 1.10 + t * 0.35 + 4.18) + 0.08 * sin(p.x * 2.1 - t * 0.40 + 3.0);
+  float wYellow = exp(-pow((p.y - yYellow) / 0.14, 2.0));
+  col += C_YELLOW * wYellow * pYellow * 1.00;
 
   // 4. Google Green Wave (crisp lower-mid ribbon)
-  float yGreen = 0.42 + 0.29 * sin(p.x * 0.85 + t * 0.20 + 3.14) + 0.11 * sin(p.x * 1.9 - t * 0.26 + 2.2);
-  float wGreen = exp(-pow((p.y - yGreen) / 0.15, 2.0));
-  col += C_GREEN * wGreen * 1.0;
+  float yGreen = 0.42 + 0.29 * sin(p.x * 0.85 + t * 0.30 + 3.14) + 0.11 * sin(p.x * 1.9 - t * 0.36 + 2.2);
+  float wGreen = exp(-pow((p.y - yGreen) / 0.16, 2.0));
+  col += C_GREEN * wGreen * pGreen * 1.10;
 
-  // Ambient soft floating GDG color pools for full-screen harmonic coverage
-  vec2 c1 = vec2(0.28 * aspect + 0.35 * sin(t * 0.14 + 1.2), 0.45 + 0.25 * cos(t * 0.11 + 2.1));
-  col += C_BLUE * exp(-dot(p - c1, p - c1) / 0.18) * 0.65;
+  // Ambient soft floating GDG color pools with subtle pulsation
+  vec2 c1 = vec2(0.28 * aspect + 0.35 * sin(t * 0.20 + 1.2), 0.45 + 0.25 * cos(t * 0.16 + 2.1));
+  col += C_BLUE * exp(-dot(p - c1, p - c1) / 0.18) * (0.50 + 0.22 * sin(t * 1.9));
 
-  vec2 c2 = vec2(0.72 * aspect + 0.40 * sin(t * 0.13 + 3.7), 0.55 + 0.25 * cos(t * 0.12 + 0.8));
-  col += C_GREEN * exp(-dot(p - c2, p - c2) / 0.16) * 0.60;
+  vec2 c2 = vec2(0.72 * aspect + 0.40 * sin(t * 0.18 + 3.7), 0.55 + 0.25 * cos(t * 0.17 + 0.8));
+  col += C_GREEN * exp(-dot(p - c2, p - c2) / 0.16) * (0.48 + 0.20 * sin(t * 2.2 + 2.0));
 
-  vec2 c3 = vec2(0.50 * aspect + 0.45 * sin(t * 0.15 + 5.1), 0.48 + 0.28 * cos(t * 0.14 + 4.4));
-  col += C_RED * exp(-dot(p - c3, p - c3) / 0.16) * 0.55;
+  vec2 c3 = vec2(0.50 * aspect + 0.45 * sin(t * 0.22 + 5.1), 0.48 + 0.28 * cos(t * 0.19 + 4.4));
+  col += C_RED * exp(-dot(p - c3, p - c3) / 0.16) * (0.45 + 0.20 * sin(t * 1.7 + 4.0));
 
-  vec2 c4 = vec2(0.12 * aspect + 0.30 * sin(t * 0.16 + 2.5), 0.62 + 0.22 * cos(t * 0.13 + 3.3));
-  col += C_YELLOW * exp(-dot(p - c4, p - c4) / 0.15) * 0.55;
+  vec2 c4 = vec2(0.12 * aspect + 0.30 * sin(t * 0.23 + 2.5), 0.62 + 0.22 * cos(t * 0.20 + 3.3));
+  col += C_YELLOW * exp(-dot(p - c4, p - c4) / 0.15) * (0.45 + 0.20 * sin(t * 2.0 + 1.0));
 
   // Pointer Lamp with smooth chromatic GDG dispersion
   vec2 m = uMouse / uRes.y;
@@ -75,7 +81,7 @@ vec3 light(vec2 p){
 
   // Prismatic dispersion around pointer lamp: smooth cycle across the 4 Google colors
   float ang = atan(p.y - m.y, p.x - m.x);
-  float rawCycle = (ang / 3.14159265) * 2.0 + t * 0.5;
+  float rawCycle = (ang / 3.14159265) * 2.0 + t * 0.6;
   float phase = fract(rawCycle * 0.25) * 4.0;
   vec3 lampColor = C_BLUE;
   if (phase < 1.0) {
@@ -109,6 +115,12 @@ void main(){
     return;
   }
 
+  // Individual tile subtle blinking/breathing effect (low intensity!)
+  float tileHash = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453);
+  float tileOsc = sin(uTime * (1.1 + tileHash * 1.4) + tileHash * 6.2831853);
+  // Soft smooth blinking curve: gentle modulation between 0.80 and 1.15
+  float tileBlink = 0.82 + 0.30 * smoothstep(-0.35, 0.65, tileOsc);
+
   // Bevel: bends light inwards
   float edge = clamp(1.0 + d / 0.52, 0.0, 1.0);
   vec2 g = normalize(sign(q) * pow(aq + 1e-4, vec2(8.0)));
@@ -119,9 +131,9 @@ void main(){
   vec2 look = centre + q * size * 0.5 * (1.0 - 0.55 * bend) - g * bend * size * 0.9;
   vec3 L = light(look);
 
-  // Face and beveled rim
-  vec3 face = light(centre + q * size * 0.32);
-  vec3 rim = L * pow(edge, 1.6) * 3.2;
+  // Face and beveled rim modulated by per-tile subtle blinking
+  vec3 face = light(centre + q * size * 0.32) * tileBlink;
+  vec3 rim = L * pow(edge, 1.6) * 3.2 * tileBlink;
   float fres = pow(edge, 7.0) * 0.12;
 
   vec3 col;
