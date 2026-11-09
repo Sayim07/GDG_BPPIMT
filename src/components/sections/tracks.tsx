@@ -43,22 +43,22 @@ export function Tracks({ isCard = false }: { isCard?: boolean } = {}) {
   const content = (
     <div className="w-full">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-10 gap-2 sm:gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">
+          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary">
             Specialized Tracks
           </p>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1.5">
+          <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
             Technical Domains
           </h2>
         </div>
-        <p className="text-sm text-text-secondary max-w-md leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-secondary max-w-md leading-snug sm:leading-relaxed">
           Hands-on learning, study groups, and hack sprints guided by student domain leads and industry mentors.
         </p>
       </div>
 
-      {/* Flat Grid: Clean Google 1px Border Accent, No Artificial Glow */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* 2x2 Grid on Mobile, 4-Column Grid on Desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {tracks.map((track, idx) => {
           const Icon = track.icon ? iconMap[track.icon] : Cloud;
           const colors = track.accentColor ? colorConfig[track.accentColor] : colorConfig.blue;
@@ -66,36 +66,36 @@ export function Tracks({ isCard = false }: { isCard?: boolean } = {}) {
           return (
             <div
               key={track.id || idx}
-              className={`bg-surface-page border border-border-subtle ${colors.hoverBorder} rounded-2xl p-5 sm:p-6 transition-colors duration-150 flex flex-col justify-between group`}
+              className={`bg-surface-page border border-border-subtle ${colors.hoverBorder} rounded-xl sm:rounded-2xl p-3.5 sm:p-6 transition-colors duration-150 flex flex-col justify-between group`}
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-2.5 sm:mb-4">
                   {/* Google Brand Color Dot */}
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${colors.accentBar}`} />
-                    {Icon && <Icon className={`w-4 h-4 ${colors.text}`} />}
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${colors.accentBar}`} />
+                    {Icon && <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${colors.text}`} />}
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-text-tertiary group-hover:text-text-primary transition-colors" />
+                  <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-tertiary group-hover:text-text-primary transition-colors" />
                 </div>
 
                 {track.title && (
-                  <h3 className="font-heading text-base sm:text-lg font-bold text-text-primary mb-2 tracking-tight">
+                  <h3 className="font-heading text-sm sm:text-lg font-bold text-text-primary mb-1 sm:mb-2 tracking-tight leading-snug">
                     {track.title}
                   </h3>
                 )}
                 {track.description && (
-                  <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-4">
+                  <p className="text-[11px] sm:text-sm text-text-secondary leading-snug sm:leading-relaxed mb-3 sm:mb-4 line-clamp-3 sm:line-clamp-none">
                     {track.description}
                   </p>
                 )}
               </div>
 
               {track.tags && track.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-3 border-t border-border-subtle">
+                <div className="flex flex-wrap gap-1 sm:gap-1.5 pt-2.5 sm:pt-3 border-t border-border-subtle">
                   {track.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-md bg-surface-subtle text-text-secondary text-[11px] font-medium"
+                      className="px-1.5 sm:px-2 py-0.5 rounded-md bg-surface-subtle text-text-secondary text-[10px] sm:text-[11px] font-medium"
                     >
                       {tag}
                     </span>
@@ -110,7 +110,7 @@ export function Tracks({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-6 sm:p-10">{content}</div>;
+    return <div className="p-4 sm:p-10">{content}</div>;
   }
 
   return (
