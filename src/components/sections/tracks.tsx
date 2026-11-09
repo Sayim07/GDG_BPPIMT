@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Cloud, Cpu, Smartphone, ShieldCheck, ArrowUpRight } from "lucide-react";
 import tracksData from "@/data/tracks.json";
 import { TrackItem } from "@/types/schema";

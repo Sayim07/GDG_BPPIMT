@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Users, Code, TrendingUp, ArrowRight } from "lucide-react";
 import pillarsData from "@/data/pillars.json";
 import { PillarItem } from "@/types/schema";
