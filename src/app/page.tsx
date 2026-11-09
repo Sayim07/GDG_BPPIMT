@@ -6,12 +6,14 @@ import { Team } from "@/components/sections/team";
 import { FAQ } from "@/components/sections/faq";
 import { ScrollStack, ScrollStackItem } from "@/components/ui/scroll-stack";
 import { CardsGlassBackground } from "@/components/ui/cards-glass-background";
+import GDGPreloader from "@/components/GDGPreloader";
 
 export default function Home() {
   return (
     <main className="w-full flex flex-col">
       <Hero />
-
+{/* GDG Intro Loading Animation */}
+      <GDGPreloader />
       {/* Cards Section with Refractive GDG GlassTiles Background */}
       <section className="relative w-full">
         {/* Sticky Background for the Cards Area */}
