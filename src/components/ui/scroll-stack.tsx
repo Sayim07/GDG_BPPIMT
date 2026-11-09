@@ -85,7 +85,7 @@ const CARD_SHADOW = [
 export const ScrollStackItem = ({ children, itemClassName = '', style, id }: ScrollStackItemProps) => (
   <div
     id={id}
-    className={`relative box-border w-full origin-top rounded-[28px] border border-border-subtle bg-surface-card text-text-primary dark:bg-[#1c1d1f] will-change-transform transition-colors duration-200 ${itemClassName}`.trim()}
+    className={`relative box-border w-full origin-top rounded-[24px] sm:rounded-[28px] border border-border-subtle bg-surface-card text-text-primary dark:bg-[#1c1d1f] will-change-transform transition-colors duration-200 ${itemClassName}`.trim()}
     style={{
       boxShadow: CARD_SHADOW,
       scrollMarginTop: '100px',
@@ -195,11 +195,29 @@ export const ScrollStack = ({
       const stackTop = resolveOffset(settings.stackPosition, viewHeight);
       const offset = settings.itemStackDistance;
       const heights = slots.map(slot => slot.offsetHeight);
+      const bottomBreathingRoom = 20;
+
+      // Calculate dynamic sticky top per slot:
+      // If a card is taller than the remaining viewport (common on mobile),
+      // shift its sticky top upward so the user can scroll through 100% of its bottom content
+      // before it pins and gets covered by the next card.
+      const stickyTops = heights.map((h, i) => {
+        const basePin = stackTop + i * offset;
+        const maxAllowedTop = viewHeight - h - bottomBreathingRoom;
+        return Math.min(basePin, maxAllowedTop);
+      });
+
+      slots.forEach((slot, i) => {
+        write(`slotTop${i}`, `${stickyTops[i]}px`, value => {
+          slot.style.top = value;
+        });
+      });
+
       const tops = slots.map(slot => slot.getBoundingClientRect().top);
-      const lastPin = stackTop + (slots.length - 1) * offset;
+      const lastPin = stickyTops[slots.length - 1];
       const padTop = windowed ? 0 : stackTop;
       const endHeight = windowed
-        ? Math.max(settings.holdDistance, viewHeight)
+        ? Math.max(settings.holdDistance, viewHeight * 0.4)
         : settings.holdDistance + Math.max(0, viewHeight - lastPin - heights[heights.length - 1]);
 
       let moved = write('padTop', padTop, value => {
@@ -221,9 +239,10 @@ export const ScrollStack = ({
       const depths = slots.map(() => 0);
       let lastCover = 0;
       for (let j = 1; j < slots.length; j++) {
-        const pinBefore = viewTop + stackTop + (j - 1) * offset;
+        const pinBefore = viewTop + stickyTops[j - 1];
         const start = pinBefore + heights[j - 1];
-        const span = Math.max(1, start - pinBefore - offset);
+        const endPin = viewTop + stackTop + j * offset;
+        const span = Math.max(1, start - endPin);
         const cover = Math.min(1, Math.max(0, (start - tops[j]) / span));
         for (let i = 0; i < j; i++) depths[i] += cover;
         lastCover = cover;
@@ -379,7 +398,7 @@ export const ScrollStack = ({
       ref={rootRef}
       className={`relative w-full ${useWindowScroll ? '' : 'h-full overflow-x-hidden overflow-y-auto'} ${className}`.trim()}
     >
-      <div ref={innerRef} className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div ref={innerRef} className="relative max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
         {items.map((child, index) => {
           const gap = itemDistance - (items.length - index) * itemStackDistance;
           return (
@@ -408,4 +427,3 @@ export const ScrollStack = ({
 };
 
 export default ScrollStack;
-

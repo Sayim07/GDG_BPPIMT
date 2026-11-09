@@ -37,17 +37,17 @@ export function Pillars({ isCard = false }: { isCard?: boolean } = {}) {
   const content = (
     <div className="w-full">
       {/* Editorial Section Header */}
-      <div className="mb-8 sm:mb-10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">
+      <div className="mb-4 sm:mb-10">
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary">
           Community Pillars
         </p>
-        <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1.5">
+        <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
           Connect. Learn. Grow.
         </h2>
       </div>
 
-      {/* Flat Material Cards (No artificial shadows or floating glows) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Flat Material Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
         {items.map((item, idx) => {
           const Icon = item.icon ? iconMap[item.icon] : Users;
           const colors = item.accentColor ? colorConfig[item.accentColor] : colorConfig.blue;
@@ -55,28 +55,28 @@ export function Pillars({ isCard = false }: { isCard?: boolean } = {}) {
           return (
             <div
               key={item.id || idx}
-              className="bg-surface-card border border-border-subtle hover:border-border-strong rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-colors duration-150 group"
+              className="bg-surface-card border border-border-subtle hover:border-border-strong rounded-xl sm:rounded-2xl p-4 sm:p-7 flex flex-col justify-between transition-colors duration-150 group"
             >
               <div>
                 {/* Subtle Accent Line */}
-                <div className={`w-8 h-1 rounded-full ${colors.accent} mb-5`} />
+                <div className={`w-7 sm:w-8 h-1 rounded-full ${colors.accent} mb-2.5 sm:mb-5`} />
 
                 {item.title && (
-                  <h3 className="font-heading text-lg sm:text-xl font-bold text-text-primary mb-2">
+                  <h3 className="font-heading text-base sm:text-xl font-bold text-text-primary mb-1 sm:mb-2">
                     {item.title}
                   </h3>
                 )}
                 {item.description && (
-                  <p className="text-sm text-text-secondary leading-relaxed">
+                  <p className="text-xs sm:text-sm text-text-secondary leading-snug sm:leading-relaxed">
                     {item.description}
                   </p>
                 )}
               </div>
 
               {item.ctaText && (
-                <div className={`mt-6 pt-4 border-t border-border-subtle flex items-center justify-between text-xs font-semibold ${colors.text} tracking-wider uppercase`}>
+                <div className={`mt-3 pt-2.5 sm:mt-6 sm:pt-4 border-t border-border-subtle flex items-center justify-between text-[11px] sm:text-xs font-semibold ${colors.text} tracking-wider uppercase`}>
                   <span>{item.ctaText}</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               )}
             </div>
@@ -87,7 +87,7 @@ export function Pillars({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-6 sm:p-10">{content}</div>;
+    return <div className="p-4 sm:p-10">{content}</div>;
   }
 
   return (
