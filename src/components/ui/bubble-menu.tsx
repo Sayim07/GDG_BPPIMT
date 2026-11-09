@@ -369,7 +369,7 @@ export function BubbleMenu({
       {/* Hamburger Toggle Button */}
       <button
         type="button"
-        className={`relative z-[1002] w-10 h-10 rounded-full flex flex-col items-center justify-center border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-primary transition-all cursor-pointer shadow-sm ${className}`.trim()}
+        className={`relative z-[1002] w-8 h-8 sm:w-10 sm:h-10 rounded-full flex flex-col items-center justify-center border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-primary transition-all cursor-pointer shadow-sm ${className}`.trim()}
         style={style}
         onClick={handleToggle}
         aria-label={menuAriaLabel}
@@ -378,20 +378,20 @@ export function BubbleMenu({
         <span
           className="block rounded-[2px] transition-transform duration-300"
           style={{
-            width: 20,
-            height: 2,
+            width: 16,
+            height: 1.5,
             backgroundColor: 'currentColor',
-            transform: isMenuOpen ? 'translateY(3px) rotate(45deg)' : 'none'
+            transform: isMenuOpen ? 'translateY(2.75px) rotate(45deg)' : 'none'
           }}
         />
         <span
           className="block rounded-[2px] transition-transform duration-300"
           style={{
-            marginTop: '4px',
-            width: 20,
-            height: 2,
+            marginTop: '3.5px',
+            width: 16,
+            height: 1.5,
             backgroundColor: 'currentColor',
-            transform: isMenuOpen ? 'translateY(-3px) rotate(-45deg)' : 'none'
+            transform: isMenuOpen ? 'translateY(-2.75px) rotate(-45deg)' : 'none'
           }}
         />
       </button>

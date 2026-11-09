@@ -73,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={productSans.variable}>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={productSans.variable}>
       <body className="min-h-screen bg-surface-page text-text-primary antialiased flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Navbar />
