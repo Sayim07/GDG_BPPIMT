@@ -178,7 +178,14 @@ export function HalftoneWordmarkFooter({
   className = "",
 }: HalftoneWordmarkFooterProps) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Before mounting, default to light theme to match SSR and avoid hydration mismatch
+  const isDark = mounted && resolvedTheme === "dark";
 
   const colors = React.useMemo(() => {
     return isDark
