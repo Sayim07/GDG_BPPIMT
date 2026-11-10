@@ -125,17 +125,17 @@ const normalizeItem = (it: DepthCarouselItem) =>
   typeof it === 'string' ? { image: it, alt: '', name: 'Team Member', role: 'GDG Member' } : it;
 
 const badgeStyles = {
-  blue: 'bg-blue-500/10 text-[#4285F4] border-blue-500/20',
-  red: 'bg-red-500/10 text-[#EA4335] border-red-500/20',
-  yellow: 'bg-amber-500/10 text-[#FBBC04] border-amber-500/20',
-  green: 'bg-emerald-500/10 text-[#34A853] border-emerald-500/20'
+  blue: 'bg-blue-500/15 text-[#1a73e8] dark:text-[#8ab4f8] border-blue-500/30',
+  red: 'bg-red-500/15 text-[#d93025] dark:text-[#f28b82] border-red-500/30',
+  yellow: 'bg-amber-500/15 text-[#e37400] dark:text-[#fdd663] border-amber-500/30',
+  green: 'bg-emerald-500/15 text-[#188038] dark:text-[#81c995] border-emerald-500/30'
 };
 
 const avatarAccents = {
-  blue: 'bg-[#4285F4]/10 text-[#4285F4] border-[#4285F4]/30',
-  red: 'bg-[#EA4335]/10 text-[#EA4335] border-[#EA4335]/30',
-  yellow: 'bg-[#FBBC04]/10 text-[#FBBC04] border-[#FBBC04]/30',
-  green: 'bg-[#34A853]/10 text-[#34A853] border-[#34A853]/30'
+  blue: 'bg-[#4285F4]/15 text-[#1a73e8] dark:text-[#8ab4f8] border-[#4285F4]/40 shadow-[0_0_20px_rgba(66,133,244,0.18)]',
+  red: 'bg-[#EA4335]/15 text-[#d93025] dark:text-[#f28b82] border-[#EA4335]/40 shadow-[0_0_20px_rgba(234,67,53,0.18)]',
+  yellow: 'bg-[#FBBC04]/15 text-[#e37400] dark:text-[#fdd663] border-[#FBBC04]/40 shadow-[0_0_20px_rgba(251,188,4,0.18)]',
+  green: 'bg-[#34A853]/15 text-[#188038] dark:text-[#81c995] border-[#34A853]/40 shadow-[0_0_20px_rgba(52,168,83,0.18)]'
 };
 
 export const DepthCarousel = ({
@@ -522,15 +522,15 @@ export const DepthCarousel = ({
                   draggable={false}
                 />
               ) : (
-                /* GDG-Themed Blank/Placeholder Member Card */
-                <div className="relative flex h-[calc(100%-6px)] w-full flex-col items-center justify-between p-6 sm:p-7 text-center select-none bg-surface-card">
+                /* GDG-Themed Elevated Member Card with Deep Contrast */
+                <div className="relative flex h-[calc(100%-6px)] w-full flex-col items-center justify-between p-6 sm:p-7 text-center select-none bg-white dark:bg-[#202124] shadow-[0_12px_36px_rgba(0,0,0,0.1)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-white/10">
 
                   {/* Domain Badge */}
                   <div className="z-10 w-full flex justify-center">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${badgeClass}`}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeClass}`}
                     >
-                      <Sparkles className="w-3.5 h-3.5 opacity-80" />
+                      <Sparkles className="w-3.5 h-3.5 opacity-90" />
                       <span>{item.domain || 'Core Team'}</span>
                     </span>
                   </div>
@@ -538,7 +538,7 @@ export const DepthCarousel = ({
                   {/* Avatar Container with GDG Branded Styling & Initials */}
                   <div className="z-10 relative my-auto flex flex-col items-center">
                     <div
-                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-full border-2 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200 ${avatarAccent}`}
+                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200 ${avatarAccent}`}
                     >
                       {item.image ? (
                         <img
@@ -549,20 +549,20 @@ export const DepthCarousel = ({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="font-heading text-xl sm:text-2xl font-bold tracking-tight select-none">
+                        <span className="font-heading text-xl sm:text-2xl font-black tracking-tight select-none">
                           {item.name ? item.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'GDG'}
                         </span>
                       )}
                     </div>
                     <div className="mt-3.5 px-2">
-                      <h4 className="font-heading text-lg sm:text-xl font-bold text-text-primary tracking-tight leading-snug">
+                      <h4 className="font-heading text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
                         {item.name || 'Team Lead'}
                       </h4>
-                      <p className="text-xs sm:text-sm text-text-secondary mt-1 font-medium">
+                      <p className="text-xs sm:text-sm text-slate-700 dark:text-zinc-200 mt-1 font-bold">
                         {item.role || 'GDG on Campus'}
                       </p>
                       {item.bio && (
-                        <p className="text-xs text-text-tertiary mt-2 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 line-clamp-2 leading-relaxed">
                           {item.bio}
                         </p>
                       )}
@@ -570,8 +570,8 @@ export const DepthCarousel = ({
                   </div>
 
                   {/* Bottom Role / Lead Status */}
-                  <div className="z-10 w-full pt-3 border-t border-border-subtle/70 flex items-center justify-center">
-                    <span className="text-[11px] uppercase tracking-wider font-semibold text-text-tertiary">
+                  <div className="z-10 w-full pt-3 border-t border-border-subtle flex items-center justify-center">
+                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-slate-700 dark:text-zinc-300 bg-surface-subtle px-3 py-1 rounded-full border border-border-subtle">
                       {item.category === 'organizer'
                         ? 'On-Campus Organizer'
                         : item.category === 'lead'

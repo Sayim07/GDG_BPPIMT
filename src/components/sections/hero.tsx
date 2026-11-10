@@ -234,16 +234,16 @@ export function Hero() {
             <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 mt-8 sm:mt-10">
               <Link
                 href={chapter.primaryCtaUrl}
-                className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover shadow-md hover:shadow-lg transition-all"
+                className="btn-sweep-blue inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 sm:py-3.5 rounded-full text-sm font-bold shadow-sm cursor-pointer"
               >
                 <span>{chapter.primaryCtaText}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/team"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full border border-border-subtle bg-surface-card/80 hover:bg-surface-subtle hover:border-border-strong text-text-primary text-sm font-semibold transition-all shadow-sm hover:shadow-md group backdrop-blur-sm"
+                className="btn-sweep-green inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-sm font-bold shadow-sm cursor-pointer group"
               >
-                <Users className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                <Users className="w-4 h-4" />
                 <span>Meet the Team</span>
               </Link>
             </div>
