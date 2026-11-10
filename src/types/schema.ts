@@ -63,6 +63,7 @@ export interface TeamMember {
   name: string;
   role: string;
   domain?: string;
+  category?: "organizer" | "lead" | "core";
   bio?: string;
   tagline?: string;
   avatarUrl?: string;
@@ -71,5 +72,7 @@ export interface TeamMember {
     linkedin?: string;
     github?: string;
     twitter?: string;
+    email?: string;
+    instagram?: string;
   };
 }

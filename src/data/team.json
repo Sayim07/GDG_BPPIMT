@@ -1,1 +1,185 @@
-[]
+[
+  {
+    "id": "protyoy-bhandary",
+    "name": "Protyoy Bhandary",
+    "role": "GDG On Campus Organizer",
+    "domain": "Chapter Leadership",
+    "category": "organizer",
+    "badgeColor": "blue",
+    "bio": "",
+    "socials": {
+      "email": "bhandaryprotyoy@gmail.com"
+    }
+  },
+  {
+    "id": "sagnik-maitra",
+    "name": "Sagnik Maitra",
+    "role": "GDG On Campus Organizer",
+    "domain": "Chapter Leadership",
+    "category": "organizer",
+    "badgeColor": "red",
+    "bio": "",
+    "socials": {
+      "email": "sagnikmaitra01@gmail.com"
+    }
+  },
+  {
+    "id": "sneha-patra",
+    "name": "Sneha Patra",
+    "role": "GDG On Campus Organizer",
+    "domain": "Chapter Leadership",
+    "category": "organizer",
+    "badgeColor": "green",
+    "bio": "",
+    "socials": {
+      "email": "snehapatra005@gmail.com"
+    }
+  },
+  {
+    "id": "sayim-mullick",
+    "name": "Sayim Mullick",
+    "role": "Tech Team Lead",
+    "domain": "Web & Architecture",
+    "category": "lead",
+    "badgeColor": "blue",
+    "bio": "",
+    "socials": {
+      "github": "https://github.com/Sayim07"
+    }
+  },
+  {
+    "id": "raktik-ghosh",
+    "name": "Raktik Ghosh",
+    "role": "AIML Team Lead",
+    "domain": "Artificial Intelligence",
+    "category": "lead",
+    "badgeColor": "red",
+    "bio": ""
+  },
+  {
+    "id": "aaryan-kumar",
+    "name": "Aaryan Kumar",
+    "role": "Cloud Team Lead",
+    "domain": "Cloud Computing",
+    "category": "lead",
+    "badgeColor": "yellow",
+    "bio": ""
+  },
+  {
+    "id": "narayan-kumar-jha",
+    "name": "Narayan Kumar Jha",
+    "role": "Design Team Lead",
+    "domain": "Creative & Branding",
+    "category": "lead",
+    "badgeColor": "blue",
+    "bio": ""
+  },
+  {
+    "id": "aadipto-ghosh",
+    "name": "Aadipto Ghosh",
+    "role": "Management Team Lead",
+    "domain": "Operations & Logistics",
+    "category": "lead",
+    "badgeColor": "yellow",
+    "bio": ""
+  },
+  {
+    "id": "satarupa-sarkar",
+    "name": "Satarupa Sarkar",
+    "role": "Marketing Team Lead",
+    "domain": "Marketing & Media",
+    "category": "lead",
+    "badgeColor": "green",
+    "bio": ""
+  },
+  {
+    "id": "bikramjit-pakhira",
+    "name": "Bikramjit Pakhira",
+    "role": "Tech Core Team",
+    "domain": "Web Development",
+    "category": "core",
+    "badgeColor": "blue",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "sayantan-pachal",
+    "name": "Sayantan Pachal",
+    "role": "Tech Core Team",
+    "domain": "Web Development",
+    "category": "core",
+    "badgeColor": "blue",
+    "bio": "2nd Year | Core Team"
+  },
+  {
+    "id": "mouli-biswas",
+    "name": "Mouli Biswas",
+    "role": "AIML Core Team",
+    "domain": "Machine Learning",
+    "category": "core",
+    "badgeColor": "red",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "subhajit-majee",
+    "name": "Subhajit Majee",
+    "role": "AIML Core Team",
+    "domain": "Machine Learning",
+    "category": "core",
+    "badgeColor": "red",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "larenza-roy",
+    "name": "Larenza Roy",
+    "role": "Cloud Core Team",
+    "domain": "Cloud Computing",
+    "category": "core",
+    "badgeColor": "yellow",
+    "bio": "2nd Year | Core Team"
+  },
+  {
+    "id": "alfia-ashraf",
+    "name": "Alfia Ashraf",
+    "role": "Design Core Team",
+    "domain": "UI/UX & Graphics",
+    "category": "core",
+    "badgeColor": "yellow",
+    "bio": "2nd Year | Core Team"
+  },
+  {
+    "id": "sagnik-saha",
+    "name": "Sagnik Saha",
+    "role": "Design Core Team",
+    "domain": "UI/UX & Graphics",
+    "category": "core",
+    "badgeColor": "yellow",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "soham-bandyopadhyay",
+    "name": "Soham Bandyopadhyay",
+    "role": "Management Core Team",
+    "domain": "Event Planning",
+    "category": "core",
+    "badgeColor": "green",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "sagnik-dutta",
+    "name": "Sagnik Dutta",
+    "role": "Management Core Team",
+    "domain": "Event Planning",
+    "category": "core",
+    "badgeColor": "green",
+    "bio": "2nd Year | Core Team"
+  },
+  {
+    "id": "sakchham-kapoor",
+    "name": "Sakchham Kapoor",
+    "role": "Marketing Core Team",
+    "domain": "Community Outreach",
+    "category": "core",
+    "badgeColor": "red",
+    "bio": "3rd Year | Core Team"
+  }
+]
