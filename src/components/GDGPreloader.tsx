@@ -1,46 +1,80 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 interface GDGPreloaderProps {
   /** Optional callback fired when the preloader finishes and unmounts */
   onComplete?: () => void;
-  /** Total duration in ms before exit starts (default: 2800ms) */
+  /** Total duration in ms before exit starts (default: 2000ms) */
   duration?: number;
 }
 
 export default function GDGPreloader({
   onComplete,
-  duration = 2800,
+  duration = 2000,
 }: GDGPreloaderProps) {
+  const pathname = usePathname();
   const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(
     "bounce"
   );
+  const isFirstRender = useRef(true);
+  const prevPathname = useRef(pathname);
 
+  // 1. Initial Site Load or Hard Reload (Full sequence on /, /events, /team)
   useEffect(() => {
-    // 1. Switch from bouncing dots to SVG logo reveal
-    const logoTimer = setTimeout(() => {
-      setStage("logo");
-    }, 1350);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prevPathname.current = pathname;
 
-    // 2. Trigger fade-out curtain exit
-    const exitTimer = setTimeout(() => {
-      setStage("exit");
-    }, duration);
+      const logoTimer = setTimeout(() => {
+        setStage("logo");
+      }, 950);
 
-    // 3. Unmount completely from DOM
-    const doneTimer = setTimeout(() => {
-      setStage("done");
-      onComplete?.();
-    }, duration + 550);
+      const exitTimer = setTimeout(() => {
+        setStage("exit");
+      }, duration);
 
-    return () => {
-      clearTimeout(logoTimer);
-      clearTimeout(exitTimer);
-      clearTimeout(doneTimer);
-    };
+      const doneTimer = setTimeout(() => {
+        setStage("done");
+        onComplete?.();
+      }, duration + 450);
+
+      return () => {
+        clearTimeout(logoTimer);
+        clearTimeout(exitTimer);
+        clearTimeout(doneTimer);
+      };
+    }
   }, [duration, onComplete]);
+
+  // 2. Client-Side Route Transitions (When navigating between /, /events, /team)
+  useEffect(() => {
+    if (!isFirstRender.current && prevPathname.current !== pathname) {
+      prevPathname.current = pathname;
+
+      setStage("bounce");
+
+      const logoTimer = setTimeout(() => {
+        setStage("logo");
+      }, 350);
+
+      const exitTimer = setTimeout(() => {
+        setStage("exit");
+      }, 850);
+
+      const doneTimer = setTimeout(() => {
+        setStage("done");
+        onComplete?.();
+      }, 1150);
+
+      return () => {
+        clearTimeout(logoTimer);
+        clearTimeout(exitTimer);
+        clearTimeout(doneTimer);
+      };
+    }
+  }, [pathname, onComplete]);
 
   if (stage === "done") return null;
 
