@@ -22,7 +22,7 @@ const GOOGLE_APPS = [
   },
   {
     name: "Google Cloud",
-    src: "https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg",
+    src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg",
     className: "top-14 right-[8%] w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24",
     animation: "animate-float-delayed",
   },
@@ -52,7 +52,7 @@ const GOOGLE_APPS = [
   },
   {
     name: "Firebase",
-    src: "https://upload.wikimedia.org/wikipedia/commons/3/37/Firebase_Logo.svg",
+    src: "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
     className: "bottom-[30%] left-[12%] w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20",
     animation: "animate-float-delayed",
   },
