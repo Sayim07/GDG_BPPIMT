@@ -267,7 +267,7 @@ export function Hero() {
           <div className="animate-tram will-change-transform flex items-end">
             <div className="animate-tram-bob relative w-[280px] sm:w-[420px] md:w-[500px]">
               <Image
-                src="/tram.webp"
+                src="/tram.jpg"
                 alt="Kolkata Heritage Tram"
                 width={500}
                 height={160}
