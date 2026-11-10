@@ -34,18 +34,11 @@ export function Navbar() {
           />
 
           <div className="flex flex-col min-w-0">
-            {/* Mobile: short "GDG" label | Desktop: full "Google Developer Group" */}
             <span className="font-bold tracking-tight text-text-primary leading-tight text-sm sm:text-base">
-              <span className="sm:hidden text-[12px]">Google Developer Group</span>
-              <span className="hidden sm:inline">Google Developer Group</span>
+              <span className="text-[12px] sm:text-[16px]">Google Developer Group</span>
             </span>
-            {/* Desktop-only subtitle */}
-            <span className="text-[10px] hidden sm:block sm:text-xs text-text-secondary font-medium tracking-normal leading-tight">
+            <span className="text-[6px] sm:text-xs text-text-secondary font-medium tracking-normal leading-tight">
               {chapter.chapterName || "B.P. Poddar Institute of Management and Technology"}
-            </span>
-            {/* Mobile-only subtitle */}
-            <span className="text-[10px] sm:hidden text-text-secondary font-medium tracking-normal leading-tight">
-              B. P. P. I. M. T.
             </span>
           </div>
         </Link>
