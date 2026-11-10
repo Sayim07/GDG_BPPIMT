@@ -10,12 +10,15 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { KineticGrid } from './kinetic-grid';
 
 export interface ScrollStackItemProps {
   children?: ReactNode;
   itemClassName?: string;
   style?: CSSProperties;
   id?: string;
+  disableGrid?: boolean;
+  gridVariant?: 'gdg' | 'blue' | 'monochrome';
 }
 
 export interface ScrollStackProps {
@@ -82,20 +85,33 @@ const CARD_SHADOW = [
   '0 24px 48px -20px rgba(0, 0, 0, 0.28)'
 ].join(', ');
 
-export const ScrollStackItem = ({ children, itemClassName = '', style, id }: ScrollStackItemProps) => (
+export const ScrollStackItem = ({
+  children,
+  itemClassName = '',
+  style,
+  id,
+  disableGrid = false,
+  gridVariant = 'gdg'
+}: ScrollStackItemProps) => (
   <div
     id={id}
-    className={`relative box-border w-full origin-top rounded-[24px] sm:rounded-[28px] border border-border-subtle bg-surface-card text-text-primary dark:bg-[#1c1d1f] will-change-transform transition-colors duration-200 ${itemClassName}`.trim()}
+    className={`relative box-border w-full origin-top rounded-[24px] sm:rounded-[28px] border border-border-subtle bg-surface-card text-text-primary dark:bg-[#1c1d1f] overflow-hidden will-change-transform transition-colors duration-200 ${itemClassName}`.trim()}
     style={{
       boxShadow: CARD_SHADOW,
       scrollMarginTop: '100px',
       ...style
     }}
   >
-    {children}
+    {!disableGrid && (
+      <KineticGrid
+        variant={gridVariant}
+        className="absolute inset-0 pointer-events-none z-0"
+      />
+    )}
+    <div className="relative z-10 w-full">{children}</div>
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 rounded-[inherit] bg-black opacity-[var(--scroll-stack-dim,0)] transition-opacity duration-150"
+      className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] bg-black opacity-[var(--scroll-stack-dim,0)] transition-opacity duration-150"
     />
   </div>
 );
