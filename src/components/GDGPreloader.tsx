@@ -313,45 +313,15 @@ export default function GDGPreloader({
           </h1>
 
           <div className="mt-1.5 flex items-center gap-2 text-xs font-medium tracking-wider uppercase sm:text-sm">
-            <span className="text-[#4285F4] font-semibold">On Campus</span>
+            <span className="text-[#4285F4] font-semibold">ON CAMPUS</span>
             <span
               className="h-1 w-1 rounded-full"
               style={{ backgroundColor: "var(--gdg-text-secondary)" }}
             />
-            <span style={{ color: "var(--gdg-text-secondary)" }}>BPPIMT</span>
-          </div>
-        </div>
-
-        {/* Collaborative Lockup (Now in document flow, directly under text) */}
-        <div
-          className={`mt-10 sm:mt-12 flex items-center justify-center gap-2 sm:gap-3 transition-all duration-700 ease-out ${
-            stage !== "bounce"
-              ? "translate-y-0 opacity-90"
-              : "translate-y-4 opacity-0 pointer-events-none"
-          }`}
-          style={{ transitionDelay: "300ms" }}
-        >
-          <Image
-            src="/images/gdg-logo.svg"
-            alt="GDG Logo"
-            width={32}
-            height={32}
-            className="h-6 w-auto sm:h-8"
-          />
-          <span
-            className="text-sm font-light sm:text-lg pb-0.5"
-            style={{ color: "var(--gdg-text-secondary)" }}
-          >
-            ×
-          </span>
-          <div className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-border-subtle">
-            <Image
-              src="/images/bppimt-logo.png"
-              alt="BPPIMT Logo"
-              width={32}
-              height={32}
-              className="h-full w-full object-contain p-[1px]"
-            />
+            <span style={{ color: "var(--gdg-text-secondary)" }} className="hidden sm:inline">
+              B. P. Poddar Institute of Management & Technology
+            </span>
+            <span className="sm:hidden">BPPIMT</span>
           </div>
         </div>
       </div>
