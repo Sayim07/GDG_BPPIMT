@@ -153,6 +153,46 @@ const HWF_CSS = `
 }
 .hwf-col a:hover { color: var(--hwf-accent); background-size: 100% 1px; }
 .hwf-col a:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+.hwf-mascot-wrapper {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: auto;
+  line-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.hwf-mascot-img {
+  width: clamp(230px, 25vw, 370px);
+  height: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.12));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+}
+.hwf-mascot-img:hover {
+  transform: scale(1.03) translateY(-4px);
+  filter: drop-shadow(0 8px 24px rgba(66, 133, 244, 0.3));
+}
+.dark .hwf-mascot-img {
+  filter: drop-shadow(0 0 20px rgba(66, 133, 244, 0.22)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+}
+.dark .hwf-mascot-img:hover {
+  filter: drop-shadow(0 0 28px rgba(66, 133, 244, 0.4)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.8));
+}
+@media (max-width: 860px) {
+  .hwf-top {
+    padding-bottom: 125px !important;
+  }
+  .hwf-mascot-img {
+    width: clamp(190px, 48vw, 280px);
+  }
+}
 .hwf-rule {
   position: relative; z-index: 2; display: flex; justify-content: flex-end; align-items: center; gap: 16px;
   margin: 0 clamp(20px, 4vw, 48px); padding-top: 14px;
@@ -761,6 +801,20 @@ export function HalftoneWordmarkFooter({
             </div>
           </div>
         </div>
+
+        {/* 3D Mascot Resting on the Dividing Line */}
+        <div className="hwf-mascot-wrapper">
+          <img
+            src="/images/gdg-mascot-welcome.png"
+            alt="Welcome to GDG On Campus - Code, Create, Connect"
+            className="hwf-mascot-img"
+            width={762}
+            height={327}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
         <div className="hwf-nav">
           {columns.map((col) => (
             <nav className="hwf-col" key={col.title} aria-label={col.title}>
