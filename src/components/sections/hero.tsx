@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Users } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
 import statsData from "@/data/stats.json";
 import { ChapterConfig, StatItem } from "@/types/schema";
@@ -48,13 +48,14 @@ export function Hero() {
         />
       </div>
 
-      {/* Authentic Google 4-Color Accent Bar */}
-      <div className="relative z-10 w-full grid grid-cols-4 h-1">
-        <div className="bg-gdg-blue h-full" />
-        <div className="bg-gdg-red h-full" />
-        <div className="bg-gdg-yellow h-full" />
-        <div className="bg-gdg-green h-full" />
-      </div>
+      {/* Authentic Google 4-Color Accent Bar with Smooth Blend Effect */}
+      <div
+        className="relative z-10 w-full h-1"
+        style={{
+          background:
+            "linear-gradient(90deg, #4285F4 0%, #4285F4 15%, #EA4335 36%, #EA4335 50%, #FBBC04 66%, #FBBC04 78%, #34A853 92%, #34A853 100%)",
+        }}
+      />
 
       {/* Main Centered Hero Content */}
       <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -111,20 +112,20 @@ export function Hero() {
 
           {/* Action CTAs */}
           {chapter.primaryCtaText && chapter.primaryCtaUrl && (
-            <div className="flex items-center justify-center gap-5 sm:gap-6 mt-8 sm:mt-10">
+            <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 mt-8 sm:mt-10">
               <Link
                 href={chapter.primaryCtaUrl}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover shadow-md hover:shadow-lg transition-all"
+                className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover shadow-md hover:shadow-lg transition-all"
               >
                 <span>{chapter.primaryCtaText}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/team"
-                className="text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1 group px-4 py-2"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full border border-border-subtle bg-surface-card/80 hover:bg-surface-subtle hover:border-border-strong text-text-primary text-sm font-semibold transition-all shadow-sm hover:shadow-md group backdrop-blur-sm"
               >
+                <Users className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                 <span>Meet the Team</span>
-                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
               </Link>
             </div>
           )}

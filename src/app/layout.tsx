@@ -34,6 +34,7 @@ const productSans = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://gdgbppimt.vercel.app"),
   title: {
     default: "GDG on Campus BPPIMT",
     template: "%s | GDG on Campus BPPIMT",

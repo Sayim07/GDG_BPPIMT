@@ -128,6 +128,20 @@ const HWF_CSS = `
 }
 .hwf-brand strong { display: block; font-weight: 700; font-size: 14px; letter-spacing: 0.05em; color: var(--hwf-ink); }
 .hwf-brand span { display: block; margin-top: 4px; color: var(--hwf-muted); text-transform: none; letter-spacing: normal; font-size: 12px; font-weight: 400; }
+.hwf-collab {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: 14px;
+  padding-top: 10px; border-top: 1px solid var(--hwf-border);
+}
+.hwf-collab-cross {
+  font-size: 11px; color: var(--hwf-muted); opacity: 0.6; font-weight: 500; user-select: none;
+}
+.hwf-collab-logo {
+  display: flex; align-items: center; justify-content: center;
+}
+.hwf-collab-logo-bppimt {
+  border-radius: 9999px; background-color: #ffffff; padding: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
 .hwf-nav { display: flex; flex-wrap: wrap; gap: clamp(24px, 4vw, 56px); }
 .hwf-col h3 { margin: 0 0 10px 0; font: inherit; color: var(--hwf-muted); font-weight: 700; letter-spacing: 0.12em; }
 .hwf-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -719,6 +733,25 @@ export function HalftoneWordmarkFooter({
         <div className="hwf-brand">
           <strong>{label}</strong>
           <span>{meta}</span>
+
+          {/* Collaboration Logos */}
+          <div className="hwf-collab">
+            <div className="hwf-collab-logo">
+              <img
+                src="/images/gdg-logo.svg"
+                alt="Google Developer Groups"
+                className="h-6 sm:h-7 w-auto object-contain"
+              />
+            </div>
+            <div className="hwf-collab-cross" aria-hidden="true">✕</div>
+            <div className="hwf-collab-logo">
+              <img
+                src="/images/bppimt-logo.png"
+                alt="B.P. Poddar Institute of Management and Technology"
+                className="h-7 w-7 sm:h-8 sm:w-8 object-contain rounded-full"
+              />
+            </div>
+          </div>
         </div>
         <div className="hwf-nav">
           {columns.map((col) => (
