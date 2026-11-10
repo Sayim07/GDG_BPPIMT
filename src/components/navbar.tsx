@@ -76,7 +76,7 @@ export function Navbar() {
               href={chapter.communityUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="items-center justify-center px-2 sm:px-5 py-2 rounded-full bg-primary text-white text-[10px] sm:text-sm font-bold hover:bg-primary-hover shadow-sm transition-all"
+              className="btn-sweep-blue items-center justify-center px-3 sm:px-5 py-2 rounded-full text-[10px] sm:text-xs font-bold shadow-xs transition-all cursor-pointer tracking-wide"
             >
               Join Chapter
             </Link>
