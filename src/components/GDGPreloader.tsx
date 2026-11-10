@@ -14,24 +14,15 @@ export default function GDGPreloader({
   onComplete,
   duration = 1800,
 }: GDGPreloaderProps) {
-  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(() => {
-    if (typeof window !== "undefined") {
-      try {
-        if (sessionStorage.getItem("gdg_preloader_seen")) {
-          return "done";
-        }
-      } catch {}
-    }
-    return "bounce";
-  });
+  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">("bounce");
 
   useEffect(() => {
-    if (stage === "done") {
-      onComplete?.();
-      return;
-    }
-
     try {
+      if (sessionStorage.getItem("gdg_preloader_seen")) {
+        setStage("done");
+        onComplete?.();
+        return;
+      }
       sessionStorage.setItem("gdg_preloader_seen", "true");
     } catch {}
 
@@ -63,7 +54,7 @@ export default function GDGPreloader({
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
     };
-  }, [duration, onComplete, stage]);
+  }, [duration, onComplete]);
 
   if (stage === "done") return null;
 

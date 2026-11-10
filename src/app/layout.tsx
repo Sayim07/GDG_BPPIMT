@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { AgentationProvider } from "@/components/dev/agentation-provider";
+import GDGPreloader from "@/components/GDGPreloader";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -76,6 +77,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={productSans.variable}>
       <body className="min-h-screen bg-surface-page text-text-primary antialiased flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <GDGPreloader />
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />
