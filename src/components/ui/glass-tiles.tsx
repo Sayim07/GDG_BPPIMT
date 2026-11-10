@@ -22,82 +22,6 @@ uniform float uIsDark;
 uniform vec3 uGround;
 uniform vec3 uGrout;
 
-// Authentic Google 4-Color Brand Palette
-const vec3 C_BLUE   = vec3(0.2588, 0.5216, 0.9569); // #4285F4 (Google Blue)
-const vec3 C_RED    = vec3(0.9176, 0.2627, 0.2078); // #EA4335 (Google Red)
-const vec3 C_YELLOW = vec3(0.9843, 0.7373, 0.0157); // #FBBC04 (Google Yellow)
-const vec3 C_GREEN  = vec3(0.2039, 0.6588, 0.3255); // #34A853 (Google Green)
-
-// Multi-spectral chromatic light behind the glass: GDG Blue, Red, Yellow, Green waves & pools
-vec3 light(vec2 p){
-  float t = uTime;
-  vec3 col = vec3(0.0);
-  float aspect = uRes.x / uRes.y;
-
-  // Gentle rhythmic breathing pulses for each Google color wave
-  float pBlue   = 0.72 + 0.28 * sin(t * 1.8 + p.x * 2.2);
-  float pRed    = 0.72 + 0.28 * sin(t * 2.1 + p.x * 2.6 + 1.8);
-  float pYellow = 0.72 + 0.28 * sin(t * 1.6 + p.x * 2.4 + 3.6);
-  float pGreen  = 0.72 + 0.28 * sin(t * 2.3 + p.x * 2.8 + 5.2);
-
-  // 1. Google Blue Wave (broad, silky flowing ribbon across upper-mid)
-  float yBlue = 0.55 + 0.28 * sin(p.x * 0.75 + t * 0.32) + 0.12 * sin(p.x * 1.8 - t * 0.38);
-  float wBlue = exp(-pow((p.y - yBlue) / 0.16, 2.0));
-  col += C_BLUE * wBlue * pBlue * 1.15;
-
-  // 2. Google Red Wave (diagonal counter wave through mid-lower)
-  float yRed = 0.45 + 0.30 * sin(p.x * 0.90 + t * 0.28 + 2.09) + 0.10 * sin(p.x * 1.6 - t * 0.34 + 1.2);
-  float wRed = exp(-pow((p.y - yRed) / 0.15, 2.0));
-  col += C_RED * wRed * pRed * 1.05;
-
-  // 3. Google Yellow Flow (warm undulating ambient flow)
-  float yYellow = 0.50 + 0.26 * sin(p.x * 1.10 + t * 0.35 + 4.18) + 0.08 * sin(p.x * 2.1 - t * 0.40 + 3.0);
-  float wYellow = exp(-pow((p.y - yYellow) / 0.14, 2.0));
-  col += C_YELLOW * wYellow * pYellow * 1.00;
-
-  // 4. Google Green Wave (crisp lower-mid ribbon)
-  float yGreen = 0.42 + 0.29 * sin(p.x * 0.85 + t * 0.30 + 3.14) + 0.11 * sin(p.x * 1.9 - t * 0.36 + 2.2);
-  float wGreen = exp(-pow((p.y - yGreen) / 0.16, 2.0));
-  col += C_GREEN * wGreen * pGreen * 1.10;
-
-  // Ambient soft floating GDG color pools with subtle pulsation
-  vec2 c1 = vec2(0.28 * aspect + 0.35 * sin(t * 0.20 + 1.2), 0.45 + 0.25 * cos(t * 0.16 + 2.1));
-  col += C_BLUE * exp(-dot(p - c1, p - c1) / 0.18) * (0.50 + 0.22 * sin(t * 1.9));
-
-  vec2 c2 = vec2(0.72 * aspect + 0.40 * sin(t * 0.18 + 3.7), 0.55 + 0.25 * cos(t * 0.17 + 0.8));
-  col += C_GREEN * exp(-dot(p - c2, p - c2) / 0.16) * (0.48 + 0.20 * sin(t * 2.2 + 2.0));
-
-  vec2 c3 = vec2(0.50 * aspect + 0.45 * sin(t * 0.22 + 5.1), 0.48 + 0.28 * cos(t * 0.19 + 4.4));
-  col += C_RED * exp(-dot(p - c3, p - c3) / 0.16) * (0.45 + 0.20 * sin(t * 1.7 + 4.0));
-
-  vec2 c4 = vec2(0.12 * aspect + 0.30 * sin(t * 0.23 + 2.5), 0.62 + 0.22 * cos(t * 0.20 + 3.3));
-  col += C_YELLOW * exp(-dot(p - c4, p - c4) / 0.15) * (0.45 + 0.20 * sin(t * 2.0 + 1.0));
-
-  // Pointer Lamp with smooth chromatic GDG dispersion
-  vec2 m = uMouse / uRes.y;
-  float dMouse = length(p - m);
-  float lampGlow = exp(-pow(dMouse / 0.30, 2.0)) * uLamp;
-  float lampCore = exp(-pow(dMouse / 0.08, 2.0)) * uLamp;
-
-  // Prismatic dispersion around pointer lamp: smooth cycle across the 4 Google colors
-  float ang = atan(p.y - m.y, p.x - m.x);
-  float rawCycle = (ang / 3.14159265) * 2.0 + t * 0.6;
-  float phase = fract(rawCycle * 0.25) * 4.0;
-  vec3 lampColor = C_BLUE;
-  if (phase < 1.0) {
-    lampColor = mix(C_BLUE, C_RED, phase);
-  } else if (phase < 2.0) {
-    lampColor = mix(C_RED, C_YELLOW, phase - 1.0);
-  } else if (phase < 3.0) {
-    lampColor = mix(C_YELLOW, C_GREEN, phase - 2.0);
-  } else {
-    lampColor = mix(C_GREEN, C_BLUE, phase - 3.0);
-  }
-
-  col += lampColor * lampGlow * 1.3 + vec3(1.0) * lampCore * 0.6;
-  return col;
-}
-
 void main(){
   vec2 p = gl_FragCoord.xy / uRes.y;
   float aspect = uRes.x / uRes.y;
@@ -110,63 +34,46 @@ void main(){
   float sq = pow(pow(aq.x, 9.0) + pow(aq.y, 9.0), 1.0 / 9.0);
   float d = sq - 0.975; // Clean hairline grout
 
+  // Grout lines
   if (d > 0.0) {
     gl_FragColor = vec4(uGrout, 1.0);
     return;
   }
 
-  // Individual tile subtle blinking/breathing effect (low intensity!)
-  float tileHash = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453);
-  float tileOsc = sin(uTime * (1.1 + tileHash * 1.4) + tileHash * 6.2831853);
-  // Soft smooth blinking curve: gentle modulation between 0.80 and 1.15
-  float tileBlink = 0.82 + 0.30 * smoothstep(-0.35, 0.65, tileOsc);
+  // Bevel edge curve: 0.0 at tile interior/center, rising to 1.0 at grout boundary
+  float edge = clamp(1.0 + d / 0.42, 0.0, 1.0);
 
-  // Bevel: bends light inwards
-  float edge = clamp(1.0 + d / 0.52, 0.0, 1.0);
-  vec2 g = normalize(sign(q) * pow(aq + 1e-4, vec2(8.0)));
-  float bend = pow(edge, 2.2);
-  vec2 centre = (id + 0.5) * size;
+  // Center of the tile is 100% pure uGround (#ffffff in light, deep #12151b in dark)
+  // No gray dish or darkening in the middle
+  vec3 col = uGround;
 
-  // Refracted light lookup
-  vec2 look = centre + q * size * 0.5 * (1.0 - 0.55 * bend) - g * bend * size * 0.9;
-  vec3 L = light(look);
+  // Directional lighting: subtle highlight from top-left, delicate soft shadow on bottom-right
+  float lightDir = -q.y * 0.707 - q.x * 0.707;
+  float specLight = max(0.0, lightDir);
+  float shadeLight = max(0.0, -lightDir);
 
-  // Face and beveled rim modulated by per-tile subtle blinking
-  vec3 face = light(centre + q * size * 0.32) * tileBlink;
-  vec3 rim = L * pow(edge, 1.6) * 3.2 * tileBlink;
-  float fres = pow(edge, 7.0) * 0.12;
-
-  vec3 col;
   if (uIsDark > 0.5) {
-    // Dark mode: Deep obsidian glass with glowing neon GDG ribbons
-    col = uGround;
-    col += face * 0.06;
-    col += rim * 0.75;
-    col += vec3(1.0) * pow(max(length(rim) - 1.2, 0.0), 2.0) * 0.35 + vec3(fres);
-    col *= 0.90 + 0.10 * (0.5 + 0.5 * q.y);
+    // Dark mode: Deep obsidian glass tiles with crisp subtle bevel highlight
+    float spec = pow(edge, 3.5) * specLight * 0.14;
+    float shade = pow(edge, 2.5) * shadeLight * 0.03;
+    col = col - vec3(shade) + vec3(spec);
+
+    // Soft neutral hover sheen
+    vec2 m = uMouse / uRes.y;
+    float dMouse = length(p - m);
+    float hoverGlow = exp(-pow(dMouse / 0.35, 2.0)) * uLamp * 0.10 * pow(edge, 1.5);
+    col += vec3(hoverGlow);
   } else {
-    // Light mode: Clean white architectural glass with subtle, low-intensity GDG pastel sheen
-    float innerShade = 0.99 + 0.01 * (0.5 + 0.5 * q.y);
-    vec3 tileBase = uGround * innerShade;
+    // Light mode: Proper pure white architectural tiles (spotless white center)
+    float spec = pow(edge, 4.0) * specLight * 0.12;
+    float shade = pow(edge, 2.8) * shadeLight * 0.04;
+    col = col - vec3(shade) + vec3(spec);
 
-    // Extract chromatic GDG hue vectors (branchless)
-    float lightMag = length(face);
-    vec3 hueFace = face / (lightMag + 1e-4);
-
-    float rimMag = length(rim);
-    vec3 hueRim = rim / (rimMag + 1e-4);
-
-    // Subtle diffuse face tint: soft low intensity (4% to 8% max)
-    float faceAmount = clamp(lightMag * 0.06, 0.0, 0.08);
-    col = mix(tileBase, hueFace, faceAmount);
-
-    // Beveled rim shimmer: crisp, silky pastel Google color ribbons (10% to 20% max)
-    float rimAmount = clamp(rimMag * 0.16, 0.0, 0.20) * pow(edge, 1.1);
-    col = mix(col, hueRim, rimAmount);
-
-    // Subtle crisp specular glint along the crest of the bevel
-    float glint = pow(edge, 6.0) * clamp(rimMag * 0.12, 0.0, 0.15);
-    col += vec3(glint);
+    // Soft neutral hover sheen
+    vec2 m = uMouse / uRes.y;
+    float dMouse = length(p - m);
+    float hoverGlow = exp(-pow(dMouse / 0.35, 2.0)) * uLamp * 0.06 * pow(edge, 1.5);
+    col += vec3(hoverGlow);
   }
 
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
@@ -183,11 +90,11 @@ const rgb = (hex: string) => {
   ] as const;
 };
 
-export const GDG_LIGHT_GROUND = "#f8fafd";
+export const GDG_LIGHT_GROUND = "#ffffff";
 export const GDG_LIGHT_GROUT = "#e5e9f0";
 
-export const GDG_DARK_GROUND = "#0f1217";
-export const GDG_DARK_GROUT = "#08090c";
+export const GDG_DARK_GROUND = "#12151b";
+export const GDG_DARK_GROUT = "#080a0d";
 
 export type GlassTilesPalette = {
   glow?: string;
