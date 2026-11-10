@@ -97,12 +97,13 @@ export default function GDGPreloader({
           --gdg-glow: rgba(66, 133, 244, 0.08);
         }
 
+        /* Scaled down dot animation distance */
         @keyframes gdgDotWave {
           0%, 100% {
             transform: translateY(0px) scaleY(1) scaleX(1);
           }
           35% {
-            transform: translateY(-22px) scaleY(1.08) scaleX(0.94);
+            transform: translateY(-14px) scaleY(1.08) scaleX(0.94);
           }
           70% {
             transform: translateY(4px) scaleY(0.92) scaleX(1.06);
@@ -124,11 +125,19 @@ export default function GDGPreloader({
         }
 
         .gdg-dot {
-          width: 18px;
-          height: 18px;
+          width: 12px;
+          height: 12px;
           border-radius: 9999px;
           animation: gdgDotWave 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
           will-change: transform, opacity;
+        }
+
+        /* Slightly larger dots for desktop */
+        @media (min-width: 640px) {
+          .gdg-dot {
+            width: 16px;
+            height: 16px;
+          }
         }
 
         .gdg-seg {
@@ -144,9 +153,9 @@ export default function GDGPreloader({
         }
       `}</style>
 
-      {/* Subtle Ambient Background Glow */}
+      {/* Subtle Ambient Background Glow (Scaled down) */}
       <div
-        className="pointer-events-none absolute h-80 w-80 rounded-full blur-3xl transition-opacity duration-700"
+        className="pointer-events-none absolute h-56 w-56 sm:h-72 sm:w-72 rounded-full blur-3xl transition-opacity duration-700"
         style={{
           background:
             "radial-gradient(circle, var(--gdg-glow) 0%, transparent 70%)",
@@ -156,10 +165,11 @@ export default function GDGPreloader({
 
       {/* Center Stage Container */}
       <div className="relative flex flex-col items-center justify-center px-6">
-        <div className="relative flex h-36 w-64 items-center justify-center sm:h-44 sm:w-80">
+        {/* Shrunk Logo Container: Mobile (h-20 w-40), Desktop (h-28 w-52) */}
+        <div className="relative flex h-20 w-40 items-center justify-center sm:h-28 sm:w-52">
           {/* STAGE 1: Bouncing Google Dots */}
           <div
-            className={`absolute flex items-center gap-4 transition-all duration-300 ease-in-out ${
+            className={`absolute flex items-center gap-2 sm:gap-3 transition-all duration-300 ease-in-out ${
               stage === "bounce"
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-50 pointer-events-none"
@@ -296,9 +306,9 @@ export default function GDGPreloader({
           </svg>
         </div>
 
-        {/* Typography Reveal */}
+        {/* Scaled Typography Reveal */}
         <div
-          className={`mt-3 flex flex-col items-center text-center transition-all duration-500 ease-out ${
+          className={`mt-2 flex flex-col items-center text-center transition-all duration-500 ease-out ${
             stage !== "bounce"
               ? "translate-y-0 opacity-100"
               : "translate-y-4 opacity-0"
@@ -306,13 +316,13 @@ export default function GDGPreloader({
           style={{ transitionDelay: "180ms" }}
         >
           <h1
-            className="text-xl font-bold tracking-tight sm:text-2xl"
+            className="text-base font-bold tracking-tight sm:text-xl"
             style={{ color: "var(--gdg-text-primary)" }}
           >
             Google Developer Groups
           </h1>
 
-          <div className="mt-1.5 flex items-center gap-2 text-xs font-medium tracking-wider uppercase sm:text-sm">
+          <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium tracking-wider uppercase sm:text-xs">
             <span className="text-[#4285F4] font-semibold">ON CAMPUS</span>
             <span
               className="h-1 w-1 rounded-full"
@@ -321,7 +331,9 @@ export default function GDGPreloader({
             <span style={{ color: "var(--gdg-text-secondary)" }} className="hidden sm:inline">
               B. P. Poddar Institute of Management & Technology
             </span>
-            <span className="sm:hidden">BPPIMT</span>
+            <span className="sm:hidden" style={{ color: "var(--gdg-text-secondary)" }}>
+              BPPIMT
+            </span>
           </div>
         </div>
       </div>
