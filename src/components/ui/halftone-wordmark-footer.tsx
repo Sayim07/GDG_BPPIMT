@@ -740,6 +740,10 @@ export function HalftoneWordmarkFooter({
               <img
                 src="/images/gdg-logo.svg"
                 alt="Google Developer Groups"
+                loading="lazy"
+                decoding="async"
+                width={80}
+                height={28}
                 className="h-6 sm:h-7 w-auto object-contain"
               />
             </div>
@@ -748,6 +752,10 @@ export function HalftoneWordmarkFooter({
               <img
                 src="/images/bppimt-logo.png"
                 alt="B.P. Poddar Institute of Management and Technology"
+                loading="lazy"
+                decoding="async"
+                width={32}
+                height={32}
                 className="h-7 w-7 sm:h-8 sm:w-8 object-contain rounded-full"
               />
             </div>

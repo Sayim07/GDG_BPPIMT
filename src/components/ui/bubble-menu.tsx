@@ -369,7 +369,7 @@ export function BubbleMenu({
       {/* Hamburger Toggle Button */}
       <button
         type="button"
-        className={`relative z-[1002] w-8 h-8 sm:w-10 sm:h-10 rounded-full flex flex-col items-center justify-center border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-primary transition-all cursor-pointer shadow-sm ${className}`.trim()}
+        className={`relative z-[1002] w-9 h-9 sm:w-10 sm:h-10 rounded-full flex flex-col items-center justify-center border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-primary transition-all cursor-pointer shadow-sm ${className}`.trim()}
         style={style}
         onClick={handleToggle}
         aria-label={menuAriaLabel}

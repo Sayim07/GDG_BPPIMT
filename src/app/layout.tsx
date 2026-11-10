@@ -1,10 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { AgentationProvider } from "@/components/dev/agentation-provider";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
 
 const productSans = localFont({
   src: [
@@ -14,19 +23,9 @@ const productSans = localFont({
       style: "normal",
     },
     {
-      path: "../../public/fonts/ProductSans-Italic.woff2",
-      weight: "400",
-      style: "italic",
-    },
-    {
       path: "../../public/fonts/ProductSans-Bold.woff2",
       weight: "700",
       style: "normal",
-    },
-    {
-      path: "../../public/fonts/ProductSans-BoldItalic.woff2",
-      weight: "700",
-      style: "italic",
     },
   ],
   variable: "--font-product-sans",

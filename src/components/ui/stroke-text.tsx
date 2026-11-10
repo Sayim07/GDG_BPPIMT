@@ -445,8 +445,24 @@ export const StrokeText = ({
     root.addEventListener('pointermove', onPointerMove);
     root.addEventListener('pointerleave', onPointerLeave);
 
+    let isVisible = true;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry ? entry.isIntersecting : true;
+        if (isVisible && !raf) {
+          last = performance.now();
+          raf = requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(root);
+
     const tick = (now: number) => {
-      if (!alive) return;
+      if (!alive || !isVisible) {
+        raf = 0;
+        return;
+      }
       const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
       last = now;
 
@@ -477,6 +493,7 @@ export const StrokeText = ({
 
     return () => {
       alive = false;
+      io.disconnect();
       cancelAnimationFrame(raf);
       root.removeEventListener('pointerenter', onPointerEnter);
       root.removeEventListener('pointermove', onPointerMove);

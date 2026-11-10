@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { GlassTiles } from "@/components/ui/glass-tiles";
+import dynamic from "next/dynamic";
+
+const GlassTiles = dynamic(
+  () => import("@/components/ui/glass-tiles").then((m) => m.GlassTiles),
+  { ssr: false }
+);
 
 export function CardsGlassBackground() {
   const { resolvedTheme } = useTheme();

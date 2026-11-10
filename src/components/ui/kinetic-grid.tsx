@@ -346,23 +346,45 @@ export function KineticGrid({
     [getWarpedPoint, resolvedTheme, variant]
   );
 
-  // ── Animation Loop ──────────────────────────────────────────────────────────
+  // ── Animation Loop (Intelligent Idle Sleep) ──────────────────────────────────
+  const isRunningRef = useRef(false);
 
-  const animate = useCallback(
-    (now: number) => {
-      if (isVisibleRef.current) {
-        const m = mouseRef.current;
-        const t = targetMouseRef.current;
+  const startLoop = useCallback(() => {
+    if (isRunningRef.current || !isVisibleRef.current) return;
+    isRunningRef.current = true;
 
-        m.x = lerpN(m.x, t.x, LERP_SPEED);
-        m.y = lerpN(m.y, t.y, LERP_SPEED);
-
-        draw(now);
+    const tick = (now: number) => {
+      if (!isVisibleRef.current) {
+        isRunningRef.current = false;
+        return;
       }
-      rafRef.current = requestAnimationFrame(animate);
-    },
-    [draw]
-  );
+
+      const m = mouseRef.current;
+      const t = targetMouseRef.current;
+
+      m.x = lerpN(m.x, t.x, LERP_SPEED);
+      m.y = lerpN(m.y, t.y, LERP_SPEED);
+
+      draw(now);
+
+      // Check if mouse movement is settled and no ripples remain
+      const dx = Math.abs(m.x - t.x);
+      const dy = Math.abs(m.y - t.y);
+      const isSettled =
+        (dx < 0.05 && dy < 0.05) || (m.x < -1000 && t.x < -1000);
+      const hasRipples = ripplesRef.current.length > 0;
+
+      if (!isSettled || hasRipples) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        // Render one final clean settling frame and sleep
+        draw(now);
+        isRunningRef.current = false;
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+  }, [draw]);
 
   // ── Setup & Listeners ───────────────────────────────────────────────────────
 
@@ -384,12 +406,14 @@ export function KineticGrid({
       canvas.style.height = `${h}px`;
 
       sizeRef.current = { w, h, dpr };
+      draw(performance.now());
     };
 
     updateSize();
 
     const resizeObserver = new ResizeObserver(() => {
       updateSize();
+      startLoop();
     });
     resizeObserver.observe(container);
 
@@ -400,6 +424,9 @@ export function KineticGrid({
         (entries) => {
           for (const entry of entries) {
             isVisibleRef.current = entry.isIntersecting;
+            if (entry.isIntersecting) {
+              startLoop();
+            }
           }
         },
         { threshold: 0.05 }
@@ -422,8 +449,10 @@ export function KineticGrid({
         relY <= rect.height + 60
       ) {
         targetMouseRef.current = { x: relX, y: relY };
-      } else {
+        startLoop();
+      } else if (targetMouseRef.current.x !== -9999) {
         targetMouseRef.current = { x: -9999, y: -9999 };
+        startLoop();
       }
     };
 
@@ -444,12 +473,13 @@ export function KineticGrid({
           opacity: 1,
           born: performance.now(),
         });
+        startLoop();
       }
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
-    rafRef.current = requestAnimationFrame(animate);
+    startLoop();
 
     return () => {
       resizeObserver.disconnect();
@@ -460,7 +490,7 @@ export function KineticGrid({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [animate]);
+  }, [startLoop]);
 
   return (
     <div
