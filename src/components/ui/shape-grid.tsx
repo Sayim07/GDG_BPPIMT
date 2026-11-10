@@ -802,7 +802,10 @@ export default function ShapeGrid({
     });
     visibility.observe(container);
 
-    window.addEventListener('pointermove', onMove, { passive: true });
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+    if (!isCoarse) {
+      window.addEventListener('pointermove', onMove, { passive: true });
+    }
     window.addEventListener('pointerdown', onDown, { passive: true });
     document.documentElement.addEventListener('pointerleave', onLeave);
     window.addEventListener('blur', onLeave);
@@ -823,7 +826,9 @@ export default function ShapeGrid({
       cancelAnimationFrame(state.raf);
       resizeObserver.disconnect();
       visibility.disconnect();
-      window.removeEventListener('pointermove', onMove);
+      if (!isCoarse) {
+        window.removeEventListener('pointermove', onMove);
+      }
       window.removeEventListener('pointerdown', onDown);
       document.documentElement.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('blur', onLeave);
