@@ -12,43 +12,67 @@ import { ShapeGrid } from "@/components/ui/shape-grid";
 import { StrokeText } from "@/components/ui/stroke-text";
 import { TextType } from "@/components/ui/text-type";
 
-// Floating Google product icons data
+// Floating Google product icons with enlarged medium-big sizes and well-spaced coordinates
 const GOOGLE_APPS = [
   {
     name: "Gemini",
     src: "https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg",
-    className: "top-16 left-[8%] w-10 h-10 sm:w-12 sm:h-12",
+    className: "top-10 left-[6%] w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20",
     animation: "animate-float-slow",
   },
   {
     name: "Google Cloud",
     src: "https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg",
-    className: "top-28 right-[10%] w-10 h-10 sm:w-14 sm:h-14",
+    className: "top-14 right-[8%] w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24",
     animation: "animate-float-delayed",
   },
   {
     name: "Google Drive",
     src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
-    className: "top-[48%] left-[5%] w-8 h-8 sm:w-11 sm:h-11",
+    className: "top-[40%] left-[3%] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20",
     animation: "animate-float-reverse",
   },
   {
     name: "Google Maps",
     src: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg",
-    className: "top-[52%] right-[6%] w-8 h-8 sm:w-10 sm:h-10",
+    className: "top-[42%] right-[4%] w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18",
+    animation: "animate-float-slow",
+  },
+  {
+    name: "YouTube",
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
+    className: "top-[22%] left-[20%] w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18",
+    animation: "animate-float-delayed",
+  },
+  {
+    name: "Gmail",
+    src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+    className: "top-[20%] right-[22%] w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18",
     animation: "animate-float-slow",
   },
   {
     name: "Firebase",
     src: "https://upload.wikimedia.org/wikipedia/commons/3/37/Firebase_Logo.svg",
-    className: "bottom-[28%] left-[14%] w-8 h-8 sm:w-10 sm:h-10",
+    className: "bottom-[30%] left-[12%] w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20",
     animation: "animate-float-delayed",
   },
   {
     name: "TensorFlow",
     src: "https://upload.wikimedia.org/wikipedia/commons/2/2d/Tensorflow_logo.svg",
-    className: "bottom-[26%] right-[15%] w-8 h-8 sm:w-11 sm:h-11",
+    className: "bottom-[28%] right-[14%] w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20",
     animation: "animate-float-slow",
+  },
+  {
+    name: "Chrome",
+    src: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%28February_2022%29.svg",
+    className: "bottom-[42%] left-[25%] w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16",
+    animation: "animate-float-reverse",
+  },
+  {
+    name: "Android",
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/64/Android_logo_2019_%28stacked%29.svg",
+    className: "bottom-[44%] right-[26%] w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16",
+    animation: "animate-float-reverse",
   },
 ];
 
@@ -63,11 +87,10 @@ export function Hero() {
     setMounted(true);
 
     const handleScroll = () => {
-      // Calculates how far the user has scrolled relative to the viewport height
       const scrollY = window.scrollY || window.pageYOffset;
       const windowHeight = window.innerHeight || 800;
-      
-      // Interpolate progress: starts at 0, reaches 100% when scrolled past hero section
+
+      // Map progress across hero scroll height (0 to 1)
       const progress = Math.min(Math.max(scrollY / (windowHeight * 0.9), 0), 1);
       setTramProgress(progress);
     };
@@ -82,12 +105,12 @@ export function Hero() {
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Tram starts off-screen left (-25%) and drives to the right (105%) as you scroll
+  // Tram moves smoothly across the screen from off-left (-25vw) to beyond the right boundary (105vw)
   const tramTranslateX = -25 + tramProgress * 130;
 
   return (
     <div className="relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between bg-surface-page border-b border-border-subtle overflow-hidden">
-      {/* Dynamic Keyframes for Floating Icons & Subtle Tram Bob */}
+      {/* Keyframe Styles for Floating Icons & Subtle Tram Motion */}
       <style jsx global>{`
         @keyframes tramBob {
           0%, 100% {
@@ -150,17 +173,17 @@ export function Hero() {
         />
       </div>
 
-      {/* Floating Google Apps Layer */}
+      {/* Floating Google Apps Layer (Enlarged Medium-Big Badges) */}
       <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden select-none">
         {GOOGLE_APPS.map((app) => (
           <div
             key={app.name}
-            className={`absolute flex items-center justify-center p-2 rounded-2xl bg-white/70 dark:bg-black/40 backdrop-blur-md shadow-lg border border-white/20 dark:border-white/10 ${app.className} ${app.animation}`}
+            className={`absolute flex items-center justify-center p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-xl border border-white/40 dark:border-white/10 ${app.className} ${app.animation}`}
           >
             <img
               src={app.src}
               alt={app.name}
-              className="w-full h-full object-contain filter drop-shadow-sm"
+              className="w-full h-full object-contain filter drop-shadow-md"
               loading="lazy"
             />
           </div>
@@ -282,7 +305,7 @@ export function Hero() {
           >
             <div className="animate-tram-bob relative w-[280px] sm:w-[420px] md:w-[500px]">
               <Image
-                src="/images/tram.jpg"
+                src="/images/tram-removebg-preview.png"
                 alt="Kolkata Heritage Tram"
                 width={500}
                 height={160}
