@@ -57,25 +57,38 @@ export function Hero() {
   const stats = (statsData as StatItem[]) || [];
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [tramProgress, setTramProgress] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+
+    const handleScroll = () => {
+      // Calculates how far the user has scrolled relative to the viewport height
+      const scrollY = window.scrollY || window.pageYOffset;
+      const windowHeight = window.innerHeight || 800;
+      
+      // Interpolate progress: starts at 0, reaches 100% when scrolled past hero section
+      const progress = Math.min(Math.max(scrollY / (windowHeight * 0.9), 0), 1);
+      setTramProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
 
+  // Tram starts off-screen left (-25%) and drives to the right (105%) as you scroll
+  const tramTranslateX = -25 + tramProgress * 130;
+
   return (
     <div className="relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between bg-surface-page border-b border-border-subtle overflow-hidden">
-      {/* Dynamic Keyframes for Tram and Floating Icons */}
+      {/* Dynamic Keyframes for Floating Icons & Subtle Tram Bob */}
       <style jsx global>{`
-        @keyframes tramRide {
-          0% {
-            transform: translateX(-120%);
-          }
-          100% {
-            transform: translateX(120vw);
-          }
-        }
         @keyframes tramBob {
           0%, 100% {
             transform: translateY(0px);
@@ -99,9 +112,6 @@ export function Hero() {
           50% {
             transform: translateY(12px) rotate(-3deg);
           }
-        }
-        .animate-tram {
-          animation: tramRide 22s linear infinite;
         }
         .animate-tram-bob {
           animation: tramBob 1.6s ease-in-out infinite;
@@ -262,12 +272,17 @@ export function Hero() {
         {/* Overhead Catenary Cable Wire */}
         <div className="w-full h-px bg-zinc-300 dark:bg-zinc-700/60 mb-1" />
 
-        {/* Riding Tram Track Section */}
+        {/* Riding Tram Track Section (Controlled by Scroll) */}
         <div className="relative w-full h-24 sm:h-32 flex items-end">
-          <div className="animate-tram will-change-transform flex items-end">
+          <div
+            className="will-change-transform flex items-end transition-transform duration-75 ease-out"
+            style={{
+              transform: `translateX(${tramTranslateX}vw)`,
+            }}
+          >
             <div className="animate-tram-bob relative w-[280px] sm:w-[420px] md:w-[500px]">
               <Image
-                src="/tram.jpg"
+                src="/images/tram.jpg"
                 alt="Kolkata Heritage Tram"
                 width={500}
                 height={160}
