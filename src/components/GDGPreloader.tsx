@@ -17,22 +17,6 @@ export default function GDGPreloader({
   const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">("bounce");
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem("gdg_preloader_seen")) {
-        setStage("done");
-        onComplete?.();
-        return;
-      }
-      sessionStorage.setItem("gdg_preloader_seen", "true");
-    } catch {}
-
-    // Respect reduced motion accessibility
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setStage("done");
-      onComplete?.();
-      return;
-    }
-
     // 1. Switch from bouncing dots to SVG logo reveal
     const logoTimer = setTimeout(() => {
       setStage("logo");

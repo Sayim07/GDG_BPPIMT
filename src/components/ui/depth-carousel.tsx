@@ -10,7 +10,6 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent
 } from 'react';
 import gsap from 'gsap';
-import { useTheme } from 'next-themes';
 import { Sparkles, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export type DepthCarouselItem =
@@ -162,11 +161,6 @@ export const DepthCarousel = ({
   onChange,
   className = ''
 }: DepthCarouselProps) => {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
-
-  const defaultTint = tint || (isDark ? 'rgba(5, 7, 12, 0.45)' : 'rgba(255, 255, 255, 0.25)');
-
   const data = useMemo(() => (Array.isArray(items) && items.length > 0 ? items : GDG_PLACEHOLDER_ITEMS).map(normalizeItem), [items]);
   const count = data.length;
 
@@ -584,11 +578,13 @@ export const DepthCarousel = ({
 
               {/* Tint overlay during 3D depth transition */}
               <span
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity"
+                className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity ${
+                  !tint ? 'bg-white/25 dark:bg-[#05070c]/45' : ''
+                }`}
                 ref={el => {
                   overlayRefs.current[i] = el;
                 }}
-                style={{ background: defaultTint }}
+                style={tint ? { background: tint } : undefined}
               />
             </div>
           );

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { ArrowRight, ChevronDown, Users } from "lucide-react";
+import gsap from "gsap";
 import chapterConfig from "@/data/chapter.json";
 import statsData from "@/data/stats.json";
 import { ChapterConfig, StatItem } from "@/types/schema";
@@ -83,6 +84,195 @@ export function Hero() {
   const [mounted, setMounted] = useState(false);
   const [tramProgress, setTramProgress] = useState(0);
 
+  // Mascot Dragging & Interaction State
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+  const mascotMaleRef = useRef<HTMLDivElement>(null);
+  const mascotFemaleRef = useRef<HTMLDivElement>(null);
+
+  const [showMaleBubble, setShowMaleBubble] = useState(false);
+  const [showFemaleBubble, setShowFemaleBubble] = useState(false);
+  const [maleBubbleText, setMaleBubbleText] = useState("Hey Builder! Welcome to GDG 🪂");
+  const [femaleBubbleText, setFemaleBubbleText] = useState("Let's innovate together! ✨");
+
+  const [isMaleWaving, setIsMaleWaving] = useState(false);
+  const [isFemaleWaving, setIsFemaleWaving] = useState(false);
+  const [isDraggingMale, setIsDraggingMale] = useState(false);
+  const [isDraggingFemale, setIsDraggingFemale] = useState(false);
+
+  interface DragSession {
+    startX: number;
+    startY: number;
+    initialElementX: number;
+    initialElementY: number;
+    initialScreenLeft: number;
+    initialScreenTop: number;
+    mascotWidth: number;
+    mascotHeight: number;
+    hasDragged: boolean;
+  }
+
+  const dragSessionMale = useRef<DragSession | null>(null);
+  const dragSessionFemale = useRef<DragSession | null>(null);
+
+  // Interactive Cursor & Touch Drag Handlers
+  const handlePointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
+    target: "male" | "female"
+  ) => {
+    if (e.button !== 0) return; // Only drag on primary click / finger touch
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+    if (!el) return;
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+    gsap.killTweensOf(el);
+
+    const rect = el.getBoundingClientRect();
+    const currentX = Number(gsap.getProperty(el, "x")) || 0;
+    const currentY = Number(gsap.getProperty(el, "y")) || 0;
+
+    const session: DragSession = {
+      startX: e.clientX,
+      startY: e.clientY,
+      initialElementX: currentX,
+      initialElementY: currentY,
+      initialScreenLeft: rect.left,
+      initialScreenTop: rect.top,
+      mascotWidth: rect.width,
+      mascotHeight: rect.height,
+      hasDragged: false,
+    };
+
+    if (target === "male") {
+      dragSessionMale.current = session;
+      setIsDraggingMale(true);
+      setShowMaleBubble(true);
+      setMaleBubbleText("Flying with you! 🪂");
+    } else {
+      dragSessionFemale.current = session;
+      setIsDraggingFemale(true);
+      setShowFemaleBubble(true);
+      setFemaleBubbleText("Wheee! Floating high! ✨");
+    }
+
+    gsap.to(el, { scale: 1.08, duration: 0.18, ease: "power2.out" });
+  };
+
+  const handlePointerMove = (
+    e: React.PointerEvent<HTMLDivElement>,
+    target: "male" | "female"
+  ) => {
+    const session = target === "male" ? dragSessionMale.current : dragSessionFemale.current;
+    if (!session) return;
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+    if (!el) return;
+
+    const dx = e.clientX - session.startX;
+    const dy = e.clientY - session.startY;
+
+    if (!session.hasDragged && Math.hypot(dx, dy) > 4) {
+      session.hasDragged = true;
+    }
+
+    const heroEl = heroContainerRef.current;
+    let finalX = session.initialElementX + dx;
+    let finalY = session.initialElementY + dy;
+
+    if (heroEl) {
+      const heroRect = heroEl.getBoundingClientRect();
+      const proposedScreenLeft = session.initialScreenLeft + dx;
+      const proposedScreenTop = session.initialScreenTop + dy;
+
+      const minLeft = heroRect.left + 8;
+      const maxLeft = heroRect.right - session.mascotWidth - 8;
+      const minTop = heroRect.top + 8;
+      const maxTop = heroRect.bottom - session.mascotHeight - 80; // Stay safely above tram track bed
+
+      const clampedLeft = Math.max(minLeft, Math.min(maxLeft, proposedScreenLeft));
+      const clampedTop = Math.max(minTop, Math.min(maxTop, proposedScreenTop));
+
+      finalX = session.initialElementX + (clampedLeft - session.initialScreenLeft);
+      finalY = session.initialElementY + (clampedTop - session.initialScreenTop);
+    }
+
+    // Aerodynamic parachute tilt in direction of horizontal motion
+    const tilt = Math.max(Math.min(dx * 0.15, 18), -18);
+
+    gsap.set(el, {
+      x: finalX,
+      y: finalY,
+      rotation: tilt,
+    });
+  };
+
+  const handlePointerUp = (
+    e: React.PointerEvent<HTMLDivElement>,
+    target: "male" | "female"
+  ) => {
+    const session = target === "male" ? dragSessionMale.current : dragSessionFemale.current;
+    if (!session) return;
+
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+
+    if (session.hasDragged) {
+      // Landed after dragging!
+      if (target === "male") {
+        setMaleBubbleText("Great landing spot! 🪂🔥");
+        setTimeout(() => setShowMaleBubble(false), 3800);
+      } else {
+        setFemaleBubbleText("Landed safely! ✨");
+        setTimeout(() => setShowFemaleBubble(false), 3800);
+      }
+
+      if (el) {
+        const currentY = Number(gsap.getProperty(el, "y")) || 0;
+        gsap.to(el, {
+          scale: 1,
+          rotation: 0,
+          duration: 0.35,
+          ease: "power2.out",
+          onComplete: () => {
+            gsap.to(el, {
+              y: currentY + (target === "male" ? 10 : 8),
+              rotation: target === "male" ? -2 : 2,
+              duration: 2.6,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+            });
+          },
+        });
+      }
+    } else {
+      // Just a click or tap (no drag)
+      if (target === "male") {
+        setShowMaleBubble(true);
+        setIsMaleWaving(true);
+        setMaleBubbleText("Hey Builder! Welcome to GDG 🪂");
+        setTimeout(() => setIsMaleWaving(false), 1000);
+      } else {
+        setShowFemaleBubble(true);
+        setIsFemaleWaving(true);
+        setFemaleBubbleText("Let's innovate together! ✨");
+        setTimeout(() => setIsFemaleWaving(false), 1000);
+      }
+      if (el) {
+        gsap.to(el, { scale: 1, duration: 0.2 });
+      }
+    }
+
+    if (target === "male") {
+      dragSessionMale.current = null;
+      setIsDraggingMale(false);
+    } else {
+      dragSessionFemale.current = null;
+      setIsDraggingFemale(false);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
 
@@ -98,28 +288,111 @@ export function Hero() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
+    // Check if preloader has already been seen in this session
+    let preloaderSeen = false;
+    try {
+      preloaderSeen = Boolean(sessionStorage.getItem("gdg_preloader_seen"));
+    } catch {}
+
+    const enterDelay = preloaderSeen ? 0.4 : 2.0;
+    let hideBubbleTimer: NodeJS.Timeout;
+
+    const ctx = gsap.context(() => {
+      // 1. Male Parachute Mascot (Right side, slightly lower)
+      if (mascotMaleRef.current) {
+        gsap.set(mascotMaleRef.current, {
+          x: 180,
+          y: -300,
+          rotation: 12,
+          opacity: 0,
+          scale: 0.86,
+        });
+
+        const tlMale = gsap.timeline({ delay: enterDelay });
+
+        tlMale
+          .to(mascotMaleRef.current, {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 3.0,
+            ease: "power2.out",
+            onComplete: () => {
+              setShowMaleBubble(true);
+            },
+          })
+          .to(mascotMaleRef.current, {
+            y: 12,
+            rotation: -2.5,
+            duration: 2.8,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          });
+      }
+
+      // 2. Female Parachute Mascot (Left side, slightly higher)
+      if (mascotFemaleRef.current) {
+        gsap.set(mascotFemaleRef.current, {
+          x: -180,
+          y: -300,
+          rotation: -12,
+          opacity: 0,
+          scale: 0.86,
+        });
+
+        const tlFemale = gsap.timeline({ delay: enterDelay + 0.1 });
+
+        tlFemale
+          .to(mascotFemaleRef.current, {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 2.9,
+            ease: "power2.out",
+            onComplete: () => {
+              setShowFemaleBubble(true);
+            },
+          })
+          .to(mascotFemaleRef.current, {
+            y: 10,
+            rotation: 2.5,
+            duration: 2.6,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          });
+      }
+    });
+
+    hideBubbleTimer = setTimeout(() => {
+      setShowMaleBubble(false);
+      setShowFemaleBubble(false);
+    }, (enterDelay + 3.0 + 6.5) * 1000);
+
     return () => {
+      ctx.revert();
+      clearTimeout(hideBubbleTimer);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Tram moves smoothly across the screen from off-left (-25vw) to beyond the right boundary (105vw)
-  const tramTranslateX = -25 + tramProgress * 130;
+  // Tram starts at the left edge (about to enter at -24vw) and drives forward across the track as user scrolls (reaching 106vw)
+  const tramTranslateX = -24 + tramProgress * 130;
 
   return (
-    <div className="relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between bg-surface-page border-b border-border-subtle overflow-hidden">
-      {/* Keyframe Styles for Floating Icons & Subtle Tram Motion */}
+    <div
+      ref={heroContainerRef}
+      className="relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between bg-surface-page border-b border-border-subtle overflow-hidden"
+    >
+      {/* Keyframe Styles for Floating Icons & Mascot */}
       <style jsx global>{`
-        @keyframes tramBob {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-2px);
-          }
-        }
         @keyframes floatSlow {
           0%, 100% {
             transform: translateY(0px) rotate(0deg);
@@ -135,9 +408,6 @@ export function Hero() {
           50% {
             transform: translateY(12px) rotate(-3deg);
           }
-        }
-        .animate-tram-bob {
-          animation: tramBob 1.6s ease-in-out infinite;
         }
         .animate-float-slow {
           animation: floatSlow 6s ease-in-out infinite;
@@ -188,6 +458,108 @@ export function Hero() {
             />
           </div>
         ))}
+      </div>
+
+      {/* GDG Female Parachute Mascot (Left side, slightly higher - Drag to move) */}
+      <div
+        className="absolute z-[15] left-3 sm:left-6 md:left-10 lg:left-14 xl:left-18 top-[20%] sm:top-[22%] md:top-[24%] lg:top-[26%] pointer-events-none"
+      >
+        <div
+          ref={mascotFemaleRef}
+          onPointerDown={(e) => handlePointerDown(e, "female")}
+          onPointerMove={(e) => handlePointerMove(e, "female")}
+          onPointerUp={(e) => handlePointerUp(e, "female")}
+          onPointerCancel={(e) => handlePointerUp(e, "female")}
+          style={{ touchAction: "none" }}
+          className={`relative pointer-events-auto select-none will-change-transform touch-none transition-shadow ${
+            isDraggingFemale ? "cursor-grabbing z-30 scale-105" : "cursor-grab"
+          }`}
+          title="Drag me anywhere in the Hero section!"
+        >
+          {/* Welcoming Speech / Chat Bubble */}
+          <div
+            className={`absolute -top-12 left-4 sm:left-8 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border border-red-500/30 text-[11px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
+              showFemaleBubble || isDraggingFemale
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-90 translate-y-2"
+            } group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0`}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#EA4335] animate-pulse" />
+              <span>{femaleBubbleText}</span>
+            </div>
+            {/* Speech bubble tail pointer */}
+            <div className="absolute left-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-red-500/30 rotate-45" />
+          </div>
+
+          {/* Parachute Mascot Image */}
+          <div className="w-20 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(234,67,53,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+            <Image
+              src="/images/gdg-parachute-female.png"
+              alt="Google Developer Groups On Campus BPPIMT Female Parachute Mascot"
+              width={340}
+              height={506}
+              loading="eager"
+              priority={true}
+              style={{ width: "100%", height: "auto" }}
+              className={`w-full h-auto object-contain pointer-events-none transition-transform duration-300 ${
+                isFemaleWaving ? "-rotate-6 scale-110" : ""
+              }`}
+              draggable={false}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* GDG Male Parachute Mascot (Right side, slightly lower - Drag to move) */}
+      <div
+        className="absolute z-[15] right-3 sm:right-6 md:right-10 lg:right-14 xl:right-18 top-[28%] sm:top-[30%] md:top-[33%] lg:top-[36%] pointer-events-none"
+      >
+        <div
+          ref={mascotMaleRef}
+          onPointerDown={(e) => handlePointerDown(e, "male")}
+          onPointerMove={(e) => handlePointerMove(e, "male")}
+          onPointerUp={(e) => handlePointerUp(e, "male")}
+          onPointerCancel={(e) => handlePointerUp(e, "male")}
+          style={{ touchAction: "none" }}
+          className={`relative pointer-events-auto select-none will-change-transform touch-none transition-shadow ${
+            isDraggingMale ? "cursor-grabbing z-30 scale-105" : "cursor-grab"
+          }`}
+          title="Drag me anywhere in the Hero section!"
+        >
+          {/* Welcoming Speech / Chat Bubble */}
+          <div
+            className={`absolute -top-12 -left-20 sm:-left-28 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border border-blue-500/30 text-[11px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
+              showMaleBubble || isDraggingMale
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-90 translate-y-2"
+            } group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0`}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#4285F4] animate-pulse" />
+              <span>{maleBubbleText}</span>
+            </div>
+            {/* Speech bubble tail pointer */}
+            <div className="absolute right-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-blue-500/30 rotate-45" />
+          </div>
+
+          {/* Parachute Mascot Image */}
+          <div className="w-20 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(66,133,244,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+            <Image
+              src="/images/gdg-parachute-male.png"
+              alt="Google Developer Groups On Campus BPPIMT Male Parachute Mascot"
+              width={340}
+              height={506}
+              loading="eager"
+              priority={true}
+              style={{ width: "100%", height: "auto" }}
+              className={`w-full h-auto object-contain pointer-events-none transition-transform duration-300 ${
+                isMaleWaving ? "rotate-6 scale-110" : ""
+              }`}
+              draggable={false}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Google 4-Color Accent Bar */}
@@ -290,43 +662,36 @@ export function Hero() {
         </div>
       </section>
 
-      {/* Tram on Street Animation Layer */}
-      <div className="relative z-10 w-full overflow-hidden select-none pointer-events-none mt-4">
-        {/* Overhead Catenary Cable Wire */}
-        <div className="w-full h-px bg-zinc-300 dark:bg-zinc-700/60 mb-1" />
-
-        {/* Riding Tram Track Section (Controlled by Scroll) */}
-        <div className="relative w-full h-24 sm:h-32 flex items-end">
+      {/* Tram on Street / Heritage Track Layer */}
+      <div className="relative z-10 w-full select-none pointer-events-none mt-4 sm:mt-6">
+        {/* Riding Tram Track Section (Controlled by Scroll, smooth gliding without bobbing) */}
+        <div className="relative w-full overflow-hidden flex items-end">
           <div
-            className="will-change-transform flex items-end transition-transform duration-75 ease-out"
+            className="will-change-transform flex items-end transition-transform duration-100 ease-out"
             style={{
               transform: `translateX(${tramTranslateX}vw)`,
             }}
           >
-            <div className="animate-tram-bob relative w-[280px] sm:w-[420px] md:w-[500px]">
+            <div className="relative w-[240px] sm:w-[340px] md:w-[420px]">
               <Image
                 src="/images/tram-removebg-preview.png"
                 alt="Kolkata Heritage Tram"
                 width={500}
                 height={160}
-                className="w-full h-auto drop-shadow-md object-contain"
+                style={{ width: "100%", height: "auto" }}
+                className="drop-shadow-md object-contain block"
                 priority
               />
             </div>
           </div>
         </div>
 
-        {/* Street Bed & Dual Rail Tracks */}
-        <div className="w-full bg-zinc-100 dark:bg-zinc-900/80 border-t border-border-subtle py-1.5 px-0">
-          <div className="w-full space-y-1">
-            <div className="h-[2px] w-full bg-zinc-300 dark:bg-zinc-700 shadow-sm" />
-            <div className="h-[2px] w-full bg-zinc-300 dark:bg-zinc-700 shadow-sm" />
-          </div>
-        </div>
+        {/* Clean Single Dividing Edge Line (The Track on top of which the tram sits, right before Scroll to explore) */}
+        <div className="w-full h-px bg-border-subtle dark:bg-zinc-700/60" />
       </div>
 
       {/* Scroll Hint */}
-      <div className="relative z-10 w-full pb-4 pt-1 flex flex-col items-center justify-center text-text-tertiary pointer-events-none select-none">
+      <div className="relative z-10 w-full pb-3 pt-2 flex flex-col items-center justify-center text-text-tertiary pointer-events-none select-none">
         <span className="text-[11px] font-medium tracking-widest uppercase opacity-60">
           Scroll to explore
         </span>
