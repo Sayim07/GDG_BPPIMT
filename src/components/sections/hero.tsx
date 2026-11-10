@@ -474,7 +474,6 @@ export function Hero() {
           className={`relative pointer-events-auto select-none will-change-transform touch-none transition-shadow ${
             isDraggingFemale ? "cursor-grabbing z-30 scale-105" : "cursor-grab"
           }`}
-          title="Drag me anywhere in the Hero section!"
         >
           {/* Welcoming Speech / Chat Bubble */}
           <div
@@ -525,7 +524,6 @@ export function Hero() {
           className={`relative pointer-events-auto select-none will-change-transform touch-none transition-shadow ${
             isDraggingMale ? "cursor-grabbing z-30 scale-105" : "cursor-grab"
           }`}
-          title="Drag me anywhere in the Hero section!"
         >
           {/* Welcoming Speech / Chat Bubble */}
           <div

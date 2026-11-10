@@ -1,92 +1,46 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface GDGPreloaderProps {
   /** Optional callback fired when the preloader finishes and unmounts */
   onComplete?: () => void;
-  /** Total duration in ms before exit starts on initial load (default: 1400ms) */
+  /** Total duration in ms before exit starts (default: 2800ms) */
   duration?: number;
 }
 
 export default function GDGPreloader({
   onComplete,
-  duration = 1400,
+  duration = 2800,
 }: GDGPreloaderProps) {
-  const pathname = usePathname();
-  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">("bounce");
-  const isFirstRender = useRef(true);
-  const prevPathname = useRef(pathname);
+  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(
+    "bounce"
+  );
 
   useEffect(() => {
-<<<<<<< HEAD
     // 1. Switch from bouncing dots to SVG logo reveal
     const logoTimer = setTimeout(() => {
       setStage("logo");
-    }, 900);
-=======
-    // Clear any legacy session storage key
-    try {
-      sessionStorage.removeItem("gdg_preloader_seen");
-    } catch {}
+    }, 1350);
 
-    // Respect reduced motion accessibility
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // 2. Trigger fade-out curtain exit
+    const exitTimer = setTimeout(() => {
+      setStage("exit");
+    }, duration);
+
+    // 3. Unmount completely from DOM
+    const doneTimer = setTimeout(() => {
       setStage("done");
       onComplete?.();
-      return;
-    }
-
-    let logoTimer: NodeJS.Timeout;
-    let exitTimer: NodeJS.Timeout;
-    let doneTimer: NodeJS.Timeout;
->>>>>>> main
-
-    if (isFirstRender.current) {
-      // 1. Initial Site Load or Hard Reload (Full sequence)
-      isFirstRender.current = false;
-      prevPathname.current = pathname;
-
-      logoTimer = setTimeout(() => {
-        setStage("logo");
-      }, 650);
-
-      exitTimer = setTimeout(() => {
-        setStage("exit");
-      }, duration);
-
-      doneTimer = setTimeout(() => {
-        setStage("done");
-        onComplete?.();
-      }, duration + 350);
-    } else {
-      // 2. Client-Side Route Transition (Snappy sequence on route change)
-      if (prevPathname.current !== pathname) {
-        prevPathname.current = pathname;
-        setStage("bounce");
-
-        logoTimer = setTimeout(() => {
-          setStage("logo");
-        }, 320);
-
-        exitTimer = setTimeout(() => {
-          setStage("exit");
-        }, 720);
-
-        doneTimer = setTimeout(() => {
-          setStage("done");
-          onComplete?.();
-        }, 980);
-      }
-    }
+    }, duration + 550);
 
     return () => {
       clearTimeout(logoTimer);
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
     };
-  }, [pathname, duration, onComplete]);
+  }, [duration, onComplete]);
 
   if (stage === "done") return null;
 
