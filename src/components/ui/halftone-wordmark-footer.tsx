@@ -805,12 +805,12 @@ export function HalftoneWordmarkFooter({
         {/* 3D Mascot Resting on the Dividing Line */}
         <div className="hwf-mascot-wrapper">
           <img
-            src="/images/gdg-mascot-welcome.png"
-            alt="Welcome to GDG On Campus - Code, Create, Connect"
+            src="/images/gdg-mascot-dream-build.png"
+            alt="Dream. Build. Innovate. Together at GDG"
             className="hwf-mascot-img"
             width={762}
             height={327}
-            loading="lazy"
+            loading="eager"
             decoding="async"
           />
         </div>
