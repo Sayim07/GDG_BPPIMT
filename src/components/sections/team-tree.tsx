@@ -3,12 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Code2,
-  Brain,
-  Cloud,
-  Palette,
-  Briefcase,
-  Megaphone,
   Mail,
   Github,
   Linkedin,
@@ -22,6 +16,15 @@ import {
   ChevronDown,
   Check
 } from "lucide-react";
+import {
+  TechDomainIcon,
+  AimlDomainIcon,
+  CloudDomainIcon,
+  DesignDomainIcon,
+  ManagementDomainIcon,
+  MarketingDomainIcon,
+  TeamsClusterIcon
+} from "@/components/ui/domain-icons";
 import teamData from "@/data/team.json";
 import { TeamMember } from "@/types/schema";
 
@@ -40,7 +43,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "Tech",
     name: "Tech & Architecture",
-    icon: <Code2 className="w-4 h-4 text-[#4285F4]" />,
+    icon: <TechDomainIcon className="w-5 h-5 text-[#4285F4]" />,
     brandColor: "#4285F4",
     badgeStyle: "bg-blue-500/15 text-[#1a73e8] dark:text-[#8ab4f8] border-blue-500/30",
     cardBorder: "border-blue-500/40 hover:border-blue-500 hover:shadow-[0_12px_36px_rgba(66,133,244,0.18)]",
@@ -50,7 +53,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "AIML",
     name: "AI & Machine Learning",
-    icon: <Brain className="w-4 h-4 text-[#EA4335]" />,
+    icon: <AimlDomainIcon className="w-5 h-5 text-[#EA4335]" />,
     brandColor: "#EA4335",
     badgeStyle: "bg-red-500/15 text-[#d93025] dark:text-[#f28b82] border-red-500/30",
     cardBorder: "border-red-500/40 hover:border-red-500 hover:shadow-[0_12px_36px_rgba(234,67,53,0.18)]",
@@ -60,7 +63,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "Cloud",
     name: "Cloud & DevOps",
-    icon: <Cloud className="w-4 h-4 text-[#FBBC04]" />,
+    icon: <CloudDomainIcon className="w-5 h-5 text-[#FBBC04]" />,
     brandColor: "#FBBC04",
     badgeStyle: "bg-amber-500/15 text-[#e37400] dark:text-[#fdd663] border-amber-500/30",
     cardBorder: "border-amber-500/40 hover:border-amber-500 hover:shadow-[0_12px_36px_rgba(251,188,4,0.18)]",
@@ -70,7 +73,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "Design",
     name: "Design & UI/UX",
-    icon: <Palette className="w-4 h-4 text-[#4285F4]" />,
+    icon: <DesignDomainIcon className="w-5 h-5 text-[#4285F4]" />,
     brandColor: "#4285F4",
     badgeStyle: "bg-blue-500/15 text-[#1a73e8] dark:text-[#8ab4f8] border-blue-500/30",
     cardBorder: "border-blue-500/40 hover:border-blue-500 hover:shadow-[0_12px_36px_rgba(66,133,244,0.18)]",
@@ -80,7 +83,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "Management",
     name: "Operations & Logistics",
-    icon: <Briefcase className="w-4 h-4 text-[#34A853]" />,
+    icon: <ManagementDomainIcon className="w-5 h-5 text-[#34A853]" />,
     brandColor: "#34A853",
     badgeStyle: "bg-emerald-500/15 text-[#188038] dark:text-[#81c995] border-emerald-500/30",
     cardBorder: "border-emerald-500/40 hover:border-emerald-500 hover:shadow-[0_12px_36px_rgba(52,168,83,0.18)]",
@@ -90,7 +93,7 @@ const DOMAIN_BRANCHES: DomainBranch[] = [
   {
     id: "Marketing",
     name: "Marketing & Outreach",
-    icon: <Megaphone className="w-4 h-4 text-[#EA4335]" />,
+    icon: <MarketingDomainIcon className="w-5 h-5 text-[#EA4335]" />,
     brandColor: "#EA4335",
     badgeStyle: "bg-red-500/15 text-[#d93025] dark:text-[#f28b82] border-red-500/30",
     cardBorder: "border-red-500/40 hover:border-red-500 hover:shadow-[0_12px_36px_rgba(234,67,53,0.18)]",
@@ -249,7 +252,7 @@ function DomainLeadCard({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-[#202124] p-6 sm:p-7 text-center shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_12px_36px_rgb(0,0,0,0.45)] border-2 transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center justify-between w-full max-w-md ${branch.cardBorder}`}
+      className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-[#202124] p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_12px_36px_rgb(0,0,0,0.45)] border-2 transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center justify-between w-full h-full ${branch.cardBorder}`}
     >
       {/* Top Accent Strip with Domain Color */}
       <div
@@ -353,9 +356,15 @@ function DomainLeadCard({
 
 /**
  * Core Contributor Card
- * Agile, compact profile card with crisp contrast.
+ * High-stature, equal-sized profile card matching the domain lead card.
  */
-function CoreContributorCard({ member }: { member: TeamMember }) {
+function CoreContributorCard({
+  member,
+  branch
+}: {
+  member: TeamMember;
+  branch: DomainBranch;
+}) {
   const [imageError, setImageError] = useState(false);
   const badgeClass = badgeStyles[member.badgeColor || "blue"];
   const avatarAccent = avatarAccents[member.badgeColor || "blue"];
@@ -365,29 +374,39 @@ function CoreContributorCard({ member }: { member: TeamMember }) {
   const yearBadge = yearMatch ? yearMatch[1] : null;
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#202124] p-5 text-center shadow-[0_4px_20px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_6px_24px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08)] hover:shadow-lg hover:border-border-strong hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-between w-full">
+    <div
+      className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-[#202124] p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_12px_36px_rgb(0,0,0,0.45)] border-2 transition-all duration-300 hover:-translate-y-1.5 flex flex-col items-center justify-between w-full ${branch.cardBorder}`}
+    >
+      {/* Top Accent Strip with Domain Color */}
+      <div
+        className="absolute top-0 inset-x-0 h-1.5"
+        style={{ backgroundColor: branch.brandColor }}
+      />
+
       {/* Top Header Pill Bar */}
-      <div className="w-full flex items-center justify-between gap-2 mb-2.5">
-        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}`}>
-          {member.domain || "Core"}
+      <div className="w-full flex items-center justify-between gap-2 mb-3 mt-1">
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeClass}`}>
+          {branch.icon}
+          <span>{member.domain || branch.name}</span>
         </span>
 
         {yearBadge ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-700 dark:text-zinc-300 bg-surface-subtle px-2 py-0.5 rounded-full border border-border-subtle">
-            <GraduationCap className="w-3 h-3 text-text-tertiary" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider text-text-primary bg-surface-subtle px-2.5 py-0.5 rounded-full border border-border-subtle">
+            <GraduationCap className="w-3.5 h-3.5 text-primary" />
             <span>{yearBadge}</span>
           </span>
         ) : (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-            Core Team
+          <span className="inline-flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider text-text-primary bg-surface-subtle px-2.5 py-0.5 rounded-full border border-border-subtle">
+            <UserCheck className="w-3.5 h-3.5 text-primary" />
+            <span>Core Team</span>
           </span>
         )}
       </div>
 
-      {/* Avatar */}
-      <div className="relative my-1.5 flex flex-col items-center">
+      {/* Avatar Container */}
+      <div className="relative my-2 flex flex-col items-center">
         <div
-          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 bg-gradient-to-b flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform duration-200 ${avatarAccent}`}
+          className={`relative w-20 h-20 sm:w-22 sm:h-22 rounded-2xl overflow-hidden border-2 bg-gradient-to-b flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200 ${avatarAccent}`}
         >
           {member.avatarUrl && !imageError ? (
             <img
@@ -399,29 +418,29 @@ function CoreContributorCard({ member }: { member: TeamMember }) {
               onError={() => setImageError(true)}
             />
           ) : (
-            <span className="font-heading text-base sm:text-lg font-extrabold tracking-tight select-none">
+            <span className="font-heading text-xl sm:text-2xl font-black tracking-tight select-none">
               {getInitials(member.name)}
             </span>
           )}
         </div>
       </div>
 
-      {/* Name & Role with strong contrast */}
-      <div className="w-full mt-1.5">
-        <h5 className="font-heading text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight leading-snug group-hover:text-primary transition-colors">
+      {/* High-Contrast Name and Role */}
+      <div className="w-full mt-2">
+        <h4 className="font-heading text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug group-hover:text-primary transition-colors">
           {member.name}
-        </h5>
-        <p className="text-xs font-semibold text-slate-700 dark:text-zinc-300 mt-0.5">
+        </h4>
+        <p className="text-xs sm:text-sm font-bold text-slate-700 dark:text-zinc-200 mt-1">
           {member.role}
         </p>
       </div>
 
-      {/* Socials */}
-      <div className="mt-3.5 pt-2.5 border-t border-border-subtle/80 w-full flex items-center justify-center gap-2.5">
+      {/* Contact Links */}
+      <div className="mt-4 pt-3.5 border-t border-border-subtle w-full flex items-center justify-center gap-3">
         {member.socials?.email && (
           <a
             href={`mailto:${member.socials.email}`}
-            className="p-1.5 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-600 dark:text-zinc-300 hover:text-primary transition-colors border border-border-subtle shadow-xs"
+            className="p-2 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-700 dark:text-zinc-200 hover:text-primary transition-colors border border-border-subtle shadow-xs"
             title={`Email ${member.name}`}
             aria-label={`Email ${member.name}`}
           >
@@ -434,7 +453,7 @@ function CoreContributorCard({ member }: { member: TeamMember }) {
             href={member.socials.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-600 dark:text-zinc-300 hover:text-primary transition-colors border border-border-subtle shadow-xs"
+            className="p-2 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-700 dark:text-zinc-200 hover:text-primary transition-colors border border-border-subtle shadow-xs"
             title={`GitHub of ${member.name}`}
             aria-label={`GitHub profile of ${member.name}`}
           >
@@ -447,7 +466,7 @@ function CoreContributorCard({ member }: { member: TeamMember }) {
             href={member.socials.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-600 dark:text-zinc-300 hover:text-[#4285F4] transition-colors border border-border-subtle shadow-xs"
+            className="p-2 rounded-full bg-surface-subtle hover:bg-surface-page text-slate-700 dark:text-zinc-200 hover:text-[#4285F4] transition-colors border border-border-subtle shadow-xs"
             title={`LinkedIn of ${member.name}`}
             aria-label={`LinkedIn profile of ${member.name}`}
           >
@@ -456,8 +475,8 @@ function CoreContributorCard({ member }: { member: TeamMember }) {
         )}
 
         {!member.socials?.email && !member.socials?.github && !member.socials?.linkedin && (
-          <span className="text-[10px] text-text-tertiary font-semibold uppercase tracking-wider">
-            GDG Contributor
+          <span className="text-[11px] text-text-tertiary font-semibold uppercase tracking-wider py-1">
+            GDG Core Team
           </span>
         )}
       </div>
@@ -508,7 +527,7 @@ export function TeamTree() {
       {/* ================================================================= */}
       <div className="w-full text-left mb-10 sm:mb-12">
         <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Chapter Leadership &amp; Organizational Tree
+          OUR TEAM
         </h1>
 
         {/* LEFT-ALIGNED DOMAIN FILTER DROPDOWN MENU */}
@@ -519,7 +538,7 @@ export function TeamTree() {
             className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white dark:bg-[#202124] border border-slate-200 dark:border-white/15 shadow-xs hover:border-primary text-xs font-bold text-slate-800 dark:text-white transition-all cursor-pointer select-none"
             aria-label="Filter domain branches"
           >
-            <Filter className="w-3.5 h-3.5 text-primary" />
+            <TeamsClusterIcon className="w-4 h-4 text-primary" />
             <span>
               {activeDomain === "All"
                 ? "All Branches (Full Tree)"
@@ -575,16 +594,42 @@ export function TeamTree() {
       </div>
 
       {/* ================================================================= */}
-      {/* ON-CAMPUS ORGANIZERS                                              */}
+      {/* ON-CAMPUS ORGANIZERS (EXECUTIVE CHAPTER LEADERSHIP PARENT CARD)   */}
       {/* ================================================================= */}
-      <div className="w-full flex flex-col items-center">
-        <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-200 bg-white dark:bg-[#202124] border border-border-subtle mb-8 shadow-xs">
-          <ShieldCheck className="w-4 h-4 text-primary" />
-          <span>On-Campus Organizers</span>
+      <div className="w-full rounded-3xl border border-blue-500/25 bg-gradient-to-br from-blue-500/[0.04] via-transparent to-emerald-500/[0.03] p-6 sm:p-10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.35)] relative overflow-hidden transition-all">
+        {/* Google 4-Color Accent Strip */}
+        <div className="absolute top-0 inset-x-0 h-2 grid grid-cols-4">
+          <div className="bg-[#4285F4] h-full" />
+          <div className="bg-[#EA4335] h-full" />
+          <div className="bg-[#FBBC04] h-full" />
+          <div className="bg-[#34A853] h-full" />
         </div>
 
-        {/* 3 Profile Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 w-full max-w-5xl px-2">
+        {/* Section Header with prominent, authoritative typography */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle mb-8">
+          <div className="flex items-center gap-3.5">
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#202124] border-2 border-primary/40 shadow-sm flex-shrink-0">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                On-Campus Organizers
+              </h2>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-zinc-300 mt-0.5">
+                Executive Chapter Leadership &bull; Guiding GDG on Campus BPPIMT
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="px-4 py-1.5 rounded-full text-xs font-extrabold border shadow-xs bg-primary/10 text-primary border-primary/30">
+              {organizers.length} Chapter Organizers
+            </span>
+          </div>
+        </div>
+
+        {/* 3 Executive Organizer Profile Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 w-full">
           {organizers.map(org => (
             <ExecutiveOrganizerCard key={org.id} member={org} />
           ))}
@@ -611,7 +656,7 @@ export function TeamTree() {
       </div>
 
       {/* ================================================================= */}
-      {/* DOMAIN BRANCHES (LEADS + CORE CONTRIBUTORS)                       */}
+      {/* DOMAIN BRANCHES (HORIZONTAL TREE FLOW: LEAD -> CORE CONTRIBUTORS) */}
       {/* ================================================================= */}
       <div className="w-full space-y-12 sm:space-y-16">
         {visibleBranches.map(branch => {
@@ -655,53 +700,90 @@ export function TeamTree() {
                 </div>
               </div>
 
-              {/* Hierarchy Tree within the Domain */}
-              <div className="mt-10 flex flex-col items-center">
-
-                {/* --- DOMAIN LEAD CARD --- */}
+              {/* Organizational Tree within the Domain */}
+              <div className="mt-8 flex flex-col items-center">
+                {/* 1. DOMAIN LEAD CARD */}
                 {lead && (
-                  <div className="w-full max-w-md flex flex-col items-center">
-                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-200 bg-white dark:bg-[#202124] border border-border-subtle mb-3 shadow-xs">
-                      <UserCheck className="w-3.5 h-3.5 text-primary" />
-                      <span>Domain Team Lead</span>
-                    </div>
-
+                  <div className="w-full max-w-[320px] sm:max-w-[340px] flex justify-center">
                     <DomainLeadCard member={lead} branch={branch} />
-
-                    {/* Connecting Vertical Stem down to Core Members */}
-                    <div className="w-1 h-10 bg-gradient-to-b from-primary to-border-subtle my-2 rounded-full" />
-                    <div className="w-3 h-3 rounded-full bg-primary -mt-1 mb-3 ring-4 ring-primary/20" />
                   </div>
                 )}
 
-                {/* --- CORE TEAM MEMBERS CARDS --- */}
-                <div className="w-full mt-2">
-                  <div className="flex items-center justify-center gap-3 mb-8">
-                    <div className="h-0.5 w-16 bg-gradient-to-r from-transparent to-border-subtle" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-200 bg-white dark:bg-[#202124] px-4 py-1.5 rounded-full border border-border-subtle shadow-xs">
-                      Core Contributors ({branchCoreMembers.length})
-                    </span>
-                    <div className="h-0.5 w-16 bg-gradient-to-l from-transparent to-border-subtle" />
+                {/* 2. TREE CONNECTOR ROOTS */}
+                {branchCoreMembers.length === 2 && (
+                  <div className="w-full max-w-2xl mx-auto flex flex-col items-center relative my-2">
+                    {/* Vertical trunk line down from Lead */}
+                    <div
+                      className="w-1.5 h-6 rounded-full"
+                      style={{ backgroundColor: branch.brandColor, opacity: 0.8 }}
+                    />
+                    {/* Horizontal Branching Fork spanning to the 2 roots */}
+                    <div className="w-1/2 relative h-6">
+                      {/* Horizontal connecting bar */}
+                      <div
+                        className="absolute top-0 inset-x-0 h-1.5 rounded-full"
+                        style={{ backgroundColor: branch.brandColor, opacity: 0.8 }}
+                      />
+                      {/* Central fork junction node */}
+                      <div
+                        className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white dark:bg-[#202124] border-2 shadow-sm ring-4 ring-primary/10"
+                        style={{ borderColor: branch.brandColor }}
+                      />
+                      {/* Left Root Drop Line into Member 1 */}
+                      <div
+                        className="absolute top-0 left-0 w-1.5 h-6 rounded-full"
+                        style={{ backgroundColor: branch.brandColor, opacity: 0.8 }}
+                      />
+                      {/* Right Root Drop Line into Member 2 */}
+                      <div
+                        className="absolute top-0 right-0 w-1.5 h-6 rounded-full"
+                        style={{ backgroundColor: branch.brandColor, opacity: 0.8 }}
+                      />
+                    </div>
                   </div>
+                )}
 
-                  {branchCoreMembers.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-                      {branchCoreMembers.map(member => (
-                        <CoreContributorCard key={member.id} member={member} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="max-w-md mx-auto text-center p-8 rounded-2xl border-2 border-dashed border-border-subtle bg-white/60 dark:bg-[#202124]/60 shadow-xs">
-                      <p className="text-xs sm:text-sm text-slate-800 dark:text-zinc-200 font-bold">
-                        Google Cloud Study Jams & Community Cohort
-                      </p>
-                      <span className="text-xs text-slate-600 dark:text-zinc-400 mt-1.5 block font-medium">
-                        Technical workshops and study jams guided directly by Cloud Team Lead
-                      </span>
-                    </div>
-                  )}
-                </div>
+                {branchCoreMembers.length === 1 && (
+                  <div className="w-full flex flex-col items-center relative my-2">
+                    {/* Single straight root line from Lead into Member 1 */}
+                    <div
+                      className="w-1.5 h-10 rounded-full"
+                      style={{ backgroundColor: branch.brandColor, opacity: 0.8 }}
+                    />
+                    <div
+                      className="w-4 h-4 rounded-full bg-white dark:bg-[#202124] border-2 -mt-2 shadow-sm ring-4 ring-primary/10"
+                      style={{ borderColor: branch.brandColor }}
+                    />
+                  </div>
+                )}
 
+                {/* 3. CORE CONTRIBUTORS (EQUAL SIZE AS TEAM LEAD) */}
+                {branchCoreMembers.length === 2 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto w-full mt-1">
+                    {branchCoreMembers.map(member => (
+                      <CoreContributorCard key={member.id} member={member} branch={branch} />
+                    ))}
+                  </div>
+                )}
+
+                {branchCoreMembers.length === 1 && (
+                  <div className="w-full max-w-[320px] sm:max-w-[340px] mx-auto flex justify-center mt-1">
+                    {branchCoreMembers.map(member => (
+                      <CoreContributorCard key={member.id} member={member} branch={branch} />
+                    ))}
+                  </div>
+                )}
+
+                {branchCoreMembers.length === 0 && (
+                  <div className="w-full max-w-md mx-auto text-center p-8 mt-6 rounded-2xl border-2 border-dashed border-border-subtle bg-white/60 dark:bg-[#202124]/60 shadow-xs flex flex-col items-center justify-center">
+                    <p className="text-xs sm:text-sm text-slate-800 dark:text-zinc-200 font-bold">
+                      Google Cloud Study Jams &amp; Community Cohort
+                    </p>
+                    <span className="text-xs text-slate-600 dark:text-zinc-400 mt-1.5 block font-medium">
+                      Technical workshops and study jams guided directly by Cloud Team Lead
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           );
