@@ -12,17 +12,40 @@ interface GDGPreloaderProps {
 
 export default function GDGPreloader({
   onComplete,
-  duration = 2800,
+  duration = 1800,
 }: GDGPreloaderProps) {
-  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(
-    "bounce"
-  );
+  const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(() => {
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("gdg_preloader_seen")) {
+          return "done";
+        }
+      } catch {}
+    }
+    return "bounce";
+  });
 
   useEffect(() => {
+    if (stage === "done") {
+      onComplete?.();
+      return;
+    }
+
+    try {
+      sessionStorage.setItem("gdg_preloader_seen", "true");
+    } catch {}
+
+    // Respect reduced motion accessibility
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStage("done");
+      onComplete?.();
+      return;
+    }
+
     // 1. Switch from bouncing dots to SVG logo reveal
     const logoTimer = setTimeout(() => {
       setStage("logo");
-    }, 1350);
+    }, 900);
 
     // 2. Trigger fade-out curtain exit
     const exitTimer = setTimeout(() => {
@@ -33,14 +56,14 @@ export default function GDGPreloader({
     const doneTimer = setTimeout(() => {
       setStage("done");
       onComplete?.();
-    }, duration + 550);
+    }, duration + 400);
 
     return () => {
       clearTimeout(logoTimer);
       clearTimeout(exitTimer);
       clearTimeout(doneTimer);
     };
-  }, [duration, onComplete]);
+  }, [duration, onComplete, stage]);
 
   if (stage === "done") return null;
 

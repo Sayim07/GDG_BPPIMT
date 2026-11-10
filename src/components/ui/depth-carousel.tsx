@@ -517,6 +517,8 @@ export const DepthCarousel = ({
                   className="block h-full w-full select-none object-cover [pointer-events:none] [-webkit-user-drag:none]"
                   src={item.image}
                   alt={item.alt || ''}
+                  loading="lazy"
+                  decoding="async"
                   draggable={false}
                 />
               ) : (
@@ -542,6 +544,8 @@ export const DepthCarousel = ({
                         <img
                           src={item.image}
                           alt={item.name || 'Member'}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                       ) : (

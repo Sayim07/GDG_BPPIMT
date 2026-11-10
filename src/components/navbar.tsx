@@ -3,11 +3,25 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import chapterConfig from "@/data/chapter.json";
 import { ChapterConfig } from "@/types/schema";
-import { BubbleMenu } from "@/components/ui/bubble-menu";
+
+// Defer BubbleMenu & GSAP out of critical page load bundle
+const BubbleMenu = dynamic(
+  () => import("@/components/ui/bubble-menu").then((mod) => mod.BubbleMenu),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-border-subtle bg-surface-subtle"
+        aria-hidden="true"
+      />
+    ),
+  }
+);
 
 export function Navbar() {
   const chapter = chapterConfig as ChapterConfig;
@@ -23,9 +37,9 @@ export function Navbar() {
       <div className="h-14 sm:h-16 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo & Name */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
-          {/* Official GDG Logo */}
+          {/* Official GDG Logo (Crisp 5.6KB SVG instead of 165KB PNG) */}
           <Image
-            src="/images/gdg-logo.png"
+            src="/images/gdg-logo.svg"
             alt="GDG on Campus BPPIMT Logo"
             width={42}
             height={25}
@@ -50,7 +64,7 @@ export function Navbar() {
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Toggle Theme"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors cursor-pointer"
             >
               {theme === "dark" ? <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>

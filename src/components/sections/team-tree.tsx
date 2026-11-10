@@ -178,6 +178,8 @@ function FullMemberCard({
             <img
               src={member.avatarUrl}
               alt={member.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}
             />

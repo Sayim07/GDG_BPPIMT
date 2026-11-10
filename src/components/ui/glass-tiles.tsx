@@ -279,12 +279,21 @@ export function GlassTiles({
       m.y += (m.ty - m.y) * 0.12;
       m.l += (m.tl - m.l) * 0.06;
       frame();
-      raf = requestAnimationFrame(tick);
+
+      // Intelligent Idle Sleep: If pointer settled and light rested, sleep
+      const isMoving =
+        Math.abs(m.tx - m.x) > 0.5 ||
+        Math.abs(m.ty - m.y) > 0.5 ||
+        Math.abs(m.tl - m.l) > 0.01;
+
+      if (isMoving || m.tl > 0) {
+        raf = requestAnimationFrame(tick);
+      }
     };
 
     const start = () => {
       if (reduced) return frame();
-      if (!raf && alive) {
+      if (!raf && alive && visible) {
         last = 0;
         raf = requestAnimationFrame(tick);
       }
@@ -299,7 +308,10 @@ export function GlassTiles({
         e.clientX < r.left ||
         e.clientX > r.right
       ) {
-        m.tl = 0;
+        if (m.tl !== 0) {
+          m.tl = 0;
+          start();
+        }
         return;
       }
       m.tx = ((e.clientX - r.left) / r.width) * cv.width;
@@ -309,9 +321,15 @@ export function GlassTiles({
         m.y = m.ty;
       }
       m.tl = 1;
+      start();
     };
 
-    const onLeave = () => (m.tl = 0);
+    const onLeave = () => {
+      if (m.tl !== 0) {
+        m.tl = 0;
+        start();
+      }
+    };
 
     const ro = new ResizeObserver(() => {
       size();
