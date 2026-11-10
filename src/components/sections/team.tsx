@@ -3,15 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  ArrowUpRight,
-  Code2,
-  Brain,
-  Cloud,
-  Palette,
-  Briefcase,
-  Megaphone,
-  Network
-} from "lucide-react";
+  TechDomainIcon,
+  AimlDomainIcon,
+  CloudDomainIcon,
+  DesignDomainIcon,
+  ManagementDomainIcon,
+  MarketingDomainIcon
+} from "@/components/ui/domain-icons";
 import teamData from "@/data/team.json";
 import chapterConfig from "@/data/chapter.json";
 import { TeamMember, ChapterConfig } from "@/types/schema";
@@ -32,12 +30,12 @@ const avatarAccents = {
 };
 
 const domainIcons: Record<string, React.ReactNode> = {
-  Tech: <Code2 className="w-3.5 h-3.5" />,
-  AIML: <Brain className="w-3.5 h-3.5" />,
-  Cloud: <Cloud className="w-3.5 h-3.5" />,
-  Design: <Palette className="w-3.5 h-3.5" />,
-  Management: <Briefcase className="w-3.5 h-3.5" />,
-  Marketing: <Megaphone className="w-3.5 h-3.5" />,
+  Tech: <TechDomainIcon className="w-4 h-4" />,
+  AIML: <AimlDomainIcon className="w-4 h-4" />,
+  Cloud: <CloudDomainIcon className="w-4 h-4" />,
+  Design: <DesignDomainIcon className="w-4 h-4" />,
+  Management: <ManagementDomainIcon className="w-4 h-4" />,
+  Marketing: <MarketingDomainIcon className="w-4 h-4" />,
 };
 
 const getInitials = (name: string) => {
@@ -112,11 +110,9 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
         <div className="mt-8 sm:mt-10 mb-2 text-center">
           <Link
             href="/team"
-            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all group"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
-            <Network className="w-4 h-4 text-white/90" />
-            <span>View Full Team & Org Tree ({members.length})</span>
-            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            View Full Team
           </Link>
         </div>
       </div>
