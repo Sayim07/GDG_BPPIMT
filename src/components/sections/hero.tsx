@@ -82,7 +82,7 @@ export function Hero() {
   const stats = (statsData as StatItem[]) || [];
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [tramProgress, setTramProgress] = useState(0);
+  const tramRef = useRef<HTMLDivElement>(null);
 
   // Mascot Dragging & Interaction State
   const heroContainerRef = useRef<HTMLDivElement>(null);
@@ -276,13 +276,21 @@ export function Hero() {
   useEffect(() => {
     setMounted(true);
 
+    let scrollRaf = 0;
     const handleScroll = () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const windowHeight = window.innerHeight || 800;
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        const scrollY = window.scrollY || window.pageYOffset;
+        const windowHeight = window.innerHeight || 800;
 
-      // Map progress across hero scroll height (0 to 1)
-      const progress = Math.min(Math.max(scrollY / (windowHeight * 0.9), 0), 1);
-      setTramProgress(progress);
+        // Map progress across hero scroll height (0 to 1) directly via DOM transform (0 React re-renders)
+        const progress = Math.min(Math.max(scrollY / (windowHeight * 0.9), 0), 1);
+        if (tramRef.current) {
+          const tramTranslateX = -24 + progress * 130;
+          tramRef.current.style.transform = `translateX(${tramTranslateX}vw)`;
+        }
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -376,15 +384,13 @@ export function Hero() {
 
     return () => {
       ctx.revert();
+      cancelAnimationFrame(scrollRaf);
       clearTimeout(hideBubbleTimer);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
-
-  // Tram starts at the left edge (about to enter at -24vw) and drives forward across the track as user scrolls (reaching 106vw)
-  const tramTranslateX = -24 + tramProgress * 130;
 
   return (
     <div
@@ -448,7 +454,7 @@ export function Hero() {
         {GOOGLE_APPS.map((app) => (
           <div
             key={app.name}
-            className={`absolute flex items-center justify-center p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-xl border border-white/40 dark:border-white/10 ${app.className} ${app.animation}`}
+            className={`absolute flex items-center justify-center p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#202124]/95 shadow-md border border-black/5 dark:border-white/10 ${app.className} ${app.animation}`}
           >
             <img
               src={app.src}
@@ -665,9 +671,10 @@ export function Hero() {
         {/* Riding Tram Track Section (Controlled by Scroll, smooth gliding without bobbing) */}
         <div className="relative w-full overflow-hidden flex items-end">
           <div
-            className="will-change-transform flex items-end transition-transform duration-100 ease-out"
+            ref={tramRef}
+            className="will-change-transform flex items-end transition-transform duration-75 ease-out"
             style={{
-              transform: `translateX(${tramTranslateX}vw)`,
+              transform: 'translateX(-24vw)',
             }}
           >
             <div className="relative w-[240px] sm:w-[340px] md:w-[420px]">

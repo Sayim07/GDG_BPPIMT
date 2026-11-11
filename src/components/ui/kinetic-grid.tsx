@@ -399,7 +399,8 @@ export function KineticGrid({
       const h = container.clientHeight || container.offsetHeight;
       if (w === 0 || h === 0) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      const dpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       canvas.style.width = `${w}px`;

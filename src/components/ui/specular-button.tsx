@@ -156,10 +156,9 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
 ) {
   const rootRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rayRef = useRef<HTMLDivElement>(null);
+  const poolRef = useRef<HTMLDivElement>(null);
   const [webglSupported, setWebglSupported] = useState(false);
-  const [angle, setAngle] = useState(0);
-  const [isNear, setIsNear] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
 
   const handleRootRef = (el: HTMLElement | null) => {
     (rootRef as React.MutableRefObject<HTMLElement | null>).current = el;
@@ -170,16 +169,77 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
     }
   };
 
-  // Interactive mouse tracking & idle continuous specular orbit
+  // Convert hex color to rgb array
+  const hexToRgb = (hex: string): [number, number, number] => {
+    const clean = hex.replace('#', '');
+    if (clean.length === 6) {
+      return [
+        parseInt(clean.substring(0, 2), 16) / 255,
+        parseInt(clean.substring(2, 4), 16) / 255,
+        parseInt(clean.substring(4, 6), 16) / 255
+      ];
+    }
+    return [0.26, 0.52, 0.96]; // fallback Google Blue
+  };
+
+  // High-performance single animation loop (Zero React re-renders during animation)
   useEffect(() => {
     const root = rootRef.current;
+    const canvas = canvasRef.current;
+    const ray = rayRef.current;
+    const pool = poolRef.current;
     if (!root) return;
 
     let rafId = 0;
     let currentAngle = 0;
     let targetAngle = 0;
     let isTracking = false;
+    let isNear = false;
     let lastTime = performance.now();
+
+    // Check WebGL2 availability once
+    let gl: WebGL2RenderingContext | null = null;
+    let program: WebGLProgram | null = null;
+    let vao: WebGLVertexArrayObject | null = null;
+    let buffer: WebGLBuffer | null = null;
+    const uniforms: Record<string, WebGLUniformLocation | null> = {};
+
+    // Only initialize WebGL2 on desktop or capable GPUs
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (canvas && !isMobile) {
+      try {
+        gl = canvas.getContext('webgl2', {
+          alpha: true,
+          antialias: false,
+          depth: false,
+          stencil: false,
+          powerPreference: 'low-power'
+        });
+        if (gl) {
+          program = link(gl);
+          if (program) {
+            setWebglSupported(true);
+            for (const name of UNIFORMS) {
+              uniforms[name] = gl.getUniformLocation(program, name);
+            }
+            buffer = gl.createBuffer();
+            vao = gl.createVertexArray();
+            gl.bindVertexArray(vao);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(0);
+            gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+            gl.bindVertexArray(null);
+          }
+        }
+      } catch {
+        gl = null;
+      }
+    }
+
+    const rgbColor = hexToRgb(lineColor);
+    let cachedW = 0;
+    let cachedH = 0;
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = root.getBoundingClientRect();
@@ -203,14 +263,24 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
         if (deg < 0) deg += 360;
         targetAngle = deg;
         isTracking = true;
-        setIsNear(true);
+
+        if (!isNear) {
+          isNear = true;
+          if (ray) ray.style.opacity = '1';
+          if (pool) pool.style.opacity = '1';
+        }
 
         const relX = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
         const relY = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
-        setMousePos({ x: relX, y: relY });
-      } else {
+        if (pool) {
+          pool.style.setProperty('--mouse-x', `${relX.toFixed(1)}%`);
+          pool.style.setProperty('--mouse-y', `${relY.toFixed(1)}%`);
+        }
+      } else if (isTracking || isNear) {
         isTracking = false;
-        setIsNear(false);
+        isNear = false;
+        if (ray) ray.style.opacity = '0.75';
+        if (pool) pool.style.opacity = '0';
       }
     };
 
@@ -219,7 +289,6 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
       lastTime = now;
 
       if (isTracking) {
-        // Smoothly interpolate towards mouse position
         let diff = targetAngle - currentAngle;
         while (diff > 180) diff -= 360;
         while (diff < -180) diff += 360;
@@ -227,11 +296,53 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
         if (currentAngle < 0) currentAngle += 360;
         if (currentAngle >= 360) currentAngle -= 360;
       } else {
-        // Idle continuous gentle rotation around perimeter (~0.3 revs/sec)
         currentAngle = (currentAngle + 75 * dt) % 360;
       }
 
-      setAngle(currentAngle);
+      // Update CSS conic gradient directly via CSS variable — ZERO React re-render!
+      if (ray) {
+        ray.style.setProperty('--ray-angle', `${currentAngle.toFixed(1)}deg`);
+      }
+
+      // WebGL Frame rendering without reallocation
+      if (gl && program && canvas && vao) {
+        const rect = root.getBoundingClientRect();
+        if (rect.width >= 10 && rect.height >= 10) {
+          const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+          const w = Math.round(rect.width * ratio);
+          const h = Math.round(rect.height * ratio);
+
+          if (cachedW !== w || cachedH !== h) {
+            canvas.width = w;
+            canvas.height = h;
+            cachedW = w;
+            cachedH = h;
+            gl.viewport(0, 0, w, h);
+          }
+
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+          gl.useProgram(program);
+          gl.uniform2f(uniforms.uCenter, w / 2, h / 2);
+          gl.uniform2f(uniforms.uHalf, w / 2, h / 2);
+          gl.uniform1f(uniforms.uRadius, h / 2);
+          gl.uniform1f(uniforms.uPx, ratio);
+          gl.uniform1f(uniforms.uSpot, currentAngle / 360);
+          gl.uniform2f(uniforms.uEntry, 0, 0);
+          gl.uniform3fv(uniforms.uLineColor, rgbColor);
+          gl.uniform3fv(uniforms.uBaseColor, [0.5, 0.5, 0.5]);
+          gl.uniform1f(uniforms.uIntensity, isNear ? 1.4 : 0.85);
+          gl.uniform2f(uniforms.uWindow, 0.08, 0.12);
+          gl.uniform1f(uniforms.uThickness, 2.0);
+          gl.uniform1f(uniforms.uGlow, 1.2);
+
+          gl.bindVertexArray(vao);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+          gl.bindVertexArray(null);
+        }
+      }
+
       rafId = requestAnimationFrame(loop);
     };
 
@@ -241,114 +352,13 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
     return () => {
       window.removeEventListener('pointermove', onPointerMove);
       cancelAnimationFrame(rafId);
-    };
-  }, [rotation]);
-
-  // Optional WebGL2 Specular rim renderer
-  useEffect(() => {
-    const root = rootRef.current;
-    const canvas = canvasRef.current;
-    if (!root || !canvas) return;
-
-    let gl: WebGL2RenderingContext | null = null;
-    try {
-      gl = canvas.getContext('webgl2', {
-        alpha: true,
-        antialias: false,
-        depth: false,
-        stencil: false
-      });
-    } catch {
-      gl = null;
-    }
-
-    if (!gl) return;
-    const program = link(gl);
-    if (!program) return;
-
-    setWebglSupported(true);
-
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
-    for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name);
-
-    const buffer = gl.createBuffer();
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    gl.bindVertexArray(null);
-
-    // Convert hex color to rgb array
-    const hexToRgb = (hex: string): [number, number, number] => {
-      const clean = hex.replace('#', '');
-      if (clean.length === 6) {
-        return [
-          parseInt(clean.substring(0, 2), 16) / 255,
-          parseInt(clean.substring(2, 4), 16) / 255,
-          parseInt(clean.substring(4, 6), 16) / 255
-        ];
-      }
-      return [0.26, 0.52, 0.96]; // fallback Google Blue
-    };
-
-    const rgbColor = hexToRgb(lineColor);
-
-    let raf = 0;
-    const render = () => {
-      if (!canvas || !gl || !program) return;
-      const rect = root.getBoundingClientRect();
-      if (rect.width < 10 || rect.height < 10) {
-        raf = requestAnimationFrame(render);
-        return;
-      }
-
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.round(rect.width * ratio);
-      const h = Math.round(rect.height * ratio);
-
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
-
-      gl.viewport(0, 0, w, h);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-
-      gl.useProgram(program);
-      gl.uniform2f(uniforms.uCenter, w / 2, h / 2);
-      gl.uniform2f(uniforms.uHalf, w / 2, h / 2);
-      gl.uniform1f(uniforms.uRadius, h / 2);
-      gl.uniform1f(uniforms.uPx, ratio);
-      gl.uniform1f(uniforms.uSpot, angle / 360);
-      gl.uniform2f(uniforms.uEntry, 0, 0);
-      gl.uniform3fv(uniforms.uLineColor, rgbColor);
-      gl.uniform3fv(uniforms.uBaseColor, [0.5, 0.5, 0.5]);
-      gl.uniform1f(uniforms.uIntensity, isNear ? 1.4 : 0.85);
-      gl.uniform2f(uniforms.uWindow, 0.08, 0.12);
-      gl.uniform1f(uniforms.uThickness, 2.0);
-      gl.uniform1f(uniforms.uGlow, 1.2);
-
-      gl.bindVertexArray(vao);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.bindVertexArray(null);
-
-      raf = requestAnimationFrame(render);
-    };
-
-    raf = requestAnimationFrame(render);
-
-    return () => {
-      cancelAnimationFrame(raf);
       if (gl) {
-        gl.deleteBuffer(buffer);
-        gl.deleteVertexArray(vao);
-        gl.deleteProgram(program);
+        if (buffer) gl.deleteBuffer(buffer);
+        if (vao) gl.deleteVertexArray(vao);
+        if (program) gl.deleteProgram(program);
       }
     };
-  }, [lineColor, angle, isNear]);
+  }, [rotation, lineColor]);
 
   const pillStyle: CSSProperties = {
     ['--item-rot' as any]: `${rotation}deg`,
@@ -368,16 +378,17 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
 
   const innerContent = (
     <>
-      {/* Specular Ray Border Highlight (Pure Hardware CSS Conic Gradient) */}
+      {/* Specular Ray Border Highlight (Pure Hardware CSS Conic Gradient driven by CSS variable) */}
       <div
+        ref={rayRef}
         className="specular-ray pointer-events-none absolute inset-0 rounded-[999px] z-[1]"
         style={{
           padding: '2px',
-          background: `conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, ${lineColor}60 30deg, #ffffff 45deg, ${lineColor} 60deg, transparent 95deg)`,
+          background: `conic-gradient(from var(--ray-angle, 0deg) at 50% 50%, transparent 0deg, ${lineColor}60 30deg, #ffffff 45deg, ${lineColor} 60deg, transparent 95deg)`,
           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
           maskComposite: 'exclude',
-          opacity: isNear ? 1 : 0.75,
+          opacity: 0.75,
           transition: 'opacity 0.25s ease-out'
         }}
         aria-hidden="true"
@@ -385,20 +396,20 @@ export const SpecularPill = forwardRef<HTMLElement, SpecularPillProps>(function 
 
       {/* Interactive Cursor Light Pool on Pill Face */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-[999px] z-[1] transition-opacity duration-300"
+        ref={poolRef}
+        className="pointer-events-none absolute inset-0 rounded-[999px] z-[1] transition-opacity duration-300 opacity-0"
         style={{
-          background: `radial-gradient(160px circle at ${mousePos.x}% ${mousePos.y}%, ${lineColor}26, transparent 70%)`,
-          opacity: isNear ? 1 : 0
+          background: `radial-gradient(160px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${lineColor}26, transparent 70%)`
         }}
         aria-hidden="true"
       />
 
-      {/* WebGL Specular Core Canvas (active when WebGL available, transparent backdrop) */}
+      {/* WebGL Specular Core Canvas (active on capable devices, transparent backdrop) */}
       {webglSupported && (
         <canvas
           ref={canvasRef}
           className="pointer-events-none absolute inset-0 w-full h-full rounded-[999px] z-[1]"
-          style={{ mixBlendMode: 'screen', opacity: isNear ? 0.9 : 0.6 }}
+          style={{ mixBlendMode: 'screen', opacity: 0.75 }}
           aria-hidden="true"
         />
       )}

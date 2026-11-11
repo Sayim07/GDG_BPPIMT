@@ -441,7 +441,9 @@ export default function ShapeGrid({
       const width = Math.max(1, container.clientWidth);
       const height = Math.max(1, container.clientHeight);
       const view = viewFor(s.tiltX, s.tiltY, width, height, s.cellSize);
-      let ratio = s.dpr ?? Math.min(window.devicePixelRatio || 1, 2);
+      const isMobile = window.innerWidth < 768;
+      const defaultDpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
+      let ratio = s.dpr ?? defaultDpr;
       const pixels = view.width * view.height * ratio * ratio;
       if (pixels > MAX_PIXELS) ratio *= Math.sqrt(MAX_PIXELS / pixels);
       state.width = width;
@@ -838,7 +840,28 @@ export default function ShapeGrid({
 
   useEffect(() => {
     engineRef.current?.redraw();
-  });
+  }, [
+    shape,
+    cellSize,
+    lineWidth,
+    direction,
+    speed,
+    lineColor,
+    hoverColor,
+    hoverFillColor,
+    fillOpacity,
+    rainbow,
+    tiltX,
+    tiltY,
+    radius,
+    trail,
+    glow,
+    twinkle,
+    clickCascade,
+    intro,
+    paused,
+    dpr
+  ]);
 
   const mask = fadeMask(clamp(fade, 0, 1));
 

@@ -384,9 +384,15 @@ export const FoldText = ({
       }
     };
 
+    let moveFrame = 0;
     const handleMove = (event: PointerEvent) => {
       pointer = { x: event.clientX, y: event.clientY };
-      aim();
+      if (!moveFrame) {
+        moveFrame = requestAnimationFrame(() => {
+          moveFrame = 0;
+          aim();
+        });
+      }
     };
 
     const handleLeave = () => {
@@ -395,19 +401,25 @@ export const FoldText = ({
     };
 
     const handleScroll = () => {
-      if (pointer) aim();
+      if (pointer) {
+        pointer = null;
+        aim();
+      }
     };
 
-    if (refold) {
+    const canHover = typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    if (refold && canHover) {
       window.addEventListener('pointermove', handleMove, { passive: true });
-      window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+      window.addEventListener('scroll', handleScroll, { passive: true });
       document.documentElement.addEventListener('pointerleave', handleLeave);
     }
 
     return () => {
       root.removeEventListener('mouseenter', handleEnter);
+      if (moveFrame) cancelAnimationFrame(moveFrame);
       window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('scroll', handleScroll, { capture: true });
+      window.removeEventListener('scroll', handleScroll);
       document.documentElement.removeEventListener('pointerleave', handleLeave);
       gsap.ticker.remove(relax);
       scrollTrigger?.kill();

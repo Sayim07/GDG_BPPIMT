@@ -234,7 +234,13 @@ export const DepthCarousel = ({
 
       el.style.transform = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
       el.style.opacity = opacity.toFixed(3);
-      el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
+      if (blurPx > 0.5) {
+        el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(1)}px)`;
+      } else if (brightness < 0.98) {
+        el.style.filter = `brightness(${brightness.toFixed(3)})`;
+      } else {
+        el.style.filter = 'none';
+      }
       el.style.zIndex = String(zi);
       el.style.pointerEvents = shown && opacity > 0.05 ? 'auto' : 'none';
 
