@@ -84,7 +84,7 @@ export function Hero() {
   const [mounted, setMounted] = useState(false);
   const tramRef = useRef<HTMLDivElement>(null);
 
-  // Mascot Dragging & Interaction State
+  // Mascot Dragging & Flight Cycle State
   const heroContainerRef = useRef<HTMLDivElement>(null);
   const mascotMaleRef = useRef<HTMLDivElement>(null);
   const mascotFemaleRef = useRef<HTMLDivElement>(null);
@@ -114,6 +114,149 @@ export function Hero() {
   const dragSessionMale = useRef<DragSession | null>(null);
   const dragSessionFemale = useRef<DragSession | null>(null);
 
+  // Timers and tracking refs for flight cycle & reappearance
+  const maleExitTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const femaleExitTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const maleBubbleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const femaleBubbleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isDraggingMaleRef = useRef(false);
+  const isDraggingFemaleRef = useRef(false);
+
+  // Helper to start gentle floating idle bobbing
+  const startIdleBobbing = (target: "male" | "female", anchorY: number) => {
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+    if (!el) return;
+
+    gsap.killTweensOf(el);
+    gsap.to(el, {
+      y: anchorY + (target === "male" ? 12 : 10),
+      rotation: target === "male" ? -2.5 : 2.5,
+      duration: target === "male" ? 2.8 : 2.6,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+  };
+
+  // Helper to trigger flight exit in the mascot's flight direction
+  const triggerExitFlight = (target: "male" | "female") => {
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+    if (!el) return;
+
+    if (target === "male" && isDraggingMaleRef.current) return;
+    if (target === "female" && isDraggingFemaleRef.current) return;
+
+    // Fade out speech bubble
+    if (target === "male") setShowMaleBubble(false);
+    else setShowFemaleBubble(false);
+
+    gsap.killTweensOf(el);
+
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const currentX = Number(gsap.getProperty(el, "x")) || 0;
+    const currentY = Number(gsap.getProperty(el, "y")) || 0;
+
+    // Female flies forward down-right; Male flies forward down-left
+    const deltaX = target === "female" ? (isMobile ? 320 : 480) : (isMobile ? -320 : -480);
+    const deltaY = isMobile ? 550 : 700;
+    const exitTilt = target === "female" ? 14 : -14;
+
+    gsap.to(el, {
+      x: currentX + deltaX,
+      y: currentY + deltaY,
+      rotation: exitTilt,
+      opacity: 0,
+      scale: 0.88,
+      duration: 3.4,
+      ease: "power1.in",
+      onComplete: () => {
+        if (target === "male" && isDraggingMaleRef.current) return;
+        if (target === "female" && isDraggingFemaleRef.current) return;
+
+        // Reappear from top origin after brief off-screen pause
+        const timer = setTimeout(() => {
+          if (target === "male" && isDraggingMaleRef.current) return;
+          if (target === "female" && isDraggingFemaleRef.current) return;
+          animateEntranceFromOrigin(target);
+        }, 2000);
+
+        if (target === "male") maleExitTimerRef.current = timer;
+        else femaleExitTimerRef.current = timer;
+      },
+    });
+  };
+
+  // Helper to animate entrance from top origin back to home (0, 0)
+  const animateEntranceFromOrigin = (target: "male" | "female") => {
+    const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
+    if (!el) return;
+
+    if (target === "male" && isDraggingMaleRef.current) return;
+    if (target === "female" && isDraggingFemaleRef.current) return;
+
+    gsap.killTweensOf(el);
+
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const startX = target === "male" ? (isMobile ? 50 : 180) : (isMobile ? -50 : -180);
+    const startY = isMobile ? -420 : -320;
+    const startRot = target === "male" ? 12 : -12;
+
+    // Reset to top corner origin
+    gsap.set(el, {
+      x: startX,
+      y: startY,
+      rotation: startRot,
+      opacity: 0,
+      scale: 0.86,
+    });
+
+    // Glide smoothly into home position (0, 0)
+    gsap.to(el, {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      opacity: 1,
+      scale: 1,
+      duration: 3.0,
+      ease: "power2.out",
+      onComplete: () => {
+        if (target === "male") {
+          setMaleBubbleText("Hey Builder! Welcome to GDG 🪂");
+          setShowMaleBubble(true);
+        } else {
+          setFemaleBubbleText("Let's innovate together! ✨");
+          setShowFemaleBubble(true);
+        }
+
+        const bTimer = setTimeout(() => {
+          if (target === "male") setShowMaleBubble(false);
+          else setShowFemaleBubble(false);
+        }, 6000);
+
+        if (target === "male") maleBubbleTimerRef.current = bTimer;
+        else femaleBubbleTimerRef.current = bTimer;
+
+        startIdleBobbing(target, 0);
+        scheduleExitFlight(target, target === "male" ? 8500 : 10000);
+      },
+    });
+  };
+
+  // Helper to schedule an exit flight after delayMs
+  const scheduleExitFlight = (target: "male" | "female", delayMs: number) => {
+    if (target === "male") {
+      if (maleExitTimerRef.current) clearTimeout(maleExitTimerRef.current);
+      maleExitTimerRef.current = setTimeout(() => {
+        triggerExitFlight("male");
+      }, delayMs);
+    } else {
+      if (femaleExitTimerRef.current) clearTimeout(femaleExitTimerRef.current);
+      femaleExitTimerRef.current = setTimeout(() => {
+        triggerExitFlight("female");
+      }, delayMs);
+    }
+  };
+
   // Interactive Cursor & Touch Drag Handlers
   const handlePointerDown = (
     e: React.PointerEvent<HTMLDivElement>,
@@ -124,6 +267,17 @@ export function Hero() {
     if (!el) return;
 
     e.currentTarget.setPointerCapture(e.pointerId);
+
+    // Cancel pending exit flights & kill any flight-out / idle tweens immediately
+    if (target === "male") {
+      isDraggingMaleRef.current = true;
+      if (maleExitTimerRef.current) clearTimeout(maleExitTimerRef.current);
+      if (maleBubbleTimerRef.current) clearTimeout(maleBubbleTimerRef.current);
+    } else {
+      isDraggingFemaleRef.current = true;
+      if (femaleExitTimerRef.current) clearTimeout(femaleExitTimerRef.current);
+      if (femaleBubbleTimerRef.current) clearTimeout(femaleBubbleTimerRef.current);
+    }
     gsap.killTweensOf(el);
 
     const rect = el.getBoundingClientRect();
@@ -218,7 +372,7 @@ export function Hero() {
     const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
 
     if (session.hasDragged) {
-      // Landed after dragging!
+      // Landed after dragging to a new location in the hero section!
       if (target === "male") {
         setMaleBubbleText("Great landing spot! 🪂🔥");
         setTimeout(() => setShowMaleBubble(false), 3800);
@@ -235,14 +389,10 @@ export function Hero() {
           duration: 0.35,
           ease: "power2.out",
           onComplete: () => {
-            gsap.to(el, {
-              y: currentY + (target === "male" ? 10 : 8),
-              rotation: target === "male" ? -2 : 2,
-              duration: 2.6,
-              ease: "sine.inOut",
-              yoyo: true,
-              repeat: -1,
-            });
+            // Idle bobbing at new location
+            startIdleBobbing(target, currentY);
+            // After dwelling at new location, exit in flight direction and return from origin
+            scheduleExitFlight(target, 7500);
           },
         });
       }
@@ -260,14 +410,19 @@ export function Hero() {
         setTimeout(() => setIsFemaleWaving(false), 1000);
       }
       if (el) {
+        const currentY = Number(gsap.getProperty(el, "y")) || 0;
         gsap.to(el, { scale: 1, duration: 0.2 });
+        startIdleBobbing(target, currentY);
+        scheduleExitFlight(target, 6000);
       }
     }
 
     if (target === "male") {
+      isDraggingMaleRef.current = false;
       dragSessionMale.current = null;
       setIsDraggingMale(false);
     } else {
+      isDraggingFemaleRef.current = false;
       dragSessionFemale.current = null;
       setIsDraggingFemale(false);
     }
@@ -303,89 +458,23 @@ export function Hero() {
     } catch {}
 
     const enterDelay = preloaderSeen ? 0.4 : 2.0;
-    let hideBubbleTimer: NodeJS.Timeout;
 
-    const ctx = gsap.context(() => {
-      // 1. Male Parachute Mascot (Right side, slightly lower)
-      if (mascotMaleRef.current) {
-        gsap.set(mascotMaleRef.current, {
-          x: 180,
-          y: -300,
-          rotation: 12,
-          opacity: 0,
-          scale: 0.86,
-        });
+    const maleStartTimer = setTimeout(() => {
+      animateEntranceFromOrigin("male");
+    }, enterDelay * 1000);
 
-        const tlMale = gsap.timeline({ delay: enterDelay });
-
-        tlMale
-          .to(mascotMaleRef.current, {
-            x: 0,
-            y: 0,
-            rotation: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 3.0,
-            ease: "power2.out",
-            onComplete: () => {
-              setShowMaleBubble(true);
-            },
-          })
-          .to(mascotMaleRef.current, {
-            y: 12,
-            rotation: -2.5,
-            duration: 2.8,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-          });
-      }
-
-      // 2. Female Parachute Mascot (Left side, slightly higher)
-      if (mascotFemaleRef.current) {
-        gsap.set(mascotFemaleRef.current, {
-          x: -180,
-          y: -300,
-          rotation: -12,
-          opacity: 0,
-          scale: 0.86,
-        });
-
-        const tlFemale = gsap.timeline({ delay: enterDelay + 0.1 });
-
-        tlFemale
-          .to(mascotFemaleRef.current, {
-            x: 0,
-            y: 0,
-            rotation: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 2.9,
-            ease: "power2.out",
-            onComplete: () => {
-              setShowFemaleBubble(true);
-            },
-          })
-          .to(mascotFemaleRef.current, {
-            y: 10,
-            rotation: 2.5,
-            duration: 2.6,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-          });
-      }
-    });
-
-    hideBubbleTimer = setTimeout(() => {
-      setShowMaleBubble(false);
-      setShowFemaleBubble(false);
-    }, (enterDelay + 3.0 + 6.5) * 1000);
+    const femaleStartTimer = setTimeout(() => {
+      animateEntranceFromOrigin("female");
+    }, (enterDelay + 0.35) * 1000);
 
     return () => {
-      ctx.revert();
       cancelAnimationFrame(scrollRaf);
-      clearTimeout(hideBubbleTimer);
+      clearTimeout(maleStartTimer);
+      clearTimeout(femaleStartTimer);
+      if (maleExitTimerRef.current) clearTimeout(maleExitTimerRef.current);
+      if (femaleExitTimerRef.current) clearTimeout(femaleExitTimerRef.current);
+      if (maleBubbleTimerRef.current) clearTimeout(maleBubbleTimerRef.current);
+      if (femaleBubbleTimerRef.current) clearTimeout(femaleBubbleTimerRef.current);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -468,7 +557,7 @@ export function Hero() {
 
       {/* GDG Female Parachute Mascot (Left side, slightly higher - Drag to move) */}
       <div
-        className="absolute z-[15] left-3 sm:left-6 md:left-10 lg:left-14 xl:left-18 top-[20%] sm:top-[22%] md:top-[24%] lg:top-[26%] pointer-events-none"
+        className="absolute z-[15] left-2 sm:left-6 md:left-10 lg:left-14 xl:left-18 bottom-28 sm:bottom-auto sm:top-[22%] md:top-[24%] lg:top-[26%] pointer-events-none"
       >
         <div
           ref={mascotFemaleRef}
@@ -483,7 +572,7 @@ export function Hero() {
         >
           {/* Welcoming Speech / Chat Bubble */}
           <div
-            className={`absolute -top-12 left-4 sm:left-8 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border border-red-500/30 text-[11px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
+            className={`absolute -top-11 left-0 sm:left-4 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-2.5 sm:px-4 py-1 sm:py-2 rounded-2xl shadow-xl border border-red-500/30 text-[10px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
               showFemaleBubble || isDraggingFemale
                 ? "opacity-100 scale-100 translate-y-0"
                 : "opacity-0 scale-90 translate-y-2"
@@ -494,11 +583,11 @@ export function Hero() {
               <span>{femaleBubbleText}</span>
             </div>
             {/* Speech bubble tail pointer */}
-            <div className="absolute left-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-red-500/30 rotate-45" />
+            <div className="absolute left-4 sm:left-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-red-500/30 rotate-45" />
           </div>
 
           {/* Parachute Mascot Image */}
-          <div className="w-20 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(234,67,53,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(234,67,53,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
             <Image
               src="/images/gdg-parachute-female.png"
               alt="Google Developer Groups On Campus BPPIMT Female Parachute Mascot"
@@ -518,7 +607,7 @@ export function Hero() {
 
       {/* GDG Male Parachute Mascot (Right side, slightly lower - Drag to move) */}
       <div
-        className="absolute z-[15] right-3 sm:right-6 md:right-10 lg:right-14 xl:right-18 top-[28%] sm:top-[30%] md:top-[33%] lg:top-[36%] pointer-events-none"
+        className="absolute z-[15] right-2 sm:right-6 md:right-10 lg:right-14 xl:right-18 bottom-20 sm:bottom-auto sm:top-[30%] md:top-[33%] lg:top-[36%] pointer-events-none"
       >
         <div
           ref={mascotMaleRef}
@@ -533,7 +622,7 @@ export function Hero() {
         >
           {/* Welcoming Speech / Chat Bubble */}
           <div
-            className={`absolute -top-12 -left-20 sm:-left-28 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border border-blue-500/30 text-[11px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
+            className={`absolute -top-11 right-0 sm:right-auto sm:-left-28 sm:-top-14 whitespace-nowrap bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-2.5 sm:px-4 py-1 sm:py-2 rounded-2xl shadow-xl border border-blue-500/30 text-[10px] sm:text-xs font-semibold text-text-primary transition-all duration-300 ease-out z-20 pointer-events-none ${
               showMaleBubble || isDraggingMale
                 ? "opacity-100 scale-100 translate-y-0"
                 : "opacity-0 scale-90 translate-y-2"
@@ -544,11 +633,11 @@ export function Hero() {
               <span>{maleBubbleText}</span>
             </div>
             {/* Speech bubble tail pointer */}
-            <div className="absolute right-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-blue-500/30 rotate-45" />
+            <div className="absolute right-4 sm:right-6 -bottom-1.5 w-3 h-3 bg-white dark:bg-zinc-900 border-r border-b border-blue-500/30 rotate-45" />
           </div>
 
           {/* Parachute Mascot Image */}
-          <div className="w-20 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(66,133,244,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(66,133,244,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
             <Image
               src="/images/gdg-parachute-male.png"
               alt="Google Developer Groups On Campus BPPIMT Male Parachute Mascot"
@@ -578,7 +667,7 @@ export function Hero() {
       {/* Main Centered Hero Content */}
       <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl mx-auto flex flex-col items-center text-center">
-          {/* Headline */}
+          {/* Headline - Responsive Mobile & Desktop */}
           {chapter.headline && (
             <h1 className="w-full max-w-6xl mx-auto flex items-center justify-center font-heading text-center">
               <span className="sr-only">{chapter.headline}</span>
@@ -640,7 +729,7 @@ export function Hero() {
               </Link>
               <Link
                 href="/team"
-                className="btn-sweep-green inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-sm font-bold shadow-sm cursor-pointer group"
+                className="btn-sweep-green bg-teal-400 inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-sm font-bold shadow-sm cursor-pointer group"
               >
                 <Users className="w-4 h-4" />
                 <span>Meet the Team</span>
