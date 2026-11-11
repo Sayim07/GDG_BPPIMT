@@ -214,11 +214,15 @@ export const ScrollStack = ({
       const bottomBreathingRoom = 20;
 
       // Calculate dynamic sticky top per slot:
-      // If a card is taller than the remaining viewport (common on mobile),
-      // shift its sticky top upward so the user can scroll through 100% of its bottom content
-      // before it pins and gets covered by the next card.
+      // On mobile screens, if a card is taller than the viewport, shift upward for scrolling bottom content.
+      // On desktop, preserve the ordered stack cascading so previous cards remain visible behind.
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const stickyTops = heights.map((h, i) => {
         const basePin = stackTop + i * offset;
+        if (!isMobile) {
+          const maxAllowedTop = Math.max(stackTop, viewHeight - h - bottomBreathingRoom);
+          return Math.min(basePin, maxAllowedTop);
+        }
         const maxAllowedTop = viewHeight - h - bottomBreathingRoom;
         return Math.min(basePin, maxAllowedTop);
       });

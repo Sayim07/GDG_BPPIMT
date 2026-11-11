@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import {
   TechDomainIcon,
   AimlDomainIcon,
@@ -81,8 +82,11 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
   const content = (
     <div className="w-full">
       {/* Section Header */}
-      <div className="text-center mb-8 sm:mb-10">
-        <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary tracking-tight">
+      <div className={`text-center ${isCard ? "mb-3 sm:mb-4" : "mb-8 sm:mb-10"}`}>
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary mb-1">
+          Leadership Roster
+        </p>
+        <h2 className={`font-heading font-bold text-text-primary tracking-tight ${isCard ? "text-2xl sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
           <FoldText
             text="Organizers & Leads"
             trigger="scroll"
@@ -93,14 +97,14 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
             stagger={0.035}
           />
         </h2>
-        <p className="text-sm sm:text-base text-text-secondary mt-2.5 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-xl mx-auto leading-relaxed">
           The official student team driving Google Developer Groups on Campus at B.P. Poddar Institute of Management and Technology
         </p>
       </div>
 
       {/* 3D Depth Carousel for Organizers & Leads */}
       <div className="w-full flex flex-col items-center">
-        <div className="w-full max-w-4xl py-2">
+        <div className="w-full max-w-4xl">
           <DepthCarousel
             items={carouselItems}
             cardWidth={280}
@@ -111,17 +115,18 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
             visibleCards={3}
             autoplay={true}
             autoplayDelay={3600}
-            className="h-[390px] sm:h-[420px]"
+            className={isCard ? "h-[365px] sm:h-[370px]" : "h-[390px] sm:h-[420px]"}
           />
         </div>
 
         {/* View Full Team CTA Button - Always fully in view */}
-        <div className="mt-8 sm:mt-10 mb-2 text-center">
+        <div className={`${isCard ? "mt-3 sm:mt-4 mb-0" : "mt-8 sm:mt-10 mb-2"} text-center`}>
           <Link
             href="/team"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
+            className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
-            View Full Team
+            <span>View Full Team</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>
@@ -204,7 +209,7 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-6 sm:p-8 md:p-10">{content}</div>;
+    return <div className="p-4 sm:p-6 sm:pb-5">{content}</div>;
   }
 
   return (

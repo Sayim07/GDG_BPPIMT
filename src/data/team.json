@@ -138,6 +138,15 @@
     "bio": "2nd Year | Core Team"
   },
   {
+    "id": "saurabh-kumar-singh",
+    "name": "Saurabh Kumar Singh",
+    "role": "Cloud Core Team",
+    "domain": "Cloud Computing",
+    "category": "core",
+    "badgeColor": "yellow",
+    "bio": "3rd Year | Core Team"
+  },
+  {
     "id": "alfia-ashraf",
     "name": "Alfia Ashraf",
     "role": "Design Core Team",
@@ -176,6 +185,15 @@
   {
     "id": "sakchham-kapoor",
     "name": "Sakchham Kapoor",
+    "role": "Marketing Core Team",
+    "domain": "Community Outreach",
+    "category": "core",
+    "badgeColor": "red",
+    "bio": "3rd Year | Core Team"
+  },
+  {
+    "id": "shreyanka-satpathy",
+    "name": "Shreyanka Satpathy",
     "role": "Marketing Core Team",
     "domain": "Community Outreach",
     "category": "core",
