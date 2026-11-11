@@ -82,11 +82,11 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
   const content = (
     <div className="w-full">
       {/* Section Header */}
-      <div className={`text-center ${isCard ? "mb-3 sm:mb-4" : "mb-8 sm:mb-10"}`}>
-        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary mb-1">
+      <div className={`text-center ${isCard ? "mb-2.5 sm:mb-3" : "mb-8 sm:mb-10"}`}>
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary">
           Leadership Roster
         </p>
-        <h2 className={`font-heading font-bold text-text-primary tracking-tight ${isCard ? "text-2xl sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
+        <h2 className={`font-heading font-bold text-text-primary tracking-tight ${isCard ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
           <FoldText
             text="Organizers & Leads"
             trigger="scroll"
@@ -97,7 +97,7 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
             stagger={0.035}
           />
         </h2>
-        <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-secondary mt-0.5 max-w-xl mx-auto leading-relaxed">
           The official student team driving Google Developer Groups on Campus at B.P. Poddar Institute of Management and Technology
         </p>
       </div>
@@ -209,7 +209,7 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-4 sm:p-6 sm:pb-5">{content}</div>;
+    return <div className="p-4 sm:p-5 sm:pb-4">{content}</div>;
   }
 
   return (

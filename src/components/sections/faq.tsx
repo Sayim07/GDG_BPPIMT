@@ -27,11 +27,11 @@ export function FAQ({ isCard = false }: { isCard?: boolean } = {}) {
   const content = (
     <div className="w-full">
       {/* Section Header */}
-      <div className="text-center mb-5 sm:mb-10">
+      <div className={`text-center ${isCard ? "mb-5 sm:mb-7" : "mb-5 sm:mb-10"}`}>
         <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary">
           Information
         </p>
-        <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
+        <h2 className={`font-heading font-bold text-text-primary tracking-tight mt-1 ${isCard ? "text-2xl sm:text-3xl lg:text-4xl" : "text-2xl sm:text-4xl"}`}>
           <FoldText
             text="Frequently Asked Questions"
             trigger="scroll"
@@ -42,13 +42,13 @@ export function FAQ({ isCard = false }: { isCard?: boolean } = {}) {
             stagger={0.025}
           />
         </h2>
-        <p className="text-xs sm:text-sm text-text-secondary mt-1 sm:mt-1.5">
+        <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-xl mx-auto">
           Details on community membership, workshops, and how to get involved
         </p>
       </div>
 
       {/* Accordion List */}
-      <div className="space-y-2.5 sm:space-y-3">
+      <div className={`space-y-3 ${isCard ? "sm:space-y-3.5" : "sm:space-y-3"}`}>
         {faqs.map((faq, idx) => {
           const isOpen = openIndex === idx;
 
@@ -59,14 +59,14 @@ export function FAQ({ isCard = false }: { isCard?: boolean } = {}) {
             >
               <button
                 onClick={() => toggleFAQ(idx)}
-                className="w-full px-4 sm:px-6 py-3.5 sm:py-5 flex items-center justify-between text-left gap-3 sm:gap-4"
+                className={`w-full px-4 sm:px-6 ${isCard ? "py-4 sm:py-4.5" : "py-3.5 sm:py-5"} flex items-center justify-between text-left gap-3 sm:gap-4`}
                 aria-expanded={isOpen}
               >
-                <span className="font-heading text-sm sm:text-lg font-bold text-text-primary tracking-tight">
+                <span className={`font-heading font-bold text-text-primary tracking-tight ${isCard ? "text-sm sm:text-base" : "text-sm sm:text-lg"}`}>
                   {faq.question}
                 </span>
                 <div
-                  className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-transform duration-200 ${
+                  className={`flex-shrink-0 ${isCard ? "w-7 h-7 sm:w-8 sm:h-8" : "w-7 h-7 sm:w-8 sm:h-8"} rounded-full flex items-center justify-center transition-transform duration-200 ${
                     isOpen
                       ? "bg-primary text-white rotate-180"
                       : "bg-surface-subtle text-text-secondary"
@@ -98,7 +98,7 @@ export function FAQ({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-4 sm:p-10">{content}</div>;
+    return <div className="p-5 sm:p-10 sm:pb-20 min-h-[600px] sm:min-h-[660px] flex flex-col justify-start">{content}</div>;
   }
 
   return (

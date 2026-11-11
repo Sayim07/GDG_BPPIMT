@@ -215,13 +215,13 @@ export const ScrollStack = ({
 
       // Calculate dynamic sticky top per slot:
       // On mobile screens, if a card is taller than the viewport, shift upward for scrolling bottom content.
-      // On desktop, preserve the ordered stack cascading so previous cards remain visible behind.
+      // On desktop, preserve the ordered stack cascading so every card pins at its exact stepped basePin (stackTop + i * offset)
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       const stickyTops = heights.map((h, i) => {
         const basePin = stackTop + i * offset;
         if (!isMobile) {
-          const maxAllowedTop = Math.max(stackTop, viewHeight - h - bottomBreathingRoom);
-          return Math.min(basePin, maxAllowedTop);
+          // On desktop, every card pins at its exact stepped basePin to preserve the stacked shadow layers behind
+          return basePin;
         }
         const maxAllowedTop = viewHeight - h - bottomBreathingRoom;
         return Math.min(basePin, maxAllowedTop);
@@ -261,7 +261,7 @@ export const ScrollStack = ({
       for (let j = 1; j < slots.length; j++) {
         const pinBefore = viewTop + stickyTops[j - 1];
         const start = pinBefore + heights[j - 1];
-        const endPin = viewTop + stackTop + j * offset;
+        const endPin = viewTop + stickyTops[j];
         const span = Math.max(1, start - endPin);
         const cover = Math.min(1, Math.max(0, (start - tops[j]) / span));
         for (let i = 0; i < j; i++) depths[i] += cover;
