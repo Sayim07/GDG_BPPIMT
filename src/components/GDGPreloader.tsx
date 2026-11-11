@@ -1,54 +1,200 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface GDGPreloaderProps {
   /** Optional callback fired when the preloader finishes and unmounts */
   onComplete?: () => void;
-  /** Total duration in ms before exit starts (default: 2800ms) */
+  /** Total duration in ms before exit starts on initial page load (default: 2800ms) */
   duration?: number;
+  /** Minimum duration in ms before exit starts on page transitions (default: 1400ms) */
+  routeDuration?: number;
 }
+
+const normalizePath = (path: string) =>
+  path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
 
 export default function GDGPreloader({
   onComplete,
   duration = 2800,
+  routeDuration = 1400,
 }: GDGPreloaderProps) {
+  const pathname = usePathname() || "/";
   const [stage, setStage] = useState<"bounce" | "logo" | "exit" | "done">(
     "bounce"
   );
+  const [mode, setMode] = useState<"initial" | "route">("initial");
+  const [runId, setRunId] = useState(0);
 
-  useEffect(() => {
-    // 1. Switch from bouncing dots to SVG logo reveal
-    const logoTimer = setTimeout(() => {
-      setStage("logo");
-    }, 1350);
+  const prevPathname = useRef(normalizePath(pathname));
+  const pendingTargetPathRef = useRef<string | null>(null);
+  const minElapsedRef = useRef(false);
+  const routeArrivedRef = useRef(true);
+  const exitingRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
-    // 2. Trigger fade-out curtain exit
-    const exitTimer = setTimeout(() => {
-      setStage("exit");
-    }, duration);
+  const timersRef = useRef<{
+    logo?: ReturnType<typeof setTimeout>;
+    exit?: ReturnType<typeof setTimeout>;
+    done?: ReturnType<typeof setTimeout>;
+    safety?: ReturnType<typeof setTimeout>;
+  }>({});
 
-    // 3. Unmount completely from DOM
-    const doneTimer = setTimeout(() => {
+  const clearAllTimers = useCallback(() => {
+    const t = timersRef.current;
+    if (t.logo) clearTimeout(t.logo);
+    if (t.exit) clearTimeout(t.exit);
+    if (t.done) clearTimeout(t.done);
+    if (t.safety) clearTimeout(t.safety);
+    timersRef.current = {};
+  }, []);
+
+  const triggerExit = useCallback(() => {
+    if (exitingRef.current) return;
+    exitingRef.current = true;
+    if (timersRef.current.safety) {
+      clearTimeout(timersRef.current.safety);
+      timersRef.current.safety = undefined;
+    }
+    setStage("exit");
+    timersRef.current.done = setTimeout(() => {
       setStage("done");
-      onComplete?.();
-    }, duration + 550);
+      pendingTargetPathRef.current = null;
+      onCompleteRef.current?.();
+    }, 550);
+  }, []);
 
+  const scheduleSequence = useCallback(
+    (isInitial: boolean, waitForRoutePath: string | null) => {
+      clearAllTimers();
+      exitingRef.current = false;
+      minElapsedRef.current = false;
+      pendingTargetPathRef.current = waitForRoutePath;
+      routeArrivedRef.current = waitForRoutePath === null;
+
+      if (!isInitial) {
+        setMode("route");
+        setRunId((id) => id + 1);
+        setStage("bounce");
+      }
+
+      const logoDelay = isInitial ? 1350 : 480;
+      const totalHold = isInitial ? duration : routeDuration;
+
+      timersRef.current.logo = setTimeout(() => {
+        setStage("logo");
+      }, logoDelay);
+
+      timersRef.current.exit = setTimeout(() => {
+        minElapsedRef.current = true;
+        if (routeArrivedRef.current) {
+          triggerExit();
+        }
+      }, totalHold);
+
+      if (waitForRoutePath !== null) {
+        // Safety fallback in case navigation is interrupted or cancelled
+        timersRef.current.safety = setTimeout(() => {
+          pendingTargetPathRef.current = null;
+          routeArrivedRef.current = true;
+          if (minElapsedRef.current) {
+            triggerExit();
+          }
+        }, Math.max(totalHold + 4500, 6000));
+      }
+    },
+    [clearAllTimers, duration, routeDuration, triggerExit]
+  );
+
+  // 1. Initial load sequence & cleanup on unmount (StrictMode-safe)
+  useEffect(() => {
+    prevPathname.current = normalizePath(pathname);
+    scheduleSequence(true, null);
     return () => {
-      clearTimeout(logoTimer);
-      clearTimeout(exitTimer);
-      clearTimeout(doneTimer);
+      clearAllTimers();
     };
-  }, [duration, onComplete]);
+    // Intentionally run once on mount; route changes are handled below
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 2. Intercept internal page link clicks immediately so there is zero flash before server/client transition
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+      const target = e.target as Element | null;
+      const anchor = target?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      if (anchor.hasAttribute("download")) return;
+      const anchorTarget = anchor.getAttribute("target");
+      if (anchorTarget && anchorTarget !== "_self") return;
+
+      const rawHref = anchor.getAttribute("href");
+      if (!rawHref || rawHref.startsWith("#")) return;
+
+      let targetUrl: URL;
+      try {
+        targetUrl = new URL(anchor.href, window.location.href);
+      } catch {
+        return;
+      }
+
+      if (
+        targetUrl.origin !== window.location.origin ||
+        (targetUrl.protocol !== "http:" && targetUrl.protocol !== "https:")
+      ) {
+        return;
+      }
+
+      const nextPath = normalizePath(targetUrl.pathname);
+      const currentPath = normalizePath(window.location.pathname);
+
+      // Only show full-page preloader when navigating to a different route
+      if (nextPath !== currentPath) {
+        scheduleSequence(false, nextPath);
+      }
+    };
+
+    document.addEventListener("click", handleDocumentClick, true);
+    return () => {
+      document.removeEventListener("click", handleDocumentClick, true);
+    };
+  }, [scheduleSequence]);
+
+  // 3. Handle route commits (both completing click-initiated loads & browser back/forward navigation)
+  useEffect(() => {
+    const currentPath = normalizePath(pathname);
+    if (prevPathname.current === currentPath) return;
+    prevPathname.current = currentPath;
+
+    if (pendingTargetPathRef.current !== null) {
+      if (pendingTargetPathRef.current === currentPath) {
+        pendingTargetPathRef.current = null;
+        routeArrivedRef.current = true;
+        if (minElapsedRef.current) {
+          triggerExit();
+        }
+      }
+      return;
+    }
+
+    // Browser back/forward or programmatic router.push without an <a> click
+    scheduleSequence(false, null);
+  }, [pathname, scheduleSequence, triggerExit]);
 
   if (stage === "done") return null;
 
   return (
     <div
+      key={runId}
       role="status"
       aria-label="Loading Google Developer Groups On Campus BPPIMT"
-      className={`gdg-preloader-root fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none overflow-hidden transition-all duration-500 ease-in-out ${
+      className={`gdg-preloader-root ${
+        mode === "route" ? "gdg-preloader-route" : ""
+      } fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none touch-none overflow-hidden transition-all duration-500 ease-in-out ${
         stage === "exit"
           ? "opacity-0 scale-105 pointer-events-none"
           : "opacity-100 scale-100"
@@ -147,9 +293,18 @@ export default function GDGPreloader({
                       opacity 0.4s ease-out;
         }
 
+        .gdg-preloader-route .gdg-seg {
+          transition-duration: 0.45s, 0.3s;
+        }
+
         .gdg-outline-active {
           stroke-dasharray: 900;
           animation: gdgOutlineDraw 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+        }
+
+        .gdg-preloader-route .gdg-outline-active {
+          animation-duration: 0.6s;
+          animation-delay: 0.08s;
         }
       `}</style>
 

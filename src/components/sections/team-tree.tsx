@@ -132,13 +132,8 @@ function ExecutiveOrganizerCard({ member }: { member: TeamMember }) {
 
   return (
     <div className="group relative overflow-hidden rounded-3xl bg-white dark:bg-[#202124] p-7 sm:p-8 text-center shadow-[0_12px_36px_-6px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.06)] dark:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)] hover:shadow-[0_22px_50px_-8px_rgba(66,133,244,0.22)] hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 flex flex-col items-center justify-between w-full">
-      {/* Google 4-Color Accent Strip */}
-      <div className="absolute top-0 inset-x-0 h-2 grid grid-cols-4">
-        <div className="bg-[#4285F4] h-full" />
-        <div className="bg-[#EA4335] h-full" />
-        <div className="bg-[#FBBC04] h-full" />
-        <div className="bg-[#34A853] h-full" />
-      </div>
+      {/* Google 4-Color Accent Strip (Smooth Blend) */}
+      <div className="absolute top-0 inset-x-0 h-2 bg-[linear-gradient(90deg,#4285F4_0%,#EA4335_33%,#FBBC04_66%,#34A853_100%)]" />
 
       {/* Top Leadership Badge */}
       <div className="w-full flex items-center justify-between gap-2 mb-4 mt-1">
@@ -597,13 +592,8 @@ export function TeamTree() {
       {/* ON-CAMPUS ORGANIZERS (EXECUTIVE CHAPTER LEADERSHIP PARENT CARD)   */}
       {/* ================================================================= */}
       <div className="w-full rounded-3xl border border-blue-500/25 bg-gradient-to-br from-blue-500/[0.04] via-transparent to-emerald-500/[0.03] p-6 sm:p-10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.35)] relative overflow-hidden transition-all">
-        {/* Google 4-Color Accent Strip */}
-        <div className="absolute top-0 inset-x-0 h-2 grid grid-cols-4">
-          <div className="bg-[#4285F4] h-full" />
-          <div className="bg-[#EA4335] h-full" />
-          <div className="bg-[#FBBC04] h-full" />
-          <div className="bg-[#34A853] h-full" />
-        </div>
+        {/* Google 4-Color Accent Strip (Smooth Blend) */}
+      <div className="absolute top-0 inset-x-0 h-2 bg-[linear-gradient(90deg,#4285F4_0%,#EA4335_33%,#FBBC04_66%,#34A853_100%)]" />
 
         {/* Section Header with prominent, authoritative typography */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle mb-8">
