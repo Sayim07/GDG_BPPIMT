@@ -37,7 +37,20 @@ export function SocialSection() {
     }
   };
 
-  const socialChannels = [
+  interface SocialChannel {
+    name: string;
+    tagline: string;
+    handle: string;
+    description: string;
+    href: string;
+    icon: React.ElementType;
+    accentColor: string;
+    badge: string;
+    characterImage: string;
+    ctaText: string;
+  }
+
+  const socialChannels: SocialChannel[] = [
     {
       name: "Official Chapter",
       tagline: "Google Developer Student Portal",
@@ -176,19 +189,14 @@ export function SocialSection() {
                 style={{ backgroundColor: channel.accentColor }}
               />
 
-              {/* 3D Character Avatar (Positioned gracefully with individual card tuning) */}
-              <div
-                className={`absolute ${
-                  channel.positionClass ||
-                  "-top-10 sm:-top-12 lg:-top-14 right-2 sm:right-3 lg:right-4"
-                } w-32 h-32 sm:w-36 sm:h-36 lg:w-[152px] lg:h-[152px] pointer-events-none select-none z-20`}
-              >
+              {/* 3D Character Avatar (Uniform positioning across all cards) */}
+              <div className="absolute -top-10 sm:-top-12 lg:-top-14 right-2 sm:right-3 lg:right-4 w-32 h-32 sm:w-36 sm:h-36 lg:w-[152px] lg:h-[152px] pointer-events-none select-none z-20">
                 {/* Soft Ambient Spotlight behind Character */}
                 <div
                   className="absolute -inset-1 rounded-full blur-2xl opacity-25 group-hover:opacity-55 transition-opacity"
                   style={{ backgroundColor: channel.accentColor }}
                 />
-                <div className={`relative w-full h-full ${channel.characterScale || ""}`}>
+                <div className="relative w-full h-full">
                   <Image
                     src={channel.characterImage}
                     alt={`${channel.name} Mascot Character`}
