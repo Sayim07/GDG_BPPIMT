@@ -70,12 +70,15 @@ interface CarouselConfig {
 
 interface DragState {
   x: number;
+  y: number;
   startPos: number;
   lastX: number;
   lastT: number;
   v: number;
   moved: boolean;
   id: number;
+  directionDecided: boolean;
+  isHorizontal: boolean;
 }
 
 // Authentic Google Developer Groups theme placeholder items when no images/roster data is provided yet
@@ -131,10 +134,10 @@ const badgeStyles = {
 };
 
 const avatarAccents = {
-  blue: 'bg-[#4285F4]/15 text-[#1a73e8] dark:text-[#8ab4f8] border-[#4285F4]/40 shadow-[0_0_20px_rgba(66,133,244,0.18)]',
-  red: 'bg-[#EA4335]/15 text-[#d93025] dark:text-[#f28b82] border-[#EA4335]/40 shadow-[0_0_20px_rgba(234,67,53,0.18)]',
-  yellow: 'bg-[#FBBC04]/15 text-[#e37400] dark:text-[#fdd663] border-[#FBBC04]/40 shadow-[0_0_20px_rgba(251,188,4,0.18)]',
-  green: 'bg-[#34A853]/15 text-[#188038] dark:text-[#81c995] border-[#34A853]/40 shadow-[0_0_20px_rgba(52,168,83,0.18)]'
+  blue: 'bg-[#4285F4]/15 text-[#1a73e8] dark:text-[#8ab4f8] border-[#4285F4]/40 sm:shadow-[0_0_20px_rgba(66,133,244,0.18)]',
+  red: 'bg-[#EA4335]/15 text-[#d93025] dark:text-[#f28b82] border-[#EA4335]/40 sm:shadow-[0_0_20px_rgba(234,67,53,0.18)]',
+  yellow: 'bg-[#FBBC04]/15 text-[#e37400] dark:text-[#fdd663] border-[#FBBC04]/40 sm:shadow-[0_0_20px_rgba(251,188,4,0.18)]',
+  green: 'bg-[#34A853]/15 text-[#188038] dark:text-[#81c995] border-[#34A853]/40 sm:shadow-[0_0_20px_rgba(52,168,83,0.18)]'
 };
 
 export const DepthCarousel = ({
@@ -180,6 +183,9 @@ export const DepthCarousel = ({
   const wheelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const reducedRef = useRef(false);
+  const isMobileRef = useRef(false);
+  const rafMoveRef = useRef<number | null>(null);
+  const lastWRef = useRef(0);
 
   const [active, setActive] = useState(0);
 
@@ -206,6 +212,14 @@ export const DepthCarousel = ({
     if (!n) return;
     const dir = cfg.tiltDirection === 'left' ? -1 : 1;
     const sc = scaleRef.current;
+    const isMobile = isMobileRef.current;
+
+    // Mobile hardware acceleration optimizations:
+    // On mobile, show only immediate neighbor (1.0) so only 2-3 cards are in memory at any time
+    const effectiveVisibleCards = isMobile ? 1.0 : cfg.visibleCards;
+    const effectiveDepth = isMobile ? 110 : cfg.depth;
+    const effectiveSpread = isMobile ? 42 : cfg.spread;
+    const effectiveTilt = isMobile ? 0 : cfg.tilt;
 
     for (let i = 0; i < n; i++) {
       const el = cardRefs.current[i];
@@ -219,33 +233,79 @@ export const DepthCarousel = ({
 
       const back = Math.max(0, d);
       const az = Math.abs(d);
-      const shown = az <= cfg.visibleCards + 0.5;
+      const shown = az <= effectiveVisibleCards + 0.5;
 
-      const tz = -cfg.depth * d;
-      const tx = dir * cfg.spread * d;
-      const ry = dir * cfg.tilt * clamp(d, 0, 1);
+      // Unrender off-stack cards completely to liberate GPU layers
+      if (!shown) {
+        if (el.dataset.v !== '0') {
+          el.dataset.v = '0';
+          el.style.opacity = '0';
+          el.style.visibility = 'hidden';
+          el.style.pointerEvents = 'none';
+        }
+        continue;
+      }
+
+      if (el.dataset.v !== '1') {
+        el.dataset.v = '1';
+        el.style.visibility = 'visible';
+      }
+
+      const tz = -effectiveDepth * d;
+      const tx = dir * effectiveSpread * d;
+      const ry = dir * effectiveTilt * clamp(d, 0, 1);
 
       let opacity = d < 0 ? Math.max(0, 1 + d) : 1;
-      if (!shown) opacity = 0;
 
-      const brightness = Math.max(0.18, 1 - back * cfg.falloff);
-      const blurPx = cfg.blur > 0 ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur) : 0;
-      const zi = Math.round(2000 - d * 20);
+      // Single matrix operation without layout-dependent percentage translations
+      const transformStr = ry !== 0
+        ? `translate3d(${tx.toFixed(1)}px, 0, ${tz.toFixed(1)}px) scale(${sc.toFixed(3)}) rotateY(${ry.toFixed(2)}deg)`
+        : `translate3d(${tx.toFixed(1)}px, 0, ${tz.toFixed(1)}px) scale(${sc.toFixed(3)})`;
 
-      el.style.transform = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
-      el.style.opacity = opacity.toFixed(3);
-      if (blurPx > 0.5) {
-        el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(1)}px)`;
-      } else if (brightness < 0.98) {
-        el.style.filter = `brightness(${brightness.toFixed(3)})`;
-      } else {
-        el.style.filter = 'none';
+      el.style.transform = transformStr;
+
+      const opStr = opacity.toFixed(2);
+      if (el.dataset.op !== opStr) {
+        el.dataset.op = opStr;
+        el.style.opacity = opStr;
       }
-      el.style.zIndex = String(zi);
-      el.style.pointerEvents = shown && opacity > 0.05 ? 'auto' : 'none';
+
+      // Update zIndex only when integer layer changes to prevent compositor stacking context churn
+      const zi = 2000 - Math.round(d) * 20;
+      const ziStr = String(zi);
+      if (el.dataset.zi !== ziStr) {
+        el.dataset.zi = ziStr;
+        el.style.zIndex = ziStr;
+      }
+
+      const pe = opacity > 0.05 ? 'auto' : 'none';
+      if (el.dataset.pe !== pe) {
+        el.dataset.pe = pe;
+        el.style.pointerEvents = pe;
+      }
+
+      if (!isMobile) {
+        const brightness = Math.max(0.18, 1 - back * cfg.falloff);
+        const blurPx = cfg.blur > 0 ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur) : 0;
+        if (blurPx > 0.5) {
+          el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(1)}px)`;
+        } else if (brightness < 0.98) {
+          el.style.filter = `brightness(${brightness.toFixed(3)})`;
+        } else {
+          el.style.filter = 'none';
+        }
+      }
 
       const ov = overlayRefs.current[i];
-      if (ov) ov.style.opacity = clamp(back * cfg.falloff * 1.25, 0, 0.82).toFixed(3);
+      if (ov) {
+        // Zero-cost hardware rendering: overlay tint provides 100% of the depth dimming
+        const ovOpacity = clamp(back * (isMobile ? cfg.falloff * 1.5 : cfg.falloff * 1.25), 0, 0.85);
+        const ovStr = ovOpacity.toFixed(2);
+        if (ov.dataset.op !== ovStr) {
+          ov.dataset.op = ovStr;
+          ov.style.opacity = ovStr;
+        }
+      }
     }
   }, []);
 
@@ -262,11 +322,13 @@ export const DepthCarousel = ({
       tweenRef.current?.kill();
       const cfg = cfgRef.current;
       const proxy = { p: posRef.current };
-      const dur = animate && !reducedRef.current ? cfg.duration / 1000 : 0;
+      const isMobile = isMobileRef.current;
+      const dur = animate && !reducedRef.current ? (isMobile ? 0.42 : cfg.duration / 1000) : 0;
+      const ease = isMobile ? 'power2.out' : cfg.ease;
       tweenRef.current = gsap.to(proxy, {
         p: target,
         duration: dur,
-        ease: cfg.ease,
+        ease: ease,
         onUpdate: () => {
           posRef.current = proxy.p;
           layout(proxy.p);
@@ -304,13 +366,31 @@ export const DepthCarousel = ({
   const navigateBy = useCallback((step: number) => setFocus(focusRef.current + step, true), [setFocus]);
 
   useEffect(() => {
+    const updateMobile = () => {
+      if (typeof window === 'undefined') return;
+      const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+      if (isMobileRef.current !== isMobile) {
+        isMobileRef.current = isMobile;
+        layout(posRef.current);
+      }
+    };
+    updateMobile();
+    window.addEventListener('resize', updateMobile, { passive: true });
+    return () => window.removeEventListener('resize', updateMobile);
+  }, [layout]);
+
+  useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const ro = new ResizeObserver(entries => {
-      const w = entries[0].contentRect.width;
+      const w = entries[0]?.contentRect?.width;
+      if (!w || Math.abs(w - lastWRef.current) < 2) return;
+      lastWRef.current = w;
       const cfg = cfgRef.current;
-      const needed = cfg.cardWidth + Math.abs(cfg.spread) * 2 + 100;
-      scaleRef.current = clamp(w / needed, 0.5, 1);
+      const isMobile = isMobileRef.current;
+      const spreadNeeded = isMobile ? 42 : Math.abs(cfg.spread);
+      const needed = cfg.cardWidth + spreadNeeded * 2 + (isMobile ? 24 : 100);
+      scaleRef.current = clamp(w / needed, 0.75, 1);
       layout(posRef.current);
     });
     ro.observe(root);
@@ -348,12 +428,15 @@ export const DepthCarousel = ({
     tweenRef.current?.kill();
     dragRef.current = {
       x: e.clientX,
+      y: e.clientY,
       startPos: posRef.current,
       lastX: e.clientX,
       lastT: performance.now(),
       v: 0,
       moved: false,
-      id: e.pointerId
+      id: e.pointerId,
+      directionDecided: false,
+      isHorizontal: false
     };
   }, []);
 
@@ -361,30 +444,62 @@ export const DepthCarousel = ({
     (e: ReactPointerEvent<HTMLDivElement>) => {
       const drag = dragRef.current;
       if (!drag) return;
+
+      const dx = e.clientX - drag.x;
+      const dy = e.clientY - drag.y;
+
+      if (!drag.directionDecided) {
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        if (absX > 6 || absY > 6) {
+          drag.directionDecided = true;
+          if (absY > absX) {
+            // User is scrolling vertically down the page: release carousel drag to allow natural smooth scrolling
+            dragRef.current = null;
+            return;
+          }
+          drag.isHorizontal = true;
+          drag.moved = true;
+          try {
+            rootRef.current?.setPointerCapture(drag.id);
+          } catch {
+            // ignore
+          }
+        } else {
+          return;
+        }
+      }
+
+      if (!drag.isHorizontal) return;
+
       const cfg = cfgRef.current;
       const stepPx = Math.max(cfg.cardWidth * 0.55 * scaleRef.current, 40);
-      const dx = e.clientX - drag.x;
-      if (!drag.moved && Math.abs(dx) > 4) {
-        drag.moved = true;
-        rootRef.current?.setPointerCapture(drag.id);
-      }
-      if (!drag.moved) return;
       const now = performance.now();
       const dt = Math.max(now - drag.lastT, 1);
       drag.v = (e.clientX - drag.lastX) / dt;
       drag.lastX = e.clientX;
       drag.lastT = now;
       posRef.current = drag.startPos - dx / stepPx;
-      layout(posRef.current);
+
+      if (!rafMoveRef.current) {
+        rafMoveRef.current = requestAnimationFrame(() => {
+          layout(posRef.current);
+          rafMoveRef.current = null;
+        });
+      }
     },
     [layout]
   );
 
   const onPointerEnd = useCallback(() => {
+    if (rafMoveRef.current) {
+      cancelAnimationFrame(rafMoveRef.current);
+      rafMoveRef.current = null;
+    }
     const drag = dragRef.current;
     if (!drag) return;
     dragRef.current = null;
-    if (!drag.moved) return;
+    if (!drag.moved || !drag.isHorizontal) return;
     const cfg = cfgRef.current;
     const stepPx = Math.max(cfg.cardWidth * 0.55 * scaleRef.current, 40);
     const projected = posRef.current - (drag.v * 180) / stepPx;
@@ -416,44 +531,76 @@ export const DepthCarousel = ({
     reducedRef.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!autoplay || reducedRef.current || count < 2) return;
     const root = rootRef.current;
+    if (!root) return;
+
     let hovered = false;
     let focused = false;
+    let inView = true;
+
     const stop = () => {
       if (autoTimerRef.current) clearInterval(autoTimerRef.current);
       autoTimerRef.current = null;
     };
+
     const start = () => {
       stop();
+      if (!inView || hovered || focused) return;
       autoTimerRef.current = setInterval(
         () => {
-          if (!hovered && !focused) navigateBy(1);
+          if (!hovered && !focused && inView) navigateBy(1);
         },
         Math.max(cfgRef.current.autoplayDelay, 600)
       );
     };
+
     const onEnter = () => {
       hovered = true;
+      stop();
     };
     const onLeave = () => {
       hovered = false;
+      start();
     };
     const onFocusIn = () => {
       focused = true;
+      stop();
     };
     const onFocusOut = () => {
       focused = false;
+      start();
     };
-    root?.addEventListener('mouseenter', onEnter);
-    root?.addEventListener('mouseleave', onLeave);
-    root?.addEventListener('focusin', onFocusIn);
-    root?.addEventListener('focusout', onFocusOut);
-    start();
+
+    root.addEventListener('mouseenter', onEnter);
+    root.addEventListener('mouseleave', onLeave);
+    root.addEventListener('focusin', onFocusIn);
+    root.addEventListener('focusout', onFocusOut);
+
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        entries => {
+          const entry = entries[0];
+          inView = entry?.isIntersecting ?? true;
+          if (inView) {
+            start();
+          } else {
+            stop();
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(root);
+    } else {
+      start();
+    }
+
     return () => {
       stop();
-      root?.removeEventListener('mouseenter', onEnter);
-      root?.removeEventListener('mouseleave', onLeave);
-      root?.removeEventListener('focusin', onFocusIn);
-      root?.removeEventListener('focusout', onFocusOut);
+      observer?.disconnect();
+      root.removeEventListener('mouseenter', onEnter);
+      root.removeEventListener('mouseleave', onLeave);
+      root.removeEventListener('focusin', onFocusIn);
+      root.removeEventListener('focusout', onFocusOut);
     };
   }, [autoplay, autoplayDelay, count, navigateBy]);
 
@@ -466,6 +613,7 @@ export const DepthCarousel = ({
       tweenRef.current?.kill();
       if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
       if (autoTimerRef.current) clearInterval(autoTimerRef.current);
+      if (rafMoveRef.current) cancelAnimationFrame(rafMoveRef.current);
     },
     []
   );
@@ -494,11 +642,17 @@ export const DepthCarousel = ({
           return (
             <div
               key={i}
-              className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-card shadow-[0_25px_50px_-15px_rgba(0,0,0,0.35),0_8px_20px_-8px_rgba(0,0,0,0.25)] transition-colors hover:border-border-strong [transform:translate(-50%,-50%)] [transform-origin:center] [will-change:transform,opacity,filter]"
+              className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-card shadow-md sm:shadow-[0_25px_50px_-15px_rgba(0,0,0,0.35),0_8px_20px_-8px_rgba(0,0,0,0.25)] transition-colors hover:border-border-strong [transform-origin:center] [will-change:transform,opacity] [backface-visibility:hidden]"
               ref={el => {
                 cardRefs.current[i] = el;
               }}
-              style={{ width: cardWidth, height: cardHeight, borderRadius: radius }}
+              style={{
+                width: cardWidth,
+                height: cardHeight,
+                borderRadius: radius,
+                marginLeft: -cardWidth / 2,
+                marginTop: -cardHeight / 2,
+              }}
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${count}`}
               aria-hidden={active !== i}
@@ -523,7 +677,7 @@ export const DepthCarousel = ({
                 />
               ) : (
                 /* GDG-Themed Elevated Member Card with Deep Contrast */
-                <div className="relative flex h-[calc(100%-6px)] w-full flex-col items-center justify-between p-6 sm:p-7 text-center select-none bg-white dark:bg-[#202124] shadow-[0_12px_36px_rgba(0,0,0,0.1)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-white/10">
+                <div className="relative flex h-[calc(100%-6px)] w-full flex-col items-center justify-between p-6 sm:p-7 text-center select-none bg-white dark:bg-[#202124] shadow-sm sm:shadow-[0_12px_36px_rgba(0,0,0,0.1)] sm:dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-white/10">
 
                   {/* Domain Badge */}
                   <div className="z-10 w-full flex justify-center">
@@ -538,7 +692,7 @@ export const DepthCarousel = ({
                   {/* Avatar Container with GDG Branded Styling & Initials */}
                   <div className="z-10 relative my-auto flex flex-col items-center">
                     <div
-                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200 ${avatarAccent}`}
+                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md sm:group-hover:scale-105 sm:transition-transform duration-200 ${avatarAccent}`}
                     >
                       {item.image ? (
                         <img
@@ -584,7 +738,7 @@ export const DepthCarousel = ({
 
               {/* Tint overlay during 3D depth transition */}
               <span
-                className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity ${
+                className={`pointer-events-none absolute inset-0 opacity-0 ${
                   !tint ? 'bg-white/25 dark:bg-[#05070c]/45' : ''
                 }`}
                 ref={el => {

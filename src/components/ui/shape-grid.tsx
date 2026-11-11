@@ -414,6 +414,7 @@ export default function ShapeGrid({
       last: 0,
       time: 0,
       visible: true,
+      needsResize: true,
       width: 1,
       height: 1,
       ratio: 1,
@@ -441,7 +442,7 @@ export default function ShapeGrid({
       const width = Math.max(1, container.clientWidth);
       const height = Math.max(1, container.clientHeight);
       const view = viewFor(s.tiltX, s.tiltY, width, height, s.cellSize);
-      const isMobile = window.innerWidth < 768;
+      const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
       const defaultDpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
       let ratio = s.dpr ?? defaultDpr;
       const pixels = view.width * view.height * ratio * ratio;
@@ -549,6 +550,8 @@ export default function ShapeGrid({
       return value;
     };
 
+    const isMobileDevice = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+
     const draw = () => {
       const s = settingsRef.current;
       const { view, ratio } = state;
@@ -567,7 +570,8 @@ export default function ShapeGrid({
       const [i0, i1, j0, j1] = range(layout, size);
       const markers = s.shape === 'cross' || s.shape === 'dot';
       const elapsed = state.time - state.startedAt;
-      const introRadius = s.intro && !reduce ? elapsed * view.reach * 1.8 : Infinity;
+      const isIntroActive = s.intro && !reduce && elapsed * view.reach * 1.8 < view.reach * 1.6;
+      const introRadius = isIntroActive ? elapsed * view.reach * 1.8 : Infinity;
       const originX = state.width / 2;
       const originY = state.height / 2;
       const centerX = originX + state.offsetX;
@@ -580,13 +584,17 @@ export default function ShapeGrid({
       ctx.fillStyle = s.lineColor;
       ctx.beginPath();
       if (s.shape === 'square') {
+        const stepX = layout.stepX;
+        const stepY = layout.stepY;
+        const offX = state.offsetX;
+        const offY = state.offsetY;
         for (let i = i0; i <= i1; i++) {
-          const x = i * layout.stepX - state.offsetX;
+          const x = i * stepX - offX;
           ctx.moveTo(x, top - size);
           ctx.lineTo(x, bottom + size);
         }
         for (let j = j0; j <= j1; j++) {
-          const y = j * layout.stepY - state.offsetY;
+          const y = j * stepY - offY;
           ctx.moveTo(left - size, y);
           ctx.lineTo(right + size, y);
         }
@@ -612,77 +620,123 @@ export default function ShapeGrid({
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      const glowing = s.glow > 0;
-      for (let i = i0; i <= i1; i++) {
-        for (let j = j0; j <= j1; j++) {
-          const [cx, cy] = centerOf(s.shape, layout, i, j);
-          const key = keyOf(i, j);
-          let value = state.lit.get(key) ?? 0;
-          let hue = state.hues.get(key) ?? 0;
-          if (state.cascades.length) {
-            const pulse = cascadeAt(s, cx, cy);
-            if (pulse > value) {
-              value = pulse;
-              hue = state.cascadeHue;
-            }
-          }
-          if (s.twinkle > 0 && !reduce) {
-            const seed = hash(i, j);
-            const wave = Math.sin(state.time * (0.35 + seed * 0.5) + seed * 40);
-            const sparkle = s.twinkle * 0.7 * Math.max(0, wave) ** 18;
-            if (sparkle > value) {
-              value = sparkle;
-              hue = seed * 360;
-            }
-          }
-          if (introRadius !== Infinity) {
-            const front = introRadius - Math.hypot(cx - centerX, cy - centerY);
-            if (front < 0) continue;
-            const wave = Math.exp(-((front / (size * 1.4)) ** 2)) * 0.85;
-            if (wave > value) {
-              value = wave;
-              hue = (Math.atan2(cy - centerY, cx - centerX) * 180) / Math.PI + state.time * 120;
-            }
-          }
-          if (value <= 0.01) continue;
-          const color = s.rainbow ? tint(hue, s.tone) : s.hoverColor;
-          const x = cx - state.offsetX;
-          const y = cy - state.offsetY;
-          ctx.beginPath();
-          traceCell(ctx, s.shape, layout, size, i, j, x, y, markers ? value * size * 0.08 : s.lineWidth * 0.5);
-          if (markers) {
-            ctx.globalAlpha = Math.min(1, value);
-            if (glowing) {
-              ctx.shadowColor = color;
-              ctx.shadowBlur = s.glow * 14 * value;
-            }
-            if (s.shape === 'dot') {
-              ctx.fillStyle = color;
-              ctx.fill();
+      // Performance optimization: skip heavy cell loop entirely if no highlights are active
+      const hasLit = state.lit.size > 0;
+      const hasCascades = state.cascades.length > 0;
+      const hasTwinkle = s.twinkle > 0 && !reduce;
+
+      if (hasLit || hasCascades || hasTwinkle || isIntroActive) {
+        const glowing = s.glow > 0;
+        const useSoftwareShadow = glowing && !isMobileDevice;
+        const twinkleThreshold = isMobileDevice ? 0.88 : 0.78;
+        const isSquare = s.shape === 'square';
+        const stepX = layout.stepX;
+        const stepY = layout.stepY;
+
+        for (let i = i0; i <= i1; i++) {
+          const skipTwinkle = isMobileDevice && ((i & 1) === 1);
+
+          for (let j = j0; j <= j1; j++) {
+            let cx = 0;
+            let cy = 0;
+            if (isSquare) {
+              cx = (i + 0.5) * stepX;
+              cy = (j + 0.5) * stepY;
             } else {
+              const c = centerOf(s.shape, layout, i, j);
+              cx = c[0];
+              cy = c[1];
+            }
+
+            const key = keyOf(i, j);
+            let value = state.lit.get(key) ?? 0;
+            let hue = state.hues.get(key) ?? 0;
+
+            if (hasCascades) {
+              const pulse = cascadeAt(s, cx, cy);
+              if (pulse > value) {
+                value = pulse;
+                hue = state.cascadeHue;
+              }
+            }
+
+            if (hasTwinkle && !skipTwinkle) {
+              const seed = hash(i, j);
+              const wave = Math.sin(state.time * (0.35 + seed * 0.5) + seed * 40);
+              if (wave > twinkleThreshold) {
+                const sparkle = s.twinkle * 0.7 * (wave ** 18);
+                if (sparkle > value) {
+                  value = sparkle;
+                  hue = seed * 360;
+                }
+              }
+            }
+
+            if (isIntroActive) {
+              const front = introRadius - Math.hypot(cx - centerX, cy - centerY);
+              if (front >= 0) {
+                const wave = Math.exp(-((front / (size * 1.4)) ** 2)) * 0.85;
+                if (wave > value) {
+                  value = wave;
+                  hue = (Math.atan2(cy - centerY, cx - centerX) * 180) / Math.PI + state.time * 120;
+                }
+              }
+            }
+
+            if (value <= 0.01) continue;
+
+            const color = s.rainbow ? tint(hue, s.tone) : s.hoverColor;
+            const x = cx - state.offsetX;
+            const y = cy - state.offsetY;
+
+            ctx.beginPath();
+            traceCell(ctx, s.shape, layout, size, i, j, x, y, markers ? value * size * 0.08 : s.lineWidth * 0.5);
+
+            if (markers) {
+              ctx.globalAlpha = Math.min(1, value);
+              if (useSoftwareShadow) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = s.glow * 14 * value;
+              }
+              if (s.shape === 'dot') {
+                ctx.fillStyle = color;
+                ctx.fill();
+              } else {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = s.lineWidth * (1 + value * 0.6);
+                ctx.stroke();
+              }
+              if (useSoftwareShadow) ctx.shadowBlur = 0;
+              continue;
+            }
+
+            if (s.fillOpacity > 0) {
+              ctx.globalAlpha = Math.min(1, value) * s.fillOpacity;
+              ctx.fillStyle = s.rainbow ? color : s.hoverFillColor;
+              ctx.fill();
+            }
+
+            // Mobile GPU alpha glow optimization (avoids slow software Gaussian blur)
+            if (glowing && isMobileDevice && value > 0.3) {
+              ctx.globalAlpha = Math.min(1, value) * 0.3;
               ctx.strokeStyle = color;
-              ctx.lineWidth = s.lineWidth * (1 + value * 0.6);
+              ctx.lineWidth = s.lineWidth + 2.5;
               ctx.stroke();
             }
-            ctx.shadowBlur = 0;
-            continue;
+
+            ctx.globalAlpha = Math.min(1, value) * 0.85;
+            if (useSoftwareShadow) {
+              ctx.shadowColor = color;
+              ctx.shadowBlur = s.glow * 16 * value;
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = s.lineWidth;
+            ctx.stroke();
+            if (useSoftwareShadow) ctx.shadowBlur = 0;
           }
-          if (s.fillOpacity > 0) {
-            ctx.globalAlpha = Math.min(1, value) * s.fillOpacity;
-            ctx.fillStyle = s.rainbow ? color : s.hoverFillColor;
-            ctx.fill();
-          }
-          ctx.globalAlpha = Math.min(1, value) * 0.85;
-          if (glowing) {
-            ctx.shadowColor = color;
-            ctx.shadowBlur = s.glow * 16 * value;
-          }
-          ctx.strokeStyle = color;
-          ctx.lineWidth = s.lineWidth;
-          ctx.stroke();
-          ctx.shadowBlur = 0;
         }
       }
+
       ctx.globalAlpha = 1;
 
       if (view.mist) {
@@ -701,11 +755,17 @@ export default function ShapeGrid({
 
     const frame = (now: number) => {
       state.raf = 0;
-      if (!state.alive) return;
+      if (!state.alive || !state.visible) return;
       const s = settingsRef.current;
       const dt = state.last ? Math.min(0.05, (now - state.last) / 1000) : 1 / 60;
       state.last = now;
-      resize();
+
+      // Only resize if container changed - zero forced layout reflow during animation
+      if (state.needsResize) {
+        state.needsResize = false;
+        resize();
+      }
+
       if (!state.started) {
         state.started = true;
         state.startedAt = state.time;
@@ -714,8 +774,10 @@ export default function ShapeGrid({
         state.time += dt;
         if (!reduce) {
           const [dx, dy] = DIRECTIONS[s.direction];
-          state.offsetX -= dx * s.speed * 60 * dt;
-          state.offsetY -= dy * s.speed * 60 * dt;
+          const maxStepX = Math.max(8, s.cellSize * 4);
+          const maxStepY = Math.max(8, s.cellSize * 4);
+          state.offsetX = (state.offsetX - dx * s.speed * 60 * dt) % maxStepX;
+          state.offsetY = (state.offsetY - dy * s.speed * 60 * dt) % maxStepY;
         }
         const want = state.inside ? 1 : 0;
         state.spotPower += (want - state.spotPower) * (1 - Math.exp(-(want ? 10 : 5) * dt));
@@ -726,7 +788,9 @@ export default function ShapeGrid({
         state.spotX += state.spotVX * dt;
         state.spotY += state.spotVY * dt;
         illuminate(s, layoutFor(s.shape, s.cellSize), dt);
-        state.cascades = state.cascades.filter(cascade => state.time - cascade.time < cascade.reach * 0.055 + 0.4);
+        if (state.cascades.length > 0) {
+          state.cascades = state.cascades.filter(cascade => state.time - cascade.time < cascade.reach * 0.055 + 0.4);
+        }
       }
       draw();
       const settled =
@@ -792,17 +856,38 @@ export default function ShapeGrid({
     };
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      draw();
+      state.needsResize = true;
       wake();
     });
     resizeObserver.observe(container);
 
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-      if (state.visible) wake();
+      const isVisible = entries.some(entry => entry.isIntersecting);
+      state.visible = isVisible;
+      if (isVisible) {
+        state.last = 0;
+        wake();
+      } else if (state.raf) {
+        cancelAnimationFrame(state.raf);
+        state.raf = 0;
+      }
     });
     visibility.observe(container);
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        state.visible = false;
+        if (state.raf) {
+          cancelAnimationFrame(state.raf);
+          state.raf = 0;
+        }
+      } else {
+        state.visible = true;
+        state.last = 0;
+        wake();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     const isCoarse = window.matchMedia('(pointer: coarse)').matches;
     if (!isCoarse) {
@@ -814,7 +899,7 @@ export default function ShapeGrid({
 
     engineRef.current = {
       redraw: () => {
-        resize();
+        state.needsResize = true;
         draw();
         wake();
       }
@@ -828,6 +913,7 @@ export default function ShapeGrid({
       cancelAnimationFrame(state.raf);
       resizeObserver.disconnect();
       visibility.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       if (!isCoarse) {
         window.removeEventListener('pointermove', onMove);
       }

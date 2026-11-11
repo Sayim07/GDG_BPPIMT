@@ -47,7 +47,7 @@ export default function Home() {
               <Events isCard />
             </ScrollStackItem>
 
-            <ScrollStackItem key="team" id="team">
+            <ScrollStackItem key="team" id="team" disableGrid>
               <Team isCard />
             </ScrollStackItem>
 
