@@ -473,7 +473,7 @@ export const DepthCarousel = ({
   return (
     <div
       ref={rootRef}
-      className={`relative flex h-full min-h-[400px] w-full cursor-grab touch-pan-y select-none items-center justify-center outline-none [perspective-origin:50%_50%] active:cursor-grabbing focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary/50 focus-visible:[outline-offset:4px] ${className}`.trim()}
+      className={`relative flex h-full min-h-[360px] w-full cursor-grab touch-pan-y select-none items-center justify-center outline-none [perspective-origin:50%_50%] active:cursor-grabbing focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary/50 focus-visible:[outline-offset:4px] ${className}`.trim()}
       style={{ perspective: `${perspective}px` }}
       role="group"
       aria-roledescription="carousel"
