@@ -8,7 +8,9 @@
     "badgeColor": "blue",
     "bio": "",
     "socials": {
-      "email": "bhandaryprotyoy@gmail.com"
+      "github": "",
+      "email": "bhandaryprotyoy@gmail.com",
+      "linkedin": ""
     }
   },
   {
@@ -20,7 +22,9 @@
     "badgeColor": "red",
     "bio": "",
     "socials": {
-      "email": "sagnikmaitra01@gmail.com"
+      "github": "",
+      "email": "sagnikmaitra01@gmail.com",
+      "linkedin": ""
     }
   },
   {
@@ -32,7 +36,9 @@
     "badgeColor": "green",
     "bio": "",
     "socials": {
-      "email": "snehapatra005@gmail.com"
+      "github": "",
+      "email": "snehapatra005@gmail.com",
+      "linkedin": ""
     }
   },
   {
@@ -44,7 +50,9 @@
     "badgeColor": "blue",
     "bio": "",
     "socials": {
-      "github": "https://github.com/Sayim07"
+      "github": "https://github.com/Sayim07",
+      "email": "",
+      "linkedin": ""
     }
   },
   {
@@ -54,7 +62,12 @@
     "domain": "Artificial Intelligence",
     "category": "lead",
     "badgeColor": "red",
-    "bio": ""
+    "bio": "",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "aaryan-kumar",
@@ -63,7 +76,12 @@
     "domain": "Cloud Computing",
     "category": "lead",
     "badgeColor": "yellow",
-    "bio": ""
+    "bio": "",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "narayan-kumar-jha",
@@ -72,7 +90,12 @@
     "domain": "Creative & Branding",
     "category": "lead",
     "badgeColor": "blue",
-    "bio": ""
+    "bio": "",
+    "socials": {
+      "github": "https://github.com/narayan-nkj",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "aadipto-ghosh",
@@ -81,7 +104,12 @@
     "domain": "Operations & Logistics",
     "category": "lead",
     "badgeColor": "yellow",
-    "bio": ""
+    "bio": "",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "satarupa-sarkar",
@@ -90,7 +118,12 @@
     "domain": "Marketing & Media",
     "category": "lead",
     "badgeColor": "green",
-    "bio": ""
+    "bio": "",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "bikramjit-pakhira",
@@ -99,7 +132,12 @@
     "domain": "Web Development",
     "category": "core",
     "badgeColor": "blue",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "sayantan-pachal",
@@ -108,7 +146,12 @@
     "domain": "Web Development",
     "category": "core",
     "badgeColor": "blue",
-    "bio": "2nd Year | Core Team"
+    "bio": "2nd Year | Core Team",
+    "socials": {
+      "github": "https://github.com/sayantan-pachal",
+      "email": "pachalsayantan@gmail.com",
+      "linkedin": "sayantan-pachal"
+    }
   },
   {
     "id": "mouli-biswas",
@@ -117,7 +160,12 @@
     "domain": "Machine Learning",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "subhajit-majee",
@@ -126,7 +174,12 @@
     "domain": "Machine Learning",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "larenza-roy",
@@ -135,7 +188,12 @@
     "domain": "Cloud Computing",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "2nd Year | Core Team"
+    "bio": "2nd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "saurabh-kumar-singh",
@@ -144,7 +202,12 @@
     "domain": "Cloud Computing",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "alfia-ashraf",
@@ -153,7 +216,12 @@
     "domain": "UI/UX & Graphics",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "2nd Year | Core Team"
+    "bio": "2nd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "sagnik-saha",
@@ -162,7 +230,12 @@
     "domain": "UI/UX & Graphics",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "soham-bandyopadhyay",
@@ -171,7 +244,12 @@
     "domain": "Event Planning",
     "category": "core",
     "badgeColor": "green",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "sagnik-dutta",
@@ -180,7 +258,12 @@
     "domain": "Event Planning",
     "category": "core",
     "badgeColor": "green",
-    "bio": "2nd Year | Core Team"
+    "bio": "2nd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "sakchham-kapoor",
@@ -189,7 +272,12 @@
     "domain": "Community Outreach",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   },
   {
     "id": "shreyanka-satpathy",
@@ -198,6 +286,11 @@
     "domain": "Community Outreach",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team"
+    "bio": "3rd Year | Core Team",
+    "socials": {
+      "github": "",
+      "email": "",
+      "linkedin": ""
+    }
   }
 ]

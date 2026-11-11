@@ -33,7 +33,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className="relative z-50 w-full bg-surface-page border-b border-border-subtle transition-colors">
+    <header className="sticky top-0 z-50 w-full bg-surface-page border-b border-border-subtle transition-colors">
       <div className="h-14 sm:h-16 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo & Name */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
