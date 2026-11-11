@@ -2,6 +2,7 @@
 
 import React, { type CSSProperties, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { gsap } from 'gsap';
 import {
@@ -16,7 +17,6 @@ import {
 } from 'lucide-react';
 import chapterConfig from '@/data/chapter.json';
 import { ChapterConfig } from '@/types/schema';
-import { SpecularPill } from '@/components/ui/specular-button';
 
 export type MenuItem = {
   label: string;
@@ -24,7 +24,6 @@ export type MenuItem = {
   ariaLabel?: string;
   rotation?: number;
   isSocial?: boolean;
-  lineColor?: string;
   hoverStyles?: {
     bgColor?: string;
     textColor?: string;
@@ -47,34 +46,44 @@ export const DEFAULT_GDG_ITEMS: MenuItem[] = [
     label: 'About',
     href: '/#about',
     ariaLabel: 'About GDG on Campus BPPIMT',
-    rotation: -4,
-    lineColor: '#4285F4',
+    rotation: -6,
     hoverStyles: { bgColor: '#4285F4', textColor: '#ffffff' } // Google Blue
+  },
+  {
+    label: 'Tracks',
+    href: '/#tracks',
+    ariaLabel: 'Specialized Technical Tracks',
+    rotation: 6,
+    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
   },
   {
     label: 'Events',
     href: '/events',
     ariaLabel: 'Community Events Hub',
-    rotation: 4,
-    lineColor: '#EA4335',
-    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
+    rotation: -4,
+    hoverStyles: { bgColor: '#FBBC04', textColor: '#202124' } // Google Yellow
   },
   {
     label: 'Team',
     href: '/team',
     ariaLabel: 'Organizers and Leads',
-    rotation: -3,
-    lineColor: '#34A853',
+    rotation: 6,
     hoverStyles: { bgColor: '#34A853', textColor: '#ffffff' } // Google Green
+  },
+  {
+    label: 'FAQ',
+    href: '/#faq',
+    ariaLabel: 'Frequently Asked Questions',
+    rotation: -6,
+    hoverStyles: { bgColor: '#4285F4', textColor: '#ffffff' } // Google Blue
   },
   {
     label: 'Social',
     href: '#social',
     ariaLabel: 'Official Social Media & Community Channels',
-    rotation: 3,
+    rotation: 4,
     isSocial: true,
-    lineColor: '#FBBC04',
-    hoverStyles: { bgColor: '#FBBC04', textColor: '#202124' } // Google Yellow
+    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
   }
 ];
 
@@ -91,18 +100,12 @@ export function BubbleMenu({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [isSocialView, setIsSocialView] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = mounted && resolvedTheme === 'dark';
+  const isDark = resolvedTheme === 'dark';
 
   const chapter = chapterConfig as ChapterConfig;
   const overlayRef = useRef<HTMLDivElement>(null);
-  const bubblesRef = useRef<(HTMLElement | null)[]>([]);
+  const bubblesRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const socialCardsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -119,16 +122,18 @@ export function BubbleMenu({
         'https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/',
       icon: Globe,
       accentColor: '#4285F4',
-      badge: 'Google Community'
+      badge: 'Google Community',
+      characterImage: '/images/characters/google.png'
     },
     {
       name: 'LinkedIn',
       handle: 'GDG on Campus BPPIMT',
       description: 'Professional updates, leadership spotlights & network milestones',
-      href: chapter.socials?.linkedin || 'https://www.linkedin.com/company/gdg-bppimt/',
+      href: chapter.socials?.linkedin || 'https://in.linkedin.com/company/gdgbppimt',
       icon: Linkedin,
       accentColor: '#0A66C2',
-      badge: 'Professional'
+      badge: 'Professional',
+      characterImage: '/images/characters/linkedin.png'
     },
     {
       name: 'GitHub',
@@ -137,7 +142,8 @@ export function BubbleMenu({
       href: chapter.socials?.github || 'https://github.com/Sayim07/GDG_BPPIMT',
       icon: Github,
       accentColor: isDark ? '#F0F6FC' : '#24292F',
-      badge: 'Open Source'
+      badge: 'Open Source',
+      characterImage: '/images/characters/github.png'
     },
     {
       name: 'WhatsApp Community',
@@ -146,16 +152,18 @@ export function BubbleMenu({
       href: chapter.socials?.whatsapp || 'https://chat.whatsapp.com/invite/gdg-bppimt',
       icon: MessageCircle,
       accentColor: '#25D366',
-      badge: 'Instant Chat'
+      badge: 'Instant Chat',
+      characterImage: '/images/characters/whatsapp.png'
     },
     {
       name: 'Instagram',
       handle: '@gdg_bppimt',
       description: 'Behind-the-scenes event photography, reels & announcements',
-      href: chapter.socials?.instagram || 'https://www.instagram.com/gdg_bppimt',
+      href: chapter.socials?.instagram || 'https://www.instagram.com/gdg.bppimt/',
       icon: Instagram,
       accentColor: '#E4405F',
-      badge: 'Visuals'
+      badge: 'Visuals',
+      characterImage: '/images/characters/instagram.png'
     },
     {
       name: 'X (Twitter)',
@@ -164,7 +172,8 @@ export function BubbleMenu({
       href: chapter.socials?.twitter || 'https://x.com/gdg_bppimt',
       icon: Twitter,
       accentColor: '#1DA1F2',
-      badge: 'Updates'
+      badge: 'Updates',
+      characterImage: '/images/characters/twitter.png'
     }
   ];
 
@@ -221,7 +230,7 @@ export function BubbleMenu({
   // GSAP animation for bubbles
   useEffect(() => {
     const overlay = overlayRef.current;
-    const bubbles = bubblesRef.current.filter(Boolean) as HTMLElement[];
+    const bubbles = bubblesRef.current.filter(Boolean) as HTMLAnchorElement[];
     const labels = labelRefs.current.filter(Boolean) as HTMLSpanElement[];
     if (!overlay) return;
 
@@ -298,7 +307,7 @@ export function BubbleMenu({
   useEffect(() => {
     const handleResize = () => {
       if (isMenuOpen && !isSocialView) {
-        const bubbles = bubblesRef.current.filter(Boolean) as HTMLElement[];
+        const bubbles = bubblesRef.current.filter(Boolean) as HTMLAnchorElement[];
         const isDesktop = window.innerWidth >= 900;
         bubbles.forEach((bubble, i) => {
           const item = menuItems[i];
@@ -408,9 +417,9 @@ export function BubbleMenu({
         >
           {isSocialView ? (
             /* Sub-View: Social Media & Community Channels */
-            <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 py-12 flex flex-col items-center pointer-events-auto">
+            <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 py-16 flex flex-col items-center pointer-events-auto">
               {/* Header with Back button and Google 4-color accent */}
-              <div className="w-full flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-border-subtle">
+              <div className="w-full flex flex-wrap items-center justify-between gap-4 mb-12 pb-4 border-b border-border-subtle">
                 <button
                   type="button"
                   onClick={() => setIsSocialView(false)}
@@ -432,7 +441,7 @@ export function BubbleMenu({
               </div>
 
               {/* Grid of 6 Social Channels */}
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-6 pt-6">
                 {socialChannels.map((channel, i) => {
                   const Icon = channel.icon;
                   return (
@@ -444,15 +453,28 @@ export function BubbleMenu({
                       ref={(el) => {
                         socialCardsRef.current[i] = el;
                       }}
-                      className="group relative flex flex-col justify-between p-6 rounded-2xl border border-border-subtle bg-surface-card hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 overflow-hidden"
+                      className="group relative flex flex-col justify-between p-6 rounded-2xl border border-border-subtle bg-surface-card hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1"
                     >
-                      {/* Top accent glow on hover */}
+                      {/* 3D Floating Character Asset */}
+                      {channel.characterImage && (
+                        <div className="absolute -top-14 right-4 w-24 h-24 sm:w-28 sm:h-28 pointer-events-none transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2 z-10">
+                          <Image
+                            src={channel.characterImage}
+                            alt={`${channel.name} character`}
+                            width={112}
+                            height={112}
+                            className="object-contain w-full h-full drop-shadow-md"
+                          />
+                        </div>
+                      )}
+
+                      {/* Top accent line on hover */}
                       <div
-                        className="absolute top-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity"
                         style={{ backgroundColor: channel.accentColor }}
                       />
 
-                      <div>
+                      <div className="relative z-0">
                         <div className="flex items-center justify-between mb-4">
                           <div
                             className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
@@ -482,8 +504,8 @@ export function BubbleMenu({
                         </p>
                       </div>
 
-                      <div className="mt-5 pt-3 border-t border-border-subtle flex items-center justify-between text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors">
-                        <span className="truncate max-w-[200px]">{channel.handle}</span>
+                      <div className="mt-5 pt-3 border-t border-border-subtle flex items-center justify-between text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors relative z-0">
+                        <span className="truncate max-w-[180px]">{channel.handle}</span>
                         <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </div>
                     </a>
@@ -492,9 +514,9 @@ export function BubbleMenu({
               </div>
             </div>
           ) : (
-            /* Main Menu View: 4 GDG Specular Capsule Pills in a 2x2 Grid */
+            /* Main Menu View: 6 Balanced Bubble Pills in a 3x2 Grid */
             <ul
-              className="pill-list list-none m-0 px-4 sm:px-6 w-full max-w-[880px] mx-auto flex flex-wrap gap-x-0 gap-y-5 sm:gap-y-7 pointer-events-auto"
+              className="pill-list list-none m-0 px-6 w-full max-w-[1200px] mx-auto flex flex-wrap gap-x-0 gap-y-3 pointer-events-auto"
               role="menu"
               aria-label="Navigation links"
             >
@@ -502,35 +524,90 @@ export function BubbleMenu({
                 <li
                   key={item.label}
                   role="none"
-                  className="pill-col flex justify-center items-stretch [flex:0_0_50%] box-border px-3 sm:px-4"
+                  className="pill-col flex justify-center items-stretch [flex:0_0_calc(100%/3)] box-border px-2"
                 >
-                  <SpecularPill
-                    ref={(el) => {
-                      bubblesRef.current[idx] = el;
-                    }}
-                    labelRef={(el) => {
-                      labelRefs.current[idx] = el;
-                    }}
-                    label={item.label}
-                    href={item.href}
-                    isSocial={item.isSocial}
-                    rotation={item.rotation ?? 0}
-                    lineColor={item.lineColor || item.hoverStyles?.bgColor || '#4285F4'}
-                    hoverBg={item.hoverStyles?.bgColor || '#4285F4'}
-                    hoverColor={item.hoverStyles?.textColor || '#ffffff'}
-                    pillBg={pillBg}
-                    pillColor={pillColor}
-                    pillBorder={pillBorder}
-                    ariaLabel={item.ariaLabel}
-                    onClick={
-                      item.isSocial
-                        ? (e) => {
-                            e.preventDefault();
-                            setIsSocialView(true);
-                          }
-                        : handleClose
-                    }
-                  />
+                  {item.isSocial ? (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      aria-label={item.ariaLabel || item.label}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsSocialView(true);
+                      }}
+                      className="pill-link w-full rounded-[999px] no-underline shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-center relative transition-[background,color,border-color,transform] duration-300 ease-out box-border whitespace-nowrap overflow-hidden font-heading font-bold cursor-pointer"
+                      style={
+                        {
+                          ['--item-rot']: `${item.rotation ?? 0}deg`,
+                          ['--hover-bg']: item.hoverStyles?.bgColor || '#EA4335',
+                          ['--hover-color']: item.hoverStyles?.textColor || '#ffffff',
+                          background: pillBg,
+                          color: pillColor,
+                          border: `1px solid ${pillBorder}`,
+                          minHeight: '110px',
+                          padding: 'clamp(1.5rem, 2.5vw, 3.5rem) 0',
+                          fontSize: 'clamp(1.75rem, 3.5vw, 3.25rem)',
+                          willChange: 'transform'
+                        } as CSSProperties
+                      }
+                      ref={(el) => {
+                        bubblesRef.current[idx] = el as unknown as HTMLAnchorElement;
+                      }}
+                    >
+                      <span
+                        className="pill-label inline-block"
+                        style={{
+                          willChange: 'transform, opacity',
+                          height: '1.2em',
+                          lineHeight: 1.2
+                        }}
+                        ref={(el) => {
+                          labelRefs.current[idx] = el;
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      role="menuitem"
+                      href={item.href}
+                      aria-label={item.ariaLabel || item.label}
+                      onClick={handleClose}
+                      className="pill-link w-full rounded-[999px] no-underline shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-center relative transition-[background,color,border-color,transform] duration-300 ease-out box-border whitespace-nowrap overflow-hidden font-heading font-bold"
+                      style={
+                        {
+                          ['--item-rot']: `${item.rotation ?? 0}deg`,
+                          ['--hover-bg']: item.hoverStyles?.bgColor || '#4285F4',
+                          ['--hover-color']: item.hoverStyles?.textColor || '#ffffff',
+                          background: pillBg,
+                          color: pillColor,
+                          border: `1px solid ${pillBorder}`,
+                          minHeight: '110px',
+                          padding: 'clamp(1.5rem, 2.5vw, 3.5rem) 0',
+                          fontSize: 'clamp(1.75rem, 3.5vw, 3.25rem)',
+                          willChange: 'transform'
+                        } as CSSProperties
+                      }
+                      ref={(el) => {
+                        bubblesRef.current[idx] = el;
+                      }}
+                    >
+                      <span
+                        className="pill-label inline-block"
+                        style={{
+                          willChange: 'transform, opacity',
+                          height: '1.2em',
+                          lineHeight: 1.2
+                        }}
+                        ref={(el) => {
+                          labelRefs.current[idx] = el;
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
