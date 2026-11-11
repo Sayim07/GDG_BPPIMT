@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import faqData from "@/data/faq.json";
+import { FoldText } from "@/components/ui/fold-text";
 
 interface FAQItem {
   id: string;
@@ -31,7 +32,15 @@ export function FAQ({ isCard = false }: { isCard?: boolean } = {}) {
           Information
         </p>
         <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
-          Frequently Asked Questions
+          <FoldText
+            text="Frequently Asked Questions"
+            trigger="scroll"
+            foldStyle="paper"
+            hinge="top"
+            hoverRefold={true}
+            duration={0.65}
+            stagger={0.025}
+          />
         </h2>
         <p className="text-xs sm:text-sm text-text-secondary mt-1 sm:mt-1.5">
           Details on community membership, workshops, and how to get involved

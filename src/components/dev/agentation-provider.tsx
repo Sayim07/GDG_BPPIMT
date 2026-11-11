@@ -35,6 +35,7 @@ export function AgentationProvider() {
   return (
     <Agentation
       appName="GDG on Campus BPPIMT"
+      endpoint="http://localhost:4747"
       copyToClipboard={true}
     />
   );

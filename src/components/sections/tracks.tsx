@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import { Cloud, Cpu, Smartphone, ShieldCheck, ArrowUpRight } from "lucide-react";
 import tracksData from "@/data/tracks.json";
 import { TrackItem } from "@/types/schema";
+import { FoldText } from "@/components/ui/fold-text";
 
 const iconMap = {
   cloud: Cloud,
@@ -49,7 +52,15 @@ export function Tracks({ isCard = false }: { isCard?: boolean } = {}) {
             Specialized Tracks
           </p>
           <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
-            Technical Domains
+            <FoldText
+              text="Technical Domains"
+              trigger="scroll"
+              foldStyle="paper"
+              hinge="top"
+              hoverRefold={true}
+              duration={0.65}
+              stagger={0.035}
+            />
           </h2>
         </div>
         <p className="text-xs sm:text-sm text-text-secondary max-w-md leading-snug sm:leading-relaxed">

@@ -14,6 +14,7 @@ import teamData from "@/data/team.json";
 import chapterConfig from "@/data/chapter.json";
 import { TeamMember, ChapterConfig } from "@/types/schema";
 import { DepthCarousel } from "@/components/ui/depth-carousel";
+import { FoldText } from "@/components/ui/fold-text";
 
 const badgeStyles = {
   blue: "bg-blue-500/10 text-[#4285F4] border-blue-500/20",
@@ -82,7 +83,15 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
       {/* Section Header */}
       <div className="text-center mb-8 sm:mb-10">
         <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary tracking-tight">
-          Organizers & Leads
+          <FoldText
+            text="Organizers & Leads"
+            trigger="scroll"
+            foldStyle="paper"
+            hinge="top"
+            hoverRefold={true}
+            duration={0.65}
+            stagger={0.035}
+          />
         </h2>
         <p className="text-sm sm:text-base text-text-secondary mt-2.5 max-w-2xl mx-auto leading-relaxed">
           The official student team driving Google Developer Groups on Campus at B.P. Poddar Institute of Management and Technology

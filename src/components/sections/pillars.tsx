@@ -2,6 +2,7 @@ import React from "react";
 import { Users, Code, TrendingUp, ArrowRight } from "lucide-react";
 import pillarsData from "@/data/pillars.json";
 import { PillarItem } from "@/types/schema";
+import { Shuffle } from "@/components/ui/shuffle";
 
 const iconMap = {
   connect: Users,
@@ -41,9 +42,16 @@ export function Pillars({ isCard = false }: { isCard?: boolean } = {}) {
         <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-text-tertiary">
           Community Pillars
         </p>
-        <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
-          Connect. Learn. Grow.
-        </h2>
+        <Shuffle
+          text="Connect. Learn. Grow."
+          tag="h2"
+          className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5"
+          textAlign="left"
+          shuffleDirection="right"
+          duration={0.4}
+          animationMode="evenodd"
+          triggerOnHover={true}
+        />
       </div>
 
       {/* Flat Material Cards */}

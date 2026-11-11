@@ -7,6 +7,7 @@ import { MapPin, Users, ArrowUpRight, Sparkles, Bell, History } from "lucide-rea
 import eventsData from "@/data/events.json";
 import chapterConfig from "@/data/chapter.json";
 import { EventItem, ChapterConfig } from "@/types/schema";
+import { FoldText } from "@/components/ui/fold-text";
 
 type EventWithMeta = EventItem & {
   date?: string;
@@ -70,7 +71,15 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
             Community Calendar
           </p>
           <h2 className="font-heading text-2xl sm:text-4xl font-bold text-text-primary tracking-tight mt-1 sm:mt-1.5">
-            Events Hub
+            <FoldText
+              text="Events Hub"
+              trigger="scroll"
+              foldStyle="paper"
+              hinge="top"
+              hoverRefold={true}
+              duration={0.65}
+              stagger={0.04}
+            />
           </h2>
         </div>
         {chapter.communityUrl && (
