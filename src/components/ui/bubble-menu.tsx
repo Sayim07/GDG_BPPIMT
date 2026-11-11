@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import chapterConfig from '@/data/chapter.json';
 import { ChapterConfig } from '@/types/schema';
+import { SpecularPill } from '@/components/ui/specular-button';
 
 export type MenuItem = {
   label: string;
@@ -24,6 +25,7 @@ export type MenuItem = {
   ariaLabel?: string;
   rotation?: number;
   isSocial?: boolean;
+  lineColor?: string;
   hoverStyles?: {
     bgColor?: string;
     textColor?: string;
@@ -46,44 +48,34 @@ export const DEFAULT_GDG_ITEMS: MenuItem[] = [
     label: 'About',
     href: '/#about',
     ariaLabel: 'About GDG on Campus BPPIMT',
-    rotation: -6,
+    rotation: -4,
+    lineColor: '#4285F4',
     hoverStyles: { bgColor: '#4285F4', textColor: '#ffffff' } // Google Blue
-  },
-  {
-    label: 'Tracks',
-    href: '/#tracks',
-    ariaLabel: 'Specialized Technical Tracks',
-    rotation: 6,
-    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
   },
   {
     label: 'Events',
     href: '/events',
     ariaLabel: 'Community Events Hub',
-    rotation: -4,
-    hoverStyles: { bgColor: '#FBBC04', textColor: '#202124' } // Google Yellow
+    rotation: 4,
+    lineColor: '#EA4335',
+    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
   },
   {
     label: 'Team',
     href: '/team',
     ariaLabel: 'Organizers and Leads',
-    rotation: 6,
+    rotation: -3,
+    lineColor: '#34A853',
     hoverStyles: { bgColor: '#34A853', textColor: '#ffffff' } // Google Green
-  },
-  {
-    label: 'FAQ',
-    href: '/#faq',
-    ariaLabel: 'Frequently Asked Questions',
-    rotation: -6,
-    hoverStyles: { bgColor: '#4285F4', textColor: '#ffffff' } // Google Blue
   },
   {
     label: 'Social',
     href: '#social',
     ariaLabel: 'Official Social Media & Community Channels',
-    rotation: 4,
+    rotation: 3,
     isSocial: true,
-    hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
+    lineColor: '#FBBC04',
+    hoverStyles: { bgColor: '#FBBC04', textColor: '#202124' } // Google Yellow
   }
 ];
 
@@ -105,7 +97,7 @@ export function BubbleMenu({
 
   const chapter = chapterConfig as ChapterConfig;
   const overlayRef = useRef<HTMLDivElement>(null);
-  const bubblesRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const bubblesRef = useRef<(HTMLElement | null)[]>([]);
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const socialCardsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -230,7 +222,7 @@ export function BubbleMenu({
   // GSAP animation for bubbles
   useEffect(() => {
     const overlay = overlayRef.current;
-    const bubbles = bubblesRef.current.filter(Boolean) as HTMLAnchorElement[];
+    const bubbles = bubblesRef.current.filter(Boolean) as HTMLElement[];
     const labels = labelRefs.current.filter(Boolean) as HTMLSpanElement[];
     if (!overlay) return;
 
@@ -307,7 +299,7 @@ export function BubbleMenu({
   useEffect(() => {
     const handleResize = () => {
       if (isMenuOpen && !isSocialView) {
-        const bubbles = bubblesRef.current.filter(Boolean) as HTMLAnchorElement[];
+        const bubbles = bubblesRef.current.filter(Boolean) as HTMLElement[];
         const isDesktop = window.innerWidth >= 900;
         bubbles.forEach((bubble, i) => {
           const item = menuItems[i];
@@ -514,9 +506,9 @@ export function BubbleMenu({
               </div>
             </div>
           ) : (
-            /* Main Menu View: 6 Balanced Bubble Pills in a 3x2 Grid */
+            /* Main Menu View: 4 GDG Specular Capsule Pills in a 2x2 Grid */
             <ul
-              className="pill-list list-none m-0 px-6 w-full max-w-[1200px] mx-auto flex flex-wrap gap-x-0 gap-y-3 pointer-events-auto"
+              className="pill-list list-none m-0 px-4 sm:px-6 w-full max-w-[880px] mx-auto flex flex-wrap gap-x-0 gap-y-5 sm:gap-y-7 pointer-events-auto"
               role="menu"
               aria-label="Navigation links"
             >
@@ -524,90 +516,35 @@ export function BubbleMenu({
                 <li
                   key={item.label}
                   role="none"
-                  className="pill-col flex justify-center items-stretch [flex:0_0_calc(100%/3)] box-border px-2"
+                  className="pill-col flex justify-center items-stretch [flex:0_0_50%] box-border px-3 sm:px-4"
                 >
-                  {item.isSocial ? (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      aria-label={item.ariaLabel || item.label}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsSocialView(true);
-                      }}
-                      className="pill-link w-full rounded-[999px] no-underline shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-center relative transition-[background,color,border-color,transform] duration-300 ease-out box-border whitespace-nowrap overflow-hidden font-heading font-bold cursor-pointer"
-                      style={
-                        {
-                          ['--item-rot']: `${item.rotation ?? 0}deg`,
-                          ['--hover-bg']: item.hoverStyles?.bgColor || '#EA4335',
-                          ['--hover-color']: item.hoverStyles?.textColor || '#ffffff',
-                          background: pillBg,
-                          color: pillColor,
-                          border: `1px solid ${pillBorder}`,
-                          minHeight: '110px',
-                          padding: 'clamp(1.5rem, 2.5vw, 3.5rem) 0',
-                          fontSize: 'clamp(1.75rem, 3.5vw, 3.25rem)',
-                          willChange: 'transform'
-                        } as CSSProperties
-                      }
-                      ref={(el) => {
-                        bubblesRef.current[idx] = el as unknown as HTMLAnchorElement;
-                      }}
-                    >
-                      <span
-                        className="pill-label inline-block"
-                        style={{
-                          willChange: 'transform, opacity',
-                          height: '1.2em',
-                          lineHeight: 1.2
-                        }}
-                        ref={(el) => {
-                          labelRefs.current[idx] = el;
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                    </button>
-                  ) : (
-                    <Link
-                      role="menuitem"
-                      href={item.href}
-                      aria-label={item.ariaLabel || item.label}
-                      onClick={handleClose}
-                      className="pill-link w-full rounded-[999px] no-underline shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-center relative transition-[background,color,border-color,transform] duration-300 ease-out box-border whitespace-nowrap overflow-hidden font-heading font-bold"
-                      style={
-                        {
-                          ['--item-rot']: `${item.rotation ?? 0}deg`,
-                          ['--hover-bg']: item.hoverStyles?.bgColor || '#4285F4',
-                          ['--hover-color']: item.hoverStyles?.textColor || '#ffffff',
-                          background: pillBg,
-                          color: pillColor,
-                          border: `1px solid ${pillBorder}`,
-                          minHeight: '110px',
-                          padding: 'clamp(1.5rem, 2.5vw, 3.5rem) 0',
-                          fontSize: 'clamp(1.75rem, 3.5vw, 3.25rem)',
-                          willChange: 'transform'
-                        } as CSSProperties
-                      }
-                      ref={(el) => {
-                        bubblesRef.current[idx] = el;
-                      }}
-                    >
-                      <span
-                        className="pill-label inline-block"
-                        style={{
-                          willChange: 'transform, opacity',
-                          height: '1.2em',
-                          lineHeight: 1.2
-                        }}
-                        ref={(el) => {
-                          labelRefs.current[idx] = el;
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                    </Link>
-                  )}
+                  <SpecularPill
+                    ref={(el) => {
+                      bubblesRef.current[idx] = el;
+                    }}
+                    labelRef={(el) => {
+                      labelRefs.current[idx] = el;
+                    }}
+                    label={item.label}
+                    href={item.href}
+                    isSocial={item.isSocial}
+                    rotation={item.rotation ?? 0}
+                    lineColor={item.lineColor || item.hoverStyles?.bgColor || '#4285F4'}
+                    hoverBg={item.hoverStyles?.bgColor || '#4285F4'}
+                    hoverColor={item.hoverStyles?.textColor || '#ffffff'}
+                    pillBg={pillBg}
+                    pillColor={pillColor}
+                    pillBorder={pillBorder}
+                    ariaLabel={item.ariaLabel}
+                    onClick={
+                      item.isSocial
+                        ? (e) => {
+                            e.preventDefault();
+                            setIsSocialView(true);
+                          }
+                        : handleClose
+                    }
+                  />
                 </li>
               ))}
             </ul>
