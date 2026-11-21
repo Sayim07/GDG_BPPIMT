@@ -115,7 +115,7 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
             visibleCards={3}
             autoplay={true}
             autoplayDelay={3600}
-            className={isCard ? "h-[365px] sm:h-[370px]" : "h-[390px] sm:h-[420px]"}
+            className={isCard ? "h-[385px] sm:h-[400px]" : "h-[405px] sm:h-[425px]"}
           />
         </div>
 

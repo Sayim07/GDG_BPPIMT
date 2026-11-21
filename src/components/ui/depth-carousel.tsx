@@ -659,7 +659,7 @@ export const DepthCarousel = ({
               onClick={() => onCardClick(i)}
             >
               {/* Top Accent Strip with Google Colors */}
-              <div className="h-1.5 w-full grid grid-cols-4">
+              <div className="absolute top-0 inset-x-0 z-30 h-1.5 w-full grid grid-cols-4">
                 <div className="bg-[#4285F4] h-full" />
                 <div className="bg-[#EA4335] h-full" />
                 <div className="bg-[#FBBC04] h-full" />
@@ -667,17 +667,30 @@ export const DepthCarousel = ({
               </div>
 
               {item.image ? (
-                <img
-                  className="block h-full w-full select-none object-cover [pointer-events:none] [-webkit-user-drag:none]"
-                  src={item.image}
-                  alt={item.alt || ''}
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                />
+                <div className="relative h-full w-full overflow-hidden">
+                  <img
+                    className="block h-full w-full select-none object-cover [pointer-events:none] [-webkit-user-drag:none]"
+                    src={item.image}
+                    alt={item.alt || item.name || 'Member'}
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                  />
+
+                  {/* Bottom Gradient Overlay with Name and Role */}
+                  <div className="absolute inset-x-0 bottom-0 z-20 pt-20 pb-5 px-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end text-left pointer-events-none">
+                    <h4 className="font-heading text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug drop-shadow-md">
+                      {item.name || 'Team Member'}
+                    </h4>
+                    <p className="text-xs sm:text-sm font-semibold text-white/90 mt-1 drop-shadow-sm flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4] flex-none" />
+                      <span>{item.role || 'GDG on Campus'}</span>
+                    </p>
+                  </div>
+                </div>
               ) : (
                 /* GDG-Themed Elevated Member Card with Deep Contrast */
-                <div className="relative flex h-[calc(100%-6px)] w-full flex-col items-center justify-between p-6 sm:p-7 text-center select-none bg-white dark:bg-[#202124] shadow-sm sm:shadow-[0_12px_36px_rgba(0,0,0,0.1)] sm:dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-white/10">
+                <div className="relative flex h-full w-full flex-col items-center justify-between p-6 sm:p-7 pt-9 text-center select-none bg-white dark:bg-[#121316] shadow-sm sm:shadow-[0_12px_36px_rgba(0,0,0,0.1)] sm:dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-white/10">
 
                   {/* Domain Badge */}
                   <div className="z-10 w-full flex justify-center">
@@ -685,7 +698,13 @@ export const DepthCarousel = ({
                       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeClass}`}
                     >
                       <Sparkles className="w-3.5 h-3.5 opacity-90" />
-                      <span>{item.domain || 'Core Team'}</span>
+                      <span>
+                        {item.category === 'organizer'
+                          ? 'Organizer'
+                          : item.category === 'lead'
+                          ? `${item.domain || ''} Lead`
+                          : (item.domain || 'Core Team')}
+                      </span>
                     </span>
                   </div>
 
@@ -694,19 +713,9 @@ export const DepthCarousel = ({
                     <div
                       className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md sm:group-hover:scale-105 sm:transition-transform duration-200 ${avatarAccent}`}
                     >
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.name || 'Member'}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="font-heading text-xl sm:text-2xl font-black tracking-tight select-none">
-                          {item.name ? item.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'GDG'}
-                        </span>
-                      )}
+                      <span className="font-heading text-xl sm:text-2xl font-black tracking-tight select-none">
+                        {item.name ? item.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'GDG'}
+                      </span>
                     </div>
                     <div className="mt-3.5 px-2">
                       <h4 className="font-heading text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
@@ -774,7 +783,7 @@ export const DepthCarousel = ({
 
       {showIndicators && count > 1 && (
         <div
-          className="absolute -bottom-2 sm:bottom-1 left-1/2 z-[3000] flex -translate-x-1/2 gap-2 rounded-full border border-border-subtle bg-surface-card/80 px-3 py-1.5 backdrop-blur-md shadow-sm"
+          className="absolute -bottom-4 sm:-bottom-3 left-1/2 z-[3000] flex -translate-x-1/2 gap-2 rounded-full border border-border-subtle bg-surface-card/90 px-3 py-1.5 backdrop-blur-md shadow-sm"
           role="tablist"
           aria-label="Slides"
         >
