@@ -692,7 +692,7 @@ export const DepthCarousel = ({
                   {/* Avatar Container with GDG Branded Styling & Initials */}
                   <div className="z-10 relative my-auto flex flex-col items-center">
                     <div
-                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md sm:group-hover:scale-105 sm:transition-transform duration-200 ${avatarAccent}`}
+                      className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 overflow-hidden flex items-center justify-center shadow-md sm:group-hover:scale-105 sm:transition-transform duration-200 ${avatarAccent}`}
                     >
                       {item.image ? (
                         <img

@@ -28,3 +28,6 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
+# Raw Member Photos (Local camera source files)
+Photos of members/
+

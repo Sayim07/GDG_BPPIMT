@@ -11,7 +11,8 @@
       "github": "",
       "email": "bhandaryprotyoy@gmail.com",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": ""
   },
   {
     "id": "sagnik-maitra",
@@ -25,7 +26,8 @@
       "github": "",
       "email": "sagnikmaitra01@gmail.com",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sagnik-maitra.jpg"
   },
   {
     "id": "sneha-patra",
@@ -39,7 +41,8 @@
       "github": "",
       "email": "snehapatra005@gmail.com",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sneha-patra.jpg"
   },
   {
     "id": "sayim-mullick",
@@ -53,7 +56,8 @@
       "github": "https://github.com/Sayim07",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sayim-mullick.jpg"
   },
   {
     "id": "raktik-ghosh",
@@ -67,7 +71,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/raktik-ghosh.jpg"
   },
   {
     "id": "aaryan-kumar",
@@ -81,7 +86,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/aaryan-kumar.jpg"
   },
   {
     "id": "narayan-kumar-jha",
@@ -95,7 +101,8 @@
       "github": "https://github.com/narayan-nkj",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/narayan-kumar-jha.jpg"
   },
   {
     "id": "aadipto-ghosh",
@@ -109,7 +116,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/aadipto-ghosh.jpg"
   },
   {
     "id": "satarupa-sarkar",
@@ -123,7 +131,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/satarupa-sarkar-v2.jpg"
   },
   {
     "id": "bikramjit-pakhira",
@@ -137,7 +146,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/bikramjit-pakhira.jpg"
   },
   {
     "id": "sayantan-pachal",
@@ -151,7 +161,12 @@
       "github": "https://github.com/sayantan-pachal",
       "email": "pachalsayantan@gmail.com",
       "linkedin": "https://www.linkedin.com/in/sayantan-pachal"
+<<<<<<< Updated upstream
     }
+=======
+    },
+    "avatarUrl": "/images/team/sayantan-pachal.jpg"
+>>>>>>> Stashed changes
   },
   {
     "id": "mouli-biswas",
@@ -165,7 +180,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/mouli-biswas.jpg"
   },
   {
     "id": "subhajit-majee",
@@ -179,7 +195,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/subhajit-majee-v2.jpg"
   },
   {
     "id": "larenza-roy",
@@ -193,7 +210,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/larenza-roy.jpg"
   },
   {
     "id": "saurabh-kumar-singh",
@@ -207,7 +225,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/saurabh-kumar-singh.jpg"
   },
   {
     "id": "alfia-ashraf",
@@ -221,7 +240,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/alfia-ashraf.jpg"
   },
   {
     "id": "sagnik-saha",
@@ -235,7 +255,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sagnik-saha.jpg"
   },
   {
     "id": "soham-bandyopadhyay",
@@ -249,7 +270,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/soham-bandyopadhyay.jpg"
   },
   {
     "id": "sagnik-dutta",
@@ -263,7 +285,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sagnik-dutta.jpg"
   },
   {
     "id": "sakchham-kapoor",
@@ -277,7 +300,8 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/sakchham-kapoor.jpg"
   },
   {
     "id": "shreyanka-satpathy",
@@ -291,6 +315,7 @@
       "github": "",
       "email": "",
       "linkedin": ""
-    }
+    },
+    "avatarUrl": "/images/team/shreyanka-satpathy.jpg"
   }
 ]

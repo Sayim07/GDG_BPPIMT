@@ -2,14 +2,50 @@ import * as React from "react";
 
 interface GridBackgroundProps {
   className?: string;
+  variant?: "default" | "warm-paper";
 }
 
 /**
  * Grid Background Component
- * Clean, non-blinking, uniform full-height grid background inspired by @meghtrix/components/grid-background.
- * Ensures consistent visibility across the entire page from top to bottom while scrolling.
+ * Supports default modern cyber-blue grid or retro warm-paper neo-brutalist grid.
  */
-export function GridBackground({ className = "" }: GridBackgroundProps) {
+export function GridBackground({
+  className = "",
+  variant = "default",
+}: GridBackgroundProps) {
+  if (variant === "warm-paper") {
+    return (
+      <div
+        className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${className}`}
+        aria-hidden="true"
+      >
+        {/* 1. Subtle Warm Sunbeam / Paper Ambient Glow */}
+        <div className="absolute top-0 inset-x-0 h-[700px] bg-gradient-to-b from-[#FBBC04]/15 via-[#F5EEDB]/30 to-transparent dark:from-[#FBBC04]/10 dark:via-transparent pointer-events-none" />
+
+        {/* 2. Full-Height Uniform Warm Orthogonal Grid (Matching placement tracker style) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(160, 140, 95, 0.24) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(160, 140, 95, 0.24) 1px, transparent 1px)
+            `,
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        {/* 3. Subtle micro-point intersection dots for architectural texture */}
+        <div
+          className="absolute inset-0 opacity-25 dark:opacity-15"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(130, 110, 70, 0.45) 1px, transparent 1px)`,
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${className}`}
