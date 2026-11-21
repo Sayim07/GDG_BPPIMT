@@ -187,11 +187,38 @@ const HWF_CSS = `
 }
 @media (max-width: 860px) {
   .hwf-top {
-    padding-bottom: 125px !important;
+    padding-bottom: 120px !important;
   }
   .hwf-mascot-img {
-    width: clamp(190px, 48vw, 280px);
+    width: clamp(185px, 46vw, 260px);
   }
+}
+@media (max-width: 767px) {
+  .hwf-root {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .hwf-top {
+    gap: 20px;
+    padding: 24px 18px 104px !important;
+  }
+  .hwf-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .hwf-mascot-img {
+    width: clamp(165px, 44vw, 225px);
+  }
+  .hwf-hint {
+    display: none;
+  }
+}
+.hwf-mobile-stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  pointer-events: none;
 }
 .hwf-rule {
   position: relative; z-index: 2; display: flex; justify-content: flex-end; align-items: center; gap: 16px;
@@ -265,6 +292,7 @@ export function HalftoneWordmarkFooter({
 
   const rootRef = React.useRef<HTMLElement | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const stageRef = React.useRef<HTMLDivElement | null>(null);
   const opts = React.useRef({
     colors,
     dotGap,
@@ -318,10 +346,162 @@ export function HalftoneWordmarkFooter({
 
     const layout = () => {
       const o = opts.current;
-      const rect = root.getBoundingClientRect();
+      const stageEl = stageRef.current;
+      let rect = root.getBoundingClientRect();
       w = Math.max(1, Math.round(rect.width));
+      const isMobile = w < 768;
+
+      // Resolve actual bottom edge of top footer UI + rule so artwork never hides behind .hwf-top
+      const ruleEl = root.querySelector(".hwf-rule") as HTMLElement | null;
+      let topUIBottom = 160;
+      if (ruleEl) {
+        topUIBottom = Math.round(ruleEl.getBoundingClientRect().bottom - rect.top) + (isMobile ? 14 : 20);
+      }
+
+      const canvasFont = 'Impact, "Arial Black", "Product Sans", "Google Sans", system-ui, sans-serif';
+      const word = o.wordmark || "GDG • BPPIMT, KOLKATA";
+
+      // Wrap onto 2 balanced lines on mobile so wordmark stays bold & eliminates bottom void space
+      let lines: string[] = [word];
+      if (isMobile && word.length > 12) {
+        if (word.includes(",")) {
+          const commaIdx = word.indexOf(",");
+          const first = word.slice(0, commaIdx).trim();
+          const second = word.slice(commaIdx + 1).trim();
+          if (first && second) lines = [first, second];
+        } else {
+          const parts = word.trim().split(/\s+/);
+          if (parts.length >= 2) {
+            const mid = Math.ceil(parts.length / 2);
+            lines = [parts.slice(0, mid).join(" "), parts.slice(mid).join(" ")];
+          }
+        }
+      }
+
+      const measureCanvas = document.createElement("canvas");
+      const mMeasure = measureCanvas.getContext("2d");
+      if (!mMeasure) return;
+
+      mMeasure.font = `900 100px ${canvasFont}`;
+      let maxMeasure100 = 0;
+      for (const ln of lines) {
+        maxMeasure100 = Math.max(maxMeasure100, mMeasure.measureText(ln).width || 400);
+      }
+
+      const logoAspect =
+        logoImg.complete && logoImg.naturalWidth > 0 && logoImg.naturalHeight > 0
+          ? logoImg.naturalWidth / logoImg.naturalHeight
+          : 692 / 406;
+
       h = Math.max(1, Math.round(rect.height));
-      dpr = w < 640 ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
+      let fontSize = 48;
+      let logoH = 72;
+      let logoW = 122;
+      let textScaleY = 1.0;
+      let effectiveCap = 40;
+      let lineGap = 10;
+      let logoTextGap = 18;
+      let logoY = topUIBottom + 10;
+      const lineBaselines: number[] = [];
+      const lineWidths: number[] = [];
+
+      if (isMobile) {
+        const maxFillW = Math.max(220, w - 32);
+        fontSize = Math.min(68, Math.max(32, (maxFillW / maxMeasure100) * 100 * 0.94));
+        mMeasure.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
+        const sampleBox = mMeasure.measureText(lines[0]);
+        const naturalCap = sampleBox.actualBoundingBoxAscent || fontSize * 0.76;
+        const naturalDescent = sampleBox.actualBoundingBoxDescent || fontSize * 0.14;
+
+        textScaleY = 1.12;
+        effectiveCap = naturalCap * textScaleY;
+        const effectiveDescent = naturalDescent * textScaleY;
+        lineGap = Math.max(10, Math.round(fontSize * 0.24));
+        logoTextGap = 16;
+
+        logoH = Math.min(92, Math.max(58, Math.round(fontSize * 1.38)));
+        logoW = logoH * logoAspect;
+        if (logoW > w * 0.44) {
+          logoW = Math.round(w * 0.44);
+          logoH = Math.round(logoW / logoAspect);
+        }
+
+        const totalTextH = lines.length * effectiveCap + Math.max(0, lines.length - 1) * lineGap + effectiveDescent;
+        const totalArtworkH = logoH + logoTextGap + totalTextH;
+        const topPad = 14;
+        const bottomPad = 28;
+        const neededStageH = Math.round(topPad + totalArtworkH + bottomPad);
+
+        if (stageEl) {
+          const prevStageH = parseFloat(stageEl.style.height) || 0;
+          if (Math.abs(prevStageH - neededStageH) > 2) {
+            stageEl.style.height = `${neededStageH}px`;
+            rect = root.getBoundingClientRect();
+            h = Math.max(1, Math.round(rect.height));
+          }
+        }
+
+        logoY = topUIBottom + topPad;
+        let curY = logoY + logoH + logoTextGap + effectiveCap;
+        for (let li = 0; li < lines.length; li++) {
+          lineBaselines.push(Math.round(curY));
+          lineWidths.push(mMeasure.measureText(lines[li]).width);
+          curY += effectiveCap + lineGap;
+        }
+      } else {
+        if (stageEl && stageEl.style.height !== "0px") {
+          stageEl.style.height = "0px";
+          rect = root.getBoundingClientRect();
+          h = Math.max(1, Math.round(rect.height));
+        }
+
+        const availTop = Math.max(140, topUIBottom);
+        const availBottom = h - Math.max(24, Math.round(h * 0.05));
+        const availH = Math.max(140, availBottom - availTop);
+
+        const maxFillW = Math.max(300, w - Math.max(24, Math.round(w * 0.04)));
+        fontSize = (maxFillW / maxMeasure100) * 100;
+
+        logoH = Math.min(Math.round(availH * 0.36), Math.max(70, Math.round(fontSize * 1.05)));
+        logoW = logoH * logoAspect;
+        logoTextGap = Math.max(16, Math.round(availH * 0.04));
+
+        mMeasure.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
+        const box = mMeasure.measureText(lines[0]);
+        const naturalCap = box.actualBoundingBoxAscent || fontSize * 0.78;
+        const naturalDescent = box.actualBoundingBoxDescent || fontSize * 0.16;
+
+        const targetTextH = Math.max(naturalCap, (availH - logoH - logoTextGap) * 0.62);
+        textScaleY = Math.min(1.45, Math.max(1.0, targetTextH / naturalCap));
+
+        effectiveCap = naturalCap * textScaleY;
+        let effectiveDescent = naturalDescent * textScaleY;
+        let totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
+
+        if (totalArtworkH > availH * 0.88) {
+          const vScale = (availH * 0.88) / totalArtworkH;
+          fontSize = Math.round(fontSize * vScale);
+          logoH = Math.round(logoH * vScale);
+          logoW = Math.round(logoW * vScale);
+          textScaleY = Math.max(1.0, textScaleY * vScale);
+          mMeasure.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
+          const updatedBox = mMeasure.measureText(lines[0]);
+          effectiveCap = (updatedBox.actualBoundingBoxAscent || fontSize * 0.78) * textScaleY;
+          effectiveDescent = (updatedBox.actualBoundingBoxDescent || fontSize * 0.16) * textScaleY;
+          totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
+        }
+
+        const availCenter = availTop + (availBottom - availTop) * 0.5;
+        logoY = Math.round(availCenter - totalArtworkH / 2);
+        if (logoY < availTop + 10) logoY = availTop + 10;
+        if (logoY + totalArtworkH > availBottom) {
+          logoY = availBottom - totalArtworkH;
+        }
+        lineBaselines.push(Math.round(logoY + logoH + logoTextGap + effectiveCap));
+        lineWidths.push(mMeasure.measureText(lines[0]).width);
+      }
+
+      dpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
 
@@ -338,102 +518,40 @@ export function HalftoneWordmarkFooter({
 
       if (!mLogo || !mText) return;
 
-      // Available vertical space for the interactive halftone artwork on full-page frame
-      const ruleEl = root.querySelector(".hwf-rule") as HTMLElement | null;
-      let topUIBottom = 160;
-      if (ruleEl) {
-        topUIBottom = Math.round(ruleEl.getBoundingClientRect().bottom - rect.top) + 20;
-      }
-      const availTop = Math.max(140, Math.min(topUIBottom, Math.round(h * 0.3)));
-      const availBottom = h - Math.max(24, Math.round(h * 0.05));
-      const availH = Math.max(140, availBottom - availTop);
-
-      // 1. Resolve bold high-impact font family for Canvas 2D (like 21st.dev bold wordmark)
-      const canvasFont = 'Impact, "Arial Black", "Product Sans", "Google Sans", system-ui, sans-serif';
-
-      // 2. Calculate typography layout for the wordmark to fill the page width and height
-      const word = o.wordmark || "GDG • BPPIMT, KOLKATA";
-      mText.font = `900 100px ${canvasFont}`;
-      const measure100 = mText.measureText(word).width || 850;
-
-      // Target width: Fill ~95% to 97% of page width, leaving clean edge padding
-      const maxFillW = Math.max(300, w - Math.max(24, Math.round(w * 0.04)));
-      let fontSize = (maxFillW / measure100) * 100;
-
-      // 3. Size GDG Logo proportionally to match the bold expanded wordmark
-      let logoH = Math.min(Math.round(availH * 0.36), Math.max(70, Math.round(fontSize * 1.05)));
-      let logoW = logoH * (692 / 406);
-      if (logoImg.complete && logoImg.naturalWidth > 0 && logoImg.naturalHeight > 0) {
-        logoW = logoH * (logoImg.naturalWidth / logoImg.naturalHeight);
-      }
-      const logoTextGap = Math.max(16, Math.round(availH * 0.04));
-
-      // 4. Calculate vertical stretch & cap height to fill vertical space like 21st.dev
-      mText.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
-      const box = mText.measureText(word);
-      const naturalCap = box.actualBoundingBoxAscent || fontSize * 0.78;
-      const naturalDescent = box.actualBoundingBoxDescent || fontSize * 0.16;
-
-      // Vertical space target: allow text to expand vertically while strictly staying in frame
-      const targetTextH = Math.max(naturalCap, (availH - logoH - logoTextGap) * 0.62);
-      let textScaleY = Math.min(1.45, Math.max(1.0, targetTextH / naturalCap));
-
-      // Calculate total effective artwork height with vertical scaling
-      let effectiveCap = naturalCap * textScaleY;
-      let effectiveDescent = naturalDescent * textScaleY;
-      let totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
-
-      // Safety check: Ensure total artwork never overflows availH
-      if (totalArtworkH > availH * 0.88) {
-        const vScale = (availH * 0.88) / totalArtworkH;
-        fontSize = Math.round(fontSize * vScale);
-        logoH = Math.round(logoH * vScale);
-        logoW = Math.round(logoW * vScale);
-        textScaleY = Math.max(1.0, textScaleY * vScale);
-        mText.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
-        effectiveCap = (box.actualBoundingBoxAscent || fontSize * 0.78) * textScaleY;
-        effectiveDescent = (box.actualBoundingBoxDescent || fontSize * 0.16) * textScaleY;
-        totalArtworkH = logoH + logoTextGap + effectiveCap + effectiveDescent;
-      }
-
-      // Re-measure box at final font size
-      const finalBox = mText.measureText(word);
-
-      // 5. Center-aligned framing within available vertical space
-      const availCenter = availTop + (availBottom - availTop) * 0.5;
-      let logoY = Math.round(availCenter - totalArtworkH / 2);
-      if (logoY < availTop + 10) logoY = availTop + 10;
-      if (logoY + totalArtworkH > availBottom) {
-        logoY = availBottom - totalArtworkH;
-      }
-      const textBaseline = Math.round(logoY + logoH + logoTextGap + effectiveCap);
       const logoX = Math.round((w - logoW) / 2);
-      const textX = Math.round((w - finalBox.width) / 2);
 
-      // 6. Draw GDG Logo on maskLogo
+      // Draw GDG Logo on maskLogo
       if (logoImg.complete && logoImg.naturalWidth > 0) {
         mLogo.drawImage(logoImg, logoX, logoY, logoW, logoH);
       }
 
-      // 7. Render Google 4-Color Gradient for Wordmark Text on maskText with vertical scale
-      mText.save();
-      mText.translate(textX, textBaseline);
-      mText.scale(1, textScaleY);
-
-      const textGrad = mText.createLinearGradient(0, 0, finalBox.width, 0);
-      textGrad.addColorStop(0.0, "#4285F4"); // Google Blue
-      textGrad.addColorStop(0.32, "#EA4335"); // Google Red
-      textGrad.addColorStop(0.68, "#FBBC04"); // Google Yellow
-      textGrad.addColorStop(1.0, "#34A853"); // Google Green
-
-      mText.fillStyle = textGrad;
+      // Render Google 4-Color Gradient for Wordmark Text on maskText
+      mText.font = `900 ${Math.round(fontSize)}px ${canvasFont}`;
       mText.textBaseline = "alphabetic";
-      mText.fillText(word, 0, 0);
-      mText.restore();
+      for (let li = 0; li < lines.length; li++) {
+        const lineStr = lines[li];
+        const lw = lineWidths[li];
+        const lx = Math.round((w - lw) / 2);
+        const ly = lineBaselines[li];
+
+        mText.save();
+        mText.translate(lx, ly);
+        mText.scale(1, textScaleY);
+
+        const textGrad = mText.createLinearGradient(0, 0, Math.max(1, lw), 0);
+        textGrad.addColorStop(0.0, "#4285F4"); // Google Blue
+        textGrad.addColorStop(0.32, "#EA4335"); // Google Red
+        textGrad.addColorStop(0.68, "#FBBC04"); // Google Yellow
+        textGrad.addColorStop(1.0, "#34A853"); // Google Green
+
+        mText.fillStyle = textGrad;
+        mText.fillText(lineStr, 0, 0);
+        mText.restore();
+      }
 
       const imgLogo = mLogo.getImageData(0, 0, w, h).data;
       const imgText = mText.getImageData(0, 0, w, h).data;
-      const dotSpacing = Math.max(4, o.dotGap);
+      const dotSpacing = isMobile ? Math.max(4, Math.min(o.dotGap, 5)) : Math.max(4, o.dotGap);
       const cols = Math.ceil(w / dotSpacing);
       const rows = Math.ceil(h / dotSpacing);
       const tmp: number[] = [];
@@ -706,16 +824,34 @@ export function HalftoneWordmarkFooter({
       wake();
     };
 
+    const onTouchEnd = (e: PointerEvent) => {
+      if (e.pointerType === "touch") {
+        onLeave();
+      }
+    };
+
     layout();
     draw(performance.now());
     wake();
 
-    root.addEventListener("pointermove", onMove);
+    root.addEventListener("pointermove", onMove, { passive: true });
     root.addEventListener("pointerleave", onLeave);
+    root.addEventListener("pointerup", onTouchEnd);
+    root.addEventListener("pointercancel", onLeave);
     root.addEventListener("pointerdown", onDown);
 
-    const ro = new ResizeObserver(() => {
+    let lastW = 0;
+    let lastH = 0;
+    const ro = new ResizeObserver((entries) => {
+      const cr = entries[0]?.contentRect;
+      if (!cr) return;
+      const cw = Math.round(cr.width);
+      const ch = Math.round(cr.height);
+      if (cw === lastW && (cw < 768 ? Math.abs(ch - lastH) < 4 : ch === lastH)) return;
+      lastW = cw;
+      lastH = ch;
       layout();
+      draw(performance.now());
       wake();
     });
     ro.observe(root);
@@ -729,6 +865,7 @@ export function HalftoneWordmarkFooter({
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         layout();
+        draw(performance.now());
         wake();
       });
     }
@@ -739,6 +876,8 @@ export function HalftoneWordmarkFooter({
       io.disconnect();
       root.removeEventListener("pointermove", onMove);
       root.removeEventListener("pointerleave", onLeave);
+      root.removeEventListener("pointerup", onTouchEnd);
+      root.removeEventListener("pointercancel", onLeave);
       root.removeEventListener("pointerdown", onDown);
     };
   }, [wordmark, dotGap, crop, fontFamily, fontWeight, colors]);
@@ -845,6 +984,9 @@ export function HalftoneWordmarkFooter({
           </button>
         ) : null}
       </div>
+
+      {/* Dynamic Artwork Spacer on Mobile (prevents 100dvh jump & bottom void) */}
+      <div ref={stageRef} className="hwf-mobile-stage" aria-hidden="true" />
     </footer>
   );
 }
