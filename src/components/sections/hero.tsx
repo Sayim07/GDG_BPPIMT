@@ -543,12 +543,12 @@ export function Hero() {
         {GOOGLE_APPS.map((app) => (
           <div
             key={app.name}
-            className={`absolute flex items-center justify-center p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#202124]/95 shadow-md border border-black/5 dark:border-white/10 ${app.className} ${app.animation}`}
+            className={`absolute items-center justify-center p-3 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#202124]/95 shadow-sm sm:shadow-md border border-black/5 dark:border-white/10 ${app.className} ${app.animation}`}
           >
             <img
               src={app.src}
               alt={app.name}
-              className="w-full h-full object-contain filter drop-shadow-md"
+              className="w-full h-full object-contain sm:filter sm:drop-shadow-md"
               loading="lazy"
             />
           </div>
@@ -587,7 +587,7 @@ export function Hero() {
           </div>
 
           {/* Parachute Mascot Image */}
-          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(234,67,53,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 sm:filter sm:drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] sm:dark:drop-shadow-[0_0_28px_rgba(234,67,53,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
             <Image
               src="/images/gdg-parachute-female.png"
               alt="Google Developer Groups On Campus BPPIMT Female Parachute Mascot"
@@ -637,7 +637,7 @@ export function Hero() {
           </div>
 
           {/* Parachute Mascot Image */}
-          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] dark:drop-shadow-[0_0_28px_rgba(66,133,244,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
+          <div className="w-16 sm:w-28 md:w-36 lg:w-44 xl:w-48 sm:filter sm:drop-shadow-[0_12px_24px_rgba(0,0,0,0.18)] sm:dark:drop-shadow-[0_0_28px_rgba(66,133,244,0.38)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
             <Image
               src="/images/gdg-parachute-male.png"
               alt="Google Developer Groups On Campus BPPIMT Male Parachute Mascot"
@@ -667,9 +667,9 @@ export function Hero() {
       {/* Main Centered Hero Content */}
       <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl mx-auto flex flex-col items-center text-center">
-          {/* Headline - Responsive Mobile & Desktop */}
+          {/* Headline - Unified StrokeText Animation Optimized for Mobile & Desktop */}
           {chapter.headline && (
-            <h1 className="w-full max-w-6xl mx-auto flex items-center justify-center font-heading text-center">
+            <h1 className="w-full max-w-6xl mx-auto flex items-center justify-center font-heading text-center px-1">
               <span className="sr-only">{chapter.headline}</span>
               <StrokeText
                 text={chapter.headline}

@@ -58,6 +58,10 @@ export default function GDGPreloader({
       clearTimeout(timersRef.current.safety);
       timersRef.current.safety = undefined;
     }
+    if (typeof window !== "undefined") {
+      (window as Window & { __gdgPreloaderActive?: boolean }).__gdgPreloaderActive = false;
+      window.dispatchEvent(new CustomEvent("gdg-preloader-exit"));
+    }
     setStage("exit");
     timersRef.current.done = setTimeout(() => {
       setStage("done");
@@ -73,6 +77,10 @@ export default function GDGPreloader({
       minElapsedRef.current = false;
       pendingTargetPathRef.current = waitForRoutePath;
       routeArrivedRef.current = waitForRoutePath === null;
+
+      if (typeof window !== "undefined") {
+        (window as Window & { __gdgPreloaderActive?: boolean }).__gdgPreloaderActive = true;
+      }
 
       if (!isInitial) {
         setMode("route");
@@ -114,6 +122,9 @@ export default function GDGPreloader({
     scheduleSequence(true, null);
     return () => {
       clearAllTimers();
+      if (typeof window !== "undefined") {
+        (window as Window & { __gdgPreloaderActive?: boolean }).__gdgPreloaderActive = false;
+      }
     };
     // Intentionally run once on mount; route changes are handled below
     // eslint-disable-next-line react-hooks/exhaustive-deps

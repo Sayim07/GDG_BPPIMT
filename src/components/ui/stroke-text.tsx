@@ -66,12 +66,12 @@ interface DashPattern {
 const DEFAULT_TEXT = 'Draw Attention';
 const SHADOW_OPACITY = 0.5;
 
-const getWipeFrames = (box: StrokeTextBox, wipeFrom: StrokeTextWipeFrom) => {
-  const end = { x: box.x, y: box.y, width: box.width, height: box.height };
-  if (wipeFrom === 'right') return { start: { ...end, x: box.x + box.width, width: 0 }, end };
-  if (wipeFrom === 'top') return { start: { ...end, height: 0 }, end };
-  if (wipeFrom === 'bottom') return { start: { ...end, y: box.y + box.height, height: 0 }, end };
-  return { start: { ...end, width: 0 }, end };
+const getWipeInsets = (wipeFrom: StrokeTextWipeFrom) => {
+  const end = 'inset(0% 0% 0% 0%)';
+  if (wipeFrom === 'right') return { start: 'inset(0% 0% 0% 100%)', end };
+  if (wipeFrom === 'top') return { start: 'inset(0% 0% 100% 0%)', end };
+  if (wipeFrom === 'bottom') return { start: 'inset(100% 0% 0% 0%)', end };
+  return { start: 'inset(0% 100% 0% 0%)', end };
 };
 
 const getDashPattern = (strokeStyle: StrokeTextStyle, dashLength: number, strokeWidth: number): DashPattern | null => {
@@ -126,20 +126,41 @@ export const StrokeText = ({
 }: StrokeTextProps) => {
   const rootRef = useRef<HTMLSpanElement | null>(null);
   const strokeTextRef = useRef<SVGTextElement | null>(null);
-  const wipeRectRef = useRef<SVGRectElement | null>(null);
+  const wipeWrapRef = useRef<HTMLSpanElement | null>(null);
   const shadowRef = useRef<SVGFEDropShadowElement | null>(null);
   const stop0Ref = useRef<SVGStopElement | null>(null);
   const stop1Ref = useRef<SVGStopElement | null>(null);
   const stop2Ref = useRef<SVGStopElement | null>(null);
 
   const [box, setBox] = useState<StrokeTextBox | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const hasCompletedOnceRef = useRef(false);
+  const activeTimelineRef = useRef<gsap.core.Timeline | null>(null);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const isCoarse = window.matchMedia?.('(pointer: coarse)').matches;
+      const isNarrow = window.innerWidth < 768;
+      const lowCores = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+      setIsMobileDevice(isNarrow || isCoarse || lowCores);
+    };
+    checkDevice();
+    window.addEventListener('resize', checkDevice, { passive: true });
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  // Skip heavy 60fps SVG <feGaussianBlur> & RAF gradient loops on mobile/low-end devices
+  const effectiveShiny = shiny && !isMobileDevice;
+  const effectiveShineGlow = !isMobileDevice ? shineGlow : 0;
+  // Boost stroke thickness slightly on narrow mobile screens so scaled-down strokes stay crisp
+  const effectiveStrokeWidth = isMobileDevice ? Math.max(Number(strokeWidth) || 1, 3.2) : strokeWidth;
 
   const baseId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
-  const wipeId = `stroke-text-wipe-${baseId}`;
   const revealId = `stroke-text-reveal-${baseId}`;
   const erodeId = `stroke-text-erode-${baseId}`;
   const shadowId = `stroke-text-shadow-${baseId}`;
-  const gdgGradId = `stroke-text-gdg-grad-${baseId}`;
+  const gdgGradOutlineId = `stroke-text-gdg-grad-o-${baseId}`;
+  const gdgGradFillId = `stroke-text-gdg-grad-f-${baseId}`;
   const shineGradId = `stroke-text-shine-${baseId}`;
   const shineGlowId = `stroke-text-shine-glow-${baseId}`;
 
@@ -154,18 +175,18 @@ export const StrokeText = ({
   const effectiveStrokeColor = useMemo(() => {
     if (strokeColor && strokeColor !== 'gdg') return strokeColor;
     if (gdgColors) {
-      return gdgColorMode === 'gradient' ? `url(#${gdgGradId})` : gdgPalette[0];
+      return gdgColorMode === 'gradient' ? `url(#${gdgGradOutlineId})` : gdgPalette[0];
     }
     return isDark ? '#8ab4f8' : '#4285F4';
-  }, [strokeColor, gdgColors, gdgColorMode, gdgGradId, gdgPalette, isDark]);
+  }, [strokeColor, gdgColors, gdgColorMode, gdgGradOutlineId, gdgPalette, isDark]);
 
   const effectiveFillColor = useMemo(() => {
     if (fillColor && fillColor !== 'gdg') return fillColor;
     if (gdgColors) {
-      return gdgColorMode === 'gradient' ? `url(#${gdgGradId})` : gdgPalette[0];
+      return gdgColorMode === 'gradient' ? `url(#${gdgGradFillId})` : gdgPalette[0];
     }
     return isDark ? '#ffffff' : '#202124';
-  }, [fillColor, gdgColors, gdgColorMode, gdgGradId, gdgPalette, isDark]);
+  }, [fillColor, gdgColors, gdgColorMode, gdgGradFillId, gdgPalette, isDark]);
 
   const characters = useMemo(() => Array.from(String(text ?? '')), [text]);
 
@@ -186,12 +207,12 @@ export const StrokeText = ({
   }, [characters, gdgColors, gdgColorMode, gdgPalette]);
 
   const dash = Math.max(fontSize * 7, 200);
-  const pattern = getDashPattern(strokeStyle, dashLength, strokeWidth);
+  const pattern = getDashPattern(strokeStyle, dashLength, effectiveStrokeWidth);
   const dashArray = pattern ? pattern.array : null;
   const dashPeriod = pattern ? pattern.period : 0;
   const lift = fontSize * 0.06;
   const softness = fontSize * 0.016;
-  const castShadow = shadow && fillMode !== 'none';
+  const castShadow = shadow && fillMode !== 'none' && !isMobileDevice;
 
   const fontStyle = useMemo<CSSProperties>(
     () => ({
@@ -219,7 +240,7 @@ export const StrokeText = ({
       }
       if (!bbox || !bbox.width) return;
 
-      const pad = Math.max(Number(strokeWidth) || 1, fontSize * 0.1);
+      const pad = Math.max(Number(effectiveStrokeWidth) || 1, fontSize * 0.1);
       const next = {
         x: bbox.x - pad,
         y: bbox.y - pad,
@@ -229,10 +250,10 @@ export const StrokeText = ({
 
       setBox(prev =>
         prev &&
-        Math.abs(prev.x - next.x) < 0.5 &&
-        Math.abs(prev.width - next.width) < 0.5 &&
-        Math.abs(prev.y - next.y) < 0.5 &&
-        Math.abs(prev.height - next.height) < 0.5
+        Math.abs(prev.x - next.x) < 1 &&
+        Math.abs(prev.width - next.width) < 1 &&
+        Math.abs(prev.y - next.y) < 1 &&
+        Math.abs(prev.height - next.height) < 1
           ? prev
           : next
       );
@@ -243,14 +264,14 @@ export const StrokeText = ({
 
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
     observer?.observe(root);
-    window.addEventListener('resize', measure);
+    window.addEventListener('resize', measure, { passive: true });
 
     return () => {
       cancelled = true;
       observer?.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [characters, fontFamily, fontSize, fontWeight, letterSpacing, strokeWidth]);
+  }, [characters, fontFamily, fontSize, fontWeight, letterSpacing, effectiveStrokeWidth]);
 
   useIsomorphicLayoutEffect(() => {
     const root = rootRef.current;
@@ -258,7 +279,7 @@ export const StrokeText = ({
 
     const strokes = gsap.utils.toArray(root.querySelectorAll('[data-stroke-char]'));
     const fills = gsap.utils.toArray(root.querySelectorAll('[data-fill-char]'));
-    const wipe = wipeRectRef.current;
+    const wipeWrap = wipeWrapRef.current;
     const outline = strokeTextRef.current;
     const drop = shadowRef.current;
     if (!strokes.length) return undefined;
@@ -267,30 +288,45 @@ export const StrokeText = ({
     const useWipe = fillEnabled && fillMode === 'wipe';
     const fillDuration = Math.max(0.4, drawDuration * 0.5);
     const staggerConfig: number | gsap.StaggerVars = reverse ? { each: stagger, from: 'end' as const } : stagger;
-    const frames = getWipeFrames(box, wipeFrom);
+    const insets = getWipeInsets(wipeFrom);
     const lifted = { dx: lift, dy: lift, 'flood-opacity': SHADOW_OPACITY };
     const grounded = { dx: 0, dy: 0, 'flood-opacity': 0 };
-    const targets = [...strokes, ...fills, wipe, drop].filter(Boolean);
+    const targets = [...strokes, ...fills, wipeWrap, drop].filter(Boolean);
 
     const setStart = () => {
       gsap.killTweensOf(targets);
-      gsap.set(strokes, { strokeDasharray: dash, strokeDashoffset: dash, strokeOpacity: 1 });
+      gsap.set(strokes, {
+        attr: { 'stroke-dasharray': dash, 'stroke-dashoffset': dash },
+        strokeOpacity: 1
+      });
       gsap.set(fills, { opacity: useWipe ? 1 : 0 });
-      if (wipe) gsap.set(wipe, { attr: frames.start });
+      if (wipeWrap) {
+        gsap.set(wipeWrap, {
+          clipPath: useWipe ? insets.start : insets.end,
+          WebkitClipPath: useWipe ? insets.start : insets.end
+        });
+      }
       if (drop) gsap.set(drop, { attr: grounded });
     };
 
     const setEnd = () => {
       gsap.killTweensOf(targets);
-      gsap.set(strokes, { strokeDasharray: dash, strokeDashoffset: 0, strokeOpacity: 1 });
+      gsap.set(strokes, {
+        attr: { 'stroke-dasharray': dash, 'stroke-dashoffset': 0 },
+        strokeOpacity: 1
+      });
       gsap.set(fills, { opacity: fillEnabled ? 1 : 0 });
-      if (wipe) gsap.set(wipe, { attr: fillEnabled ? frames.end : frames.start });
+      if (wipeWrap) {
+        const finalClip = fillEnabled ? insets.end : insets.start;
+        gsap.set(wipeWrap, { clipPath: finalClip, WebkitClipPath: finalClip });
+      }
       if (drop) gsap.set(drop, { attr: fillEnabled ? lifted : grounded });
     };
 
     const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
       setEnd();
+      hasCompletedOnceRef.current = true;
       return () => gsap.killTweensOf(targets);
     }
 
@@ -302,13 +338,34 @@ export const StrokeText = ({
         repeat: looping ? -1 : 0,
         repeatDelay: looping ? 0.9 : 0,
         yoyo: looping,
-        defaults: { overwrite: 'auto' }
+        defaults: { overwrite: 'auto' },
+        onComplete: () => {
+          if (!looping) hasCompletedOnceRef.current = true;
+        }
       });
 
-      tl.to(strokes, { strokeDashoffset: 0, duration: drawDuration, ease, stagger: staggerConfig }, 0);
+      tl.to(
+        strokes,
+        {
+          attr: { 'stroke-dashoffset': 0 },
+          duration: drawDuration,
+          ease,
+          stagger: staggerConfig
+        },
+        0
+      );
 
-      if (useWipe && wipe) {
-        tl.to(wipe, { attr: frames.end, duration: fillDuration, ease: 'power2.inOut' }, drawDuration + fillDelay);
+      if (useWipe && wipeWrap) {
+        tl.to(
+          wipeWrap,
+          {
+            clipPath: insets.end,
+            WebkitClipPath: insets.end,
+            duration: fillDuration,
+            ease: 'power2.inOut'
+          },
+          drawDuration + fillDelay
+        );
       } else if (fillEnabled) {
         tl.to(
           fills,
@@ -328,9 +385,13 @@ export const StrokeText = ({
       return tl;
     };
 
+    const prevProgress = activeTimelineRef.current?.progress() ?? 0;
     let timeline: gsap.core.Timeline | null = null;
     let scrollTrigger: ReturnType<typeof ScrollTrigger.create> | null = null;
     let redraw: gsap.core.Timeline | null = null;
+    let preloaderDelayTimer: ReturnType<typeof setTimeout> | null = null;
+    let preloaderFailsafeTimer: ReturnType<typeof setTimeout> | null = null;
+    let onPreloaderExit: (() => void) | null = null;
     const listeners: (() => void)[] = [];
 
     const listen = (handler: () => void) => {
@@ -343,10 +404,32 @@ export const StrokeText = ({
       listen(() => {
         timeline?.kill();
         timeline = build();
+        activeTimelineRef.current = timeline;
         timeline.play(0);
       });
+    } else if (trigger === 'mount' && hasCompletedOnceRef.current) {
+      // Preserve finished headline if font metrics or ResizeObserver re-measure box
+      setEnd();
+      if (hoverRedraw) {
+        listen(() => {
+          if (redraw?.isActive()) return;
+          redraw?.kill();
+          redraw = gsap
+            .timeline()
+            .to(strokes, { strokeOpacity: 0, duration: 0.2, ease: 'power1.out' })
+            .set(strokes, { attr: { 'stroke-dashoffset': dash }, strokeOpacity: 1 })
+            .to(strokes, {
+              attr: { 'stroke-dashoffset': 0 },
+              duration: drawDuration * 0.8,
+              ease,
+              stagger: staggerConfig
+            });
+        });
+      }
     } else {
       timeline = build();
+      activeTimelineRef.current = timeline;
+
       if (trigger === 'scroll') {
         scrollTrigger = ScrollTrigger.create({
           trigger: root,
@@ -354,19 +437,49 @@ export const StrokeText = ({
           once: true,
           onEnter: () => timeline?.play(0)
         });
+      } else if (prevProgress > 0 && prevProgress < 1) {
+        // Resume seamlessly if font load caused a re-measure mid-animation
+        timeline.progress(prevProgress).play();
       } else {
-        timeline.play(0);
+        // Wait for GDGPreloader curtain to start exiting so the animation plays visibly across all devices
+        const preloaderActive =
+          (window as Window & { __gdgPreloaderActive?: boolean }).__gdgPreloaderActive === true ||
+          Boolean(document.querySelector('.gdg-preloader-root:not(.opacity-0)'));
+
+        if (preloaderActive) {
+          let played = false;
+          const playOnce = () => {
+            if (played) return;
+            played = true;
+            if (preloaderDelayTimer) clearTimeout(preloaderDelayTimer);
+            if (preloaderFailsafeTimer) clearTimeout(preloaderFailsafeTimer);
+            preloaderDelayTimer = setTimeout(() => {
+              timeline?.play(0);
+            }, 90);
+          };
+
+          onPreloaderExit = playOnce;
+          window.addEventListener('gdg-preloader-exit', onPreloaderExit, { once: true });
+          preloaderFailsafeTimer = setTimeout(playOnce, 3600);
+        } else {
+          timeline.play(0);
+        }
       }
 
       if (hoverRedraw && trigger !== 'loop') {
         listen(() => {
-          if (!timeline || timeline.progress() < 1 || redraw?.isActive()) return;
+          if ((!hasCompletedOnceRef.current && (!timeline || timeline.progress() < 1)) || redraw?.isActive()) return;
           redraw?.kill();
           redraw = gsap
             .timeline()
             .to(strokes, { strokeOpacity: 0, duration: 0.2, ease: 'power1.out' })
-            .set(strokes, { strokeDashoffset: dash, strokeOpacity: 1 })
-            .to(strokes, { strokeDashoffset: 0, duration: drawDuration * 0.8, ease, stagger: staggerConfig });
+            .set(strokes, { attr: { 'stroke-dashoffset': dash }, strokeOpacity: 1 })
+            .to(strokes, {
+              attr: { 'stroke-dashoffset': 0 },
+              duration: drawDuration * 0.8,
+              ease,
+              stagger: staggerConfig
+            });
         });
       }
     }
@@ -382,6 +495,9 @@ export const StrokeText = ({
 
     return () => {
       listeners.forEach(handler => root.removeEventListener('pointerenter', handler));
+      if (onPreloaderExit) window.removeEventListener('gdg-preloader-exit', onPreloaderExit);
+      if (preloaderDelayTimer) clearTimeout(preloaderDelayTimer);
+      if (preloaderFailsafeTimer) clearTimeout(preloaderFailsafeTimer);
       scrollTrigger?.kill();
       timeline?.kill();
       redraw?.kill();
@@ -409,7 +525,7 @@ export const StrokeText = ({
   ]);
 
   useEffect(() => {
-    if (!shiny) return;
+    if (!effectiveShiny) return;
     const root = rootRef.current;
     if (!root) return;
 
@@ -499,60 +615,40 @@ export const StrokeText = ({
       root.removeEventListener('pointermove', onPointerMove);
       root.removeEventListener('pointerleave', onPointerLeave);
     };
-  }, [shiny, shineSpeed, shineWidth, followPointer]);
+  }, [effectiveShiny, shineSpeed, shineWidth, followPointer]);
 
   const viewBox = box ? `${box.x} ${box.y} ${box.width} ${box.height}` : `0 ${-fontSize} 600 ${fontSize * 1.3}`;
-  const wipeStart = box ? getWipeFrames(box, wipeFrom).start : null;
+  const gradX1 = box ? box.x : 0;
+  const gradX2 = box ? box.x + box.width : 600;
   const region: Partial<StrokeTextBox> = box
     ? { x: box.x - fontSize, y: box.y - fontSize, width: box.width + fontSize * 2, height: box.height + fontSize * 2 }
     : {};
 
-  const outlineLayer = (
-    <text
-      key={dashArray ? 'pattern' : 'solid'}
-      ref={strokeTextRef}
-      className="select-none"
-      x="0"
-      y="0"
-      fill="none"
-      stroke={effectiveStrokeColor}
-      strokeWidth={strokeWidth}
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeDasharray={dashArray || undefined}
-      mask={dashArray ? `url(#${revealId})` : undefined}
-      style={fontStyle}
-    >
-      {characters.map((char, index) => (
-        <tspan
-          data-stroke-char={dashArray ? undefined : true}
-          key={`s-${index}`}
-          stroke={wordColors ? wordColors[index] : undefined}
-        >
-          {char}
-        </tspan>
-      ))}
-    </text>
-  );
+  const insets = getWipeInsets(wipeFrom);
+  const svgSharedStyle: CSSProperties = {
+    maxWidth: `${box ? box.width : 600}px`,
+    visibility: box ? undefined : 'hidden'
+  };
 
   return (
     <span
       ref={rootRef}
-      className={`block w-full leading-[0] ${trigger === 'hover' ? 'cursor-pointer' : ''} ${className}`.trim()}
+      className={`relative block w-full leading-[0] ${trigger === 'hover' ? 'cursor-pointer' : ''} ${className}`.trim()}
       style={style}
       role="img"
       aria-label={String(text ?? '')}
     >
+      {/* Outline Stroke Layer */}
       <svg
         className="mx-auto block h-auto w-full overflow-visible"
         viewBox={viewBox}
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
-        style={{ maxWidth: `${box ? box.width : 600}px`, visibility: box ? undefined : 'hidden' }}
+        style={svgSharedStyle}
       >
         <defs>
           {gdgColors && (
-            <linearGradient id={gdgGradId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id={gdgGradOutlineId} gradientUnits="userSpaceOnUse" x1={gradX1} y1="0" x2={gradX2} y2="0">
               <stop offset="0%" stopColor={gdgPalette[0]} />
               <stop offset="32%" stopColor={gdgPalette[1]} />
               <stop offset="68%" stopColor={gdgPalette[2]} />
@@ -560,41 +656,9 @@ export const StrokeText = ({
             </linearGradient>
           )}
 
-          {shiny && (
-            <>
-              <linearGradient id={shineGradId} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop ref={stop0Ref} offset="0%" stopColor={shineColor} stopOpacity="0" />
-                <stop ref={stop1Ref} offset="0%" stopColor={shineColor} stopOpacity="0.92" />
-                <stop ref={stop2Ref} offset="0%" stopColor={shineColor} stopOpacity="0" />
-              </linearGradient>
-
-              {shineGlow > 0 && (
-                <filter id={shineGlowId} x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation={fontSize * 0.035} result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              )}
-            </>
-          )}
-
-          {fillMode === 'wipe' && wipeStart && (
-            <clipPath id={wipeId} clipPathUnits="userSpaceOnUse">
-              <rect
-                ref={wipeRectRef}
-                x={wipeStart.x}
-                y={wipeStart.y}
-                width={wipeStart.width}
-                height={wipeStart.height}
-              />
-            </clipPath>
-          )}
-
           {dashArray && (
             <filter id={erodeId} filterUnits="userSpaceOnUse" {...region}>
-              <feMorphology operator="erode" radius={(Number(strokeWidth) || 1) / 2 + 0.75} />
+              <feMorphology operator="erode" radius={(Number(effectiveStrokeWidth) || 1) / 2 + 0.75} />
             </filter>
           )}
 
@@ -605,7 +669,7 @@ export const StrokeText = ({
                 y="0"
                 fill="none"
                 stroke="#fff"
-                strokeWidth={(Number(strokeWidth) || 1) + 2}
+                strokeWidth={(Number(effectiveStrokeWidth) || 1) + 2}
                 strokeLinejoin="round"
                 strokeLinecap="round"
                 style={fontStyle}
@@ -623,71 +687,142 @@ export const StrokeText = ({
               </text>
             </mask>
           )}
-
-          {castShadow && (
-            <filter id={shadowId} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB" {...region}>
-              <feDropShadow
-                ref={shadowRef}
-                dx={lift}
-                dy={lift}
-                stdDeviation={softness}
-                floodColor={shadowColor || effectiveStrokeColor}
-                floodOpacity={SHADOW_OPACITY}
-              />
-            </filter>
-          )}
         </defs>
 
-        {!dashArray && outlineLayer}
-
-        <g filter={castShadow ? `url(#${shadowId})` : undefined}>
-          <text
-            className="select-none"
-            x="0"
-            y="0"
-            fill={effectiveFillColor}
-            stroke="none"
-            style={fontStyle}
-            clipPath={fillMode === 'wipe' && wipeStart ? `url(#${wipeId})` : undefined}
-          >
-            {characters.map((char, index) => (
-              <tspan
-                data-fill-char
-                key={`f-${index}`}
-                fill={wordColors ? wordColors[index] : undefined}
-              >
-                {char}
-              </tspan>
-            ))}
-          </text>
-        </g>
-
-        {shiny && (
-          <g
-            style={{ mixBlendMode: 'screen', pointerEvents: 'none' }}
-            filter={shineGlow > 0 ? `url(#${shineGlowId})` : undefined}
-          >
-            <text
-              className="select-none"
-              x="0"
-              y="0"
-              fill={`url(#${shineGradId})`}
-              stroke="none"
-              style={fontStyle}
-              clipPath={fillMode === 'wipe' && wipeStart ? `url(#${wipeId})` : undefined}
+        <text
+          key={dashArray ? 'pattern' : 'solid'}
+          ref={strokeTextRef}
+          className="select-none"
+          x="0"
+          y="0"
+          fill="none"
+          stroke={effectiveStrokeColor}
+          strokeWidth={effectiveStrokeWidth}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          strokeDasharray={dashArray || undefined}
+          mask={dashArray ? `url(#${revealId})` : undefined}
+          style={fontStyle}
+        >
+          {characters.map((char, index) => (
+            <tspan
+              data-stroke-char={dashArray ? undefined : true}
+              key={`s-${index}`}
+              stroke={wordColors ? wordColors[index] : undefined}
             >
-              {characters.map((char, index) => (
-                <tspan key={`sh-${index}`}>{char}</tspan>
-              ))}
-            </text>
-          </g>
-        )}
-
-        {dashArray && outlineLayer}
+              {char}
+            </tspan>
+          ))}
+        </text>
       </svg>
+
+      {/* Hardware-Composited Fill & Wipe Layer (CSS clip-path works reliably across all mobile browsers) */}
+      {fillMode !== 'none' && (
+        <span
+          ref={wipeWrapRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 block w-full will-change-[clip-path]"
+          style={
+            fillMode === 'wipe'
+              ? { clipPath: insets.start, WebkitClipPath: insets.start }
+              : undefined
+          }
+        >
+          <svg
+            className="mx-auto block h-auto w-full overflow-visible"
+            viewBox={viewBox}
+            preserveAspectRatio="xMidYMid meet"
+            style={svgSharedStyle}
+          >
+            <defs>
+              {gdgColors && (
+                <linearGradient id={gdgGradFillId} gradientUnits="userSpaceOnUse" x1={gradX1} y1="0" x2={gradX2} y2="0">
+                  <stop offset="0%" stopColor={gdgPalette[0]} />
+                  <stop offset="32%" stopColor={gdgPalette[1]} />
+                  <stop offset="68%" stopColor={gdgPalette[2]} />
+                  <stop offset="100%" stopColor={gdgPalette[3]} />
+                </linearGradient>
+              )}
+
+              {effectiveShiny && (
+                <>
+                  <linearGradient id={shineGradId} gradientUnits="userSpaceOnUse" x1={gradX1} y1="0" x2={gradX2} y2="0">
+                    <stop ref={stop0Ref} offset="0%" stopColor={shineColor} stopOpacity="0" />
+                    <stop ref={stop1Ref} offset="0%" stopColor={shineColor} stopOpacity="0.92" />
+                    <stop ref={stop2Ref} offset="0%" stopColor={shineColor} stopOpacity="0" />
+                  </linearGradient>
+
+                  {effectiveShineGlow > 0 && (
+                    <filter id={shineGlowId} x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation={fontSize * 0.035} result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  )}
+                </>
+              )}
+
+              {castShadow && (
+                <filter id={shadowId} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB" {...region}>
+                  <feDropShadow
+                    ref={shadowRef}
+                    dx={lift}
+                    dy={lift}
+                    stdDeviation={softness}
+                    floodColor={shadowColor || effectiveStrokeColor}
+                    floodOpacity={SHADOW_OPACITY}
+                  />
+                </filter>
+              )}
+            </defs>
+
+            <g filter={castShadow ? `url(#${shadowId})` : undefined}>
+              <text
+                className="select-none"
+                x="0"
+                y="0"
+                fill={effectiveFillColor}
+                stroke="none"
+                style={fontStyle}
+              >
+                {characters.map((char, index) => (
+                  <tspan
+                    data-fill-char
+                    key={`f-${index}`}
+                    fill={wordColors ? wordColors[index] : undefined}
+                  >
+                    {char}
+                  </tspan>
+                ))}
+              </text>
+            </g>
+
+            {effectiveShiny && (
+              <g
+                style={{ mixBlendMode: 'screen', pointerEvents: 'none' }}
+                filter={effectiveShineGlow > 0 ? `url(#${shineGlowId})` : undefined}
+              >
+                <text
+                  className="select-none"
+                  x="0"
+                  y="0"
+                  fill={`url(#${shineGradId})`}
+                  stroke="none"
+                  style={fontStyle}
+                >
+                  {characters.map((char, index) => (
+                    <tspan key={`sh-${index}`}>{char}</tspan>
+                  ))}
+                </text>
+              </g>
+            )}
+          </svg>
+        </span>
+      )}
     </span>
   );
 };
 
 export default StrokeText;
-
