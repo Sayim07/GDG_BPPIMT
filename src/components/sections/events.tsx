@@ -69,9 +69,10 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     tag: "RSVP Open",
     description:
       "Join Google Developer Groups on Campus BPPIMT for our upcoming community session. Click Register / RSVP to secure your spot directly on the official GDG Community page.",
+    date: "2026-11-25",
     month: "NOV",
-    day: "28",
-    time: "2:00 PM – 5:00 PM",
+    day: "25",
+    time: "4:00 – 5:00 PM (IST)",
     location: "BPPIMT Campus",
     seats: "Open Registration",
     rsvpUrl: DIRECT_EVENT_RSVP_URL,
@@ -89,12 +90,18 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     up.sort((a, b) => time(a) - time(b));
     pa.sort((a, b) => time(b) - time(a));
 
-    // Always include the pinned event with https://gdg.community.dev/e/mc349m/ if not already in events.json
-    const alreadyExists = up.some((e) => e.rsvpUrl === DIRECT_EVENT_RSVP_URL);
-    const finalUpcoming = alreadyExists ? up : [PINNED_EVENT, ...up];
+    // Include the pinned event with https://gdg.community.dev/e/mc349m/ if not already in events.json
+    const alreadyExists = [...up, ...pa].some((e) => e.rsvpUrl === DIRECT_EVENT_RSVP_URL);
+    if (!alreadyExists) {
+      if (isPastEvent(PINNED_EVENT, now)) {
+        pa.unshift(PINNED_EVENT);
+      } else {
+        up.unshift(PINNED_EVENT);
+      }
+    }
 
     return {
-      upcoming: finalUpcoming,
+      upcoming: up,
       past: pa,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
