@@ -8,11 +8,13 @@
 
 - **Exact App Name:** **`GDG on Campus BPPIMT`**
 - **Permitted Variants:** None. Do not shorten to "GDG BPPIMT", "GDSC BPPIMT", "Google Club", or "GDG Kolkata".
+- **Navbar Header Structure:**
+  - **Top Line:** **`Google Developer Group`** (Bold)
+  - **Bottom Sub-line:** **`B.P. Poddar Institute of Management and Technology`** (Subtle, tracking-normal)
 - **Official Chapter Tagline:** *"Connect, Learn, Grow with Google Developer Groups on Campus BPPIMT"*
 - **Framework Window / Tab Title Code Snippet (`/src/app/layout.tsx`):**
 
 ```typescript
-// Mandatory Next.js Metadata implementation
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -37,17 +39,23 @@ export const metadata: Metadata = {
 
 ---
 
-## 1. Design Philosophy & Intent
+## 1. Design Philosophy & Anti-AI Slop Mandate
 
-- **Anti-AI Slop Mandate:** Zero dark cyberpunk neon themes, zero fake terminal widgets, zero dense unreadable tables, and zero decorative 3D clutter.
-- **Authentic Google Developer Aesthetic:** Clean, bright, light-first canvas (#FFFFFF / #F8F9FA) with generous whitespace, friendly rounded corners (rounded-xl / rounded-2xl), subtle 1px borders (#E8EAED), and classic Google Four-Color accents.
-- **Simplicity First:** Minimal, clear structural layout that feels welcoming to college students, faculty, and industry guests. Dark mode is available as a clean toggle, but light mode is the primary brand showcase.
+The site explicitly bans standard AI coding agent clichés in favor of clean, authentic, editorial Google Developer branding:
+
+1. **No "Pillsbury Capsule Badges":** No floating `rounded-full px-3 py-1 text-xs` badges with colored dots or emoji floating over titles. Section titles use clean semantic uppercase typography (`text-xs uppercase tracking-widest text-text-tertiary`).
+2. **No Centered Hero Clichés:** No artificial "Capsule + Giant Header + 2-line Subtitle + Dual CTA Split (solid black vs ghost white)". Instead, focused primary Google Blue action and clean secondary text link.
+3. **No Nested Card Inception:** No cards inside cards inside cards with soft blur shadows. Surfaces are flat Google Material 3 with crisp 1px borders (`#E8EAED` in light, `#3C4043` in dark).
+4. **No Artificial Glow / Mesh Gradients:** No `shadow-[0_8px_30px_rgb(...)]`, no `blur-2xl` neon gradients, and no generic purple/indigo blends.
+5. **No Glassmorphism:** No translucent `backdrop-blur-md bg-white/10` navbars. The navbar is solid, crisp, and tactile.
+6. **No Framer Motion Scroll Over-Easing:** Zero repetitive `initial={{ opacity: 0, y: 15 / 20 }}` scroll-trigger delays that cause lag. Content renders immediately and naturally.
+7. **No Magnetic Button Scaling:** Zero `scale-105 duration-200` hover distortions.
 
 ---
 
 ## 2. Color System & Design Tokens
 
-The color palette is authentic Google Developer Groups branding on an airy, bright foundation:
+The color palette is authentic Google Developer Groups branding on a bright, airy light foundation and authentic Google Charcoal dark mode:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -61,50 +69,49 @@ The color palette is authentic Google Developer Groups branding on an airy, brig
 
 ### Color Token Mapping
 
-| Token Name | Light Mode Hex (Default) | Dark Mode Hex | Usage |
+| Token Name | Light Mode Hex (Default) | Dark Mode Hex (Authentic Google Material) | Usage |
 | :--- | :--- | :--- | :--- |
-| `--background` | `#FFFFFF` (Pure White) | `#121212` | Main page canvas |
-| `--surface` | `#F8F9FA` (Google Off-White) | `#1E1E1E` | Card containers and pill badges |
-| `--surface-elevated`| `#FFFFFF` | `#252525` | Hovered cards, modals, popovers |
-| `--border` | `#E8EAED` (Soft Slate) | `#2D2D2D` | Clean 1px structural borders |
-| `--foreground` | `#202124` (Google Slate) | `#F1F3F4` | Primary headings and text |
-| `--muted-foreground`| `#5F6368` (Google Neutral) | `#9AA0A6` | Subtitles, dates, meta |
-| `--gdg-blue` | `#4285F4` | `#8AB4F8` | Primary CTAs, active links, Cloud |
-| `--gdg-red` | `#EA4335` | `#F28B82` | Connect badges, AI/ML track |
-| `--gdg-yellow` | `#FBBC04` | `#FDD663` | Grow badges, Android track |
-| `--gdg-green` | `#34A853` | `#81C995` | Learn badges, Web track |
+| `--surface-page` | `#FFFFFF` (Pure White) | `#202124` (Google Charcoal) | Main page canvas |
+| `--surface-card` | `#F8F9FA` (Google Off-White) | `#292A2D` (Material Elevation 1) | Card containers |
+| `--surface-subtle` | `#F1F3F4` (Google Subtle Gray) | `#35363A` (Material Elevation 2) | Secondary elements, chips |
+| `--border-subtle` | `#E8EAED` (Google Light Border) | `#3C4043` (Google Dark Divider) | Clean 1px structural borders |
+| `--border-strong` | `#DADCE0` (Google Active Border)| `#5F6368` (Active Divider) | Hovered / active borders |
+| `--text-primary` | `#202124` (Google High Contrast)| `#E8EAED` (Google Dark Primary) | Headings, titles, high contrast |
+| `--text-secondary`| `#5F6368` (Google Medium Gray) | `#9AA0A6` (Google Dark Secondary) | Subtitles, body copy, descriptions |
+| `--text-tertiary` | `#80868B` (Google Low Contrast) | `#80868B` | Captions, meta tags, timestamps |
+| `--gdg-blue` | `#4285F4` (Light) | `#8AB4F8` (Accessible Pastel Blue) | Primary CTAs, active links, Cloud |
+| `--gdg-red` | `#EA4335` (Light) | `#F28B82` (Accessible Pastel Red) | Red accents, AI/ML track |
+| `--gdg-yellow` | `#FBBC04` (Light) | `#FDD663` (Accessible Pastel Yellow) | Yellow accents, Android track |
+| `--gdg-green` | `#34A853` (Light) | `#81C995` (Accessible Pastel Green) | Green accents, Web track |
 
 ---
 
-## 3. Typography & Hierarchy
+## 3. Typography & Hierarchy (Product Sans / Google Sans Only)
 
-- **Primary Font Family:** `Inter`, `-apple-system`, `BlinkMacSystemFont`, `sans-serif` (Clean, legible across all resolutions).
-- **Heading Font Family:** `Plus Jakarta Sans` or `Google Sans` fallback (Distinct geometric personality).
+> [!IMPORTANT]
+> **Strict Mandate:** Use **ONLY Product Sans / Google Sans** across the entire website (headings, navigation, and body copy). All generic sans-serifs (Inter, Geist, SF Pro) are removed.
+
+- **Implementation:** Preloaded high-performance local WOFF2 files (`/public/fonts/ProductSans-*.woff2`) via `next/font/local` to guarantee CLS = 0 and instant rendering.
+- **Font Variants Loaded:**
+  - `ProductSans-Regular.woff2` (400)
+  - `ProductSans-Bold.woff2` (700)
+  - `ProductSans-Italic.woff2`
+  - `ProductSans-BoldItalic.woff2`
 
 ```
 Level             Size     Weight   Tracking   Line Height
 Display Hero      56px     800      -0.03em    1.1
 Section Title     36px     700      -0.02em    1.2
-Card Title        20px     600      -0.01em    1.3
+Card Title        20px     700      -0.01em    1.3
 Body Regular      16px     400       0.00em    1.6
 Caption / Meta    13px     500      +0.01em    1.4
 ```
 
 ---
 
-## 4. Key Visual Differentiators & Interactive Components
+## 4. Key Visual Differentiators
 
-1. **Brand Brackets Accent:** Subtle `{ }` or `< >` bracket iconography inspired by Google Developer Groups identity.
-2. **Interactive Bento Grid:** Asymmetric grid layout for technology domains featuring dynamic hover states with domain-specific accent glow (e.g. Red for AI/ML, Blue for Cloud).
-3. **Filterable Event Pill Bar:** Clean chip filters with animated layout indicator (`layoutId="activeFilter"` in Framer Motion).
-4. **Member Cards with Social Flip/Reveal:** Tactile cards displaying name, role, domain badge, and instant access to LinkedIn and GitHub.
-
----
-
-## 5. What to Avoid (Anti-Patterns)
-
-- ❌ **DO NOT USE:** Generic purple/violet-heavy neon gradients (hallmark of generic AI templates).
-- ❌ **DO NOT USE:** Huge, slow Three.js spinning 3D globes or canvas elements that choke low-end mobile devices.
-- ❌ **DO NOT USE:** Stock photos of generic corporate offices or handshakes.
-- ❌ **DO NOT USE:** Unresponsive tables that cause horizontal overflow on mobile screens.
-- ❌ **DO NOT USE:** Missing empty states (e.g., blank white space when 0 upcoming events exist).
+1. **Brand Brackets Accent:** Authentic GDG 4-color brackets SVG logo in Navbar and Footer.
+2. **Four-Color Accent Line:** Subtle 4-pixel Google quad-color accent bar atop the page canvas.
+3. **Flat Material Cards:** Flat cards with clean Google 1px border highlight tones on hover.
+4. **Independent Navigation Architecture:** Dedicated independent pages for `/events` and `/team` with instant breadcrumb return navigation to Home.

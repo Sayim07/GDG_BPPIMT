@@ -11,100 +11,98 @@
        │  Developer updates local JSON datasets
        ▼
    /src/data/
+     ├── chapter.json
+     ├── tracks.json
+     ├── pillars.json
      ├── events.json
      ├── team.json
-     ├── domains.json
-     ├── projects.json
+     ├── stats.json
      └── faq.json
        │
 [2. Build Time Processing (Next.js 15 SSG)]
        │  Next.js statically generates routes at build time
        ▼
    /src/app/page.tsx (Landing Page)
-   /src/app/events/page.tsx (Events Hub)
-   /src/app/team/page.tsx (Team Directory)
-   /src/app/projects/page.tsx (Projects Showcase)
+   /src/app/events/page.tsx (Dedicated Events Hub)
+   /src/app/team/page.tsx (Dedicated Team Directory)
        │
 [3. Validation & Typing]
-       │  Zod schemas parse & enforce data contracts (/src/types/schema.ts)
+       │  TypeScript contracts enforce data integrity (/src/types/schema.ts)
        ▼
    Verified React Components Rendered into Static HTML + CSS
        │
 [4. Deployment & Edge Delivery]
-       │  Static build uploaded to Vercel / GitHub Pages Edge CDN
+       │  Static build uploaded to Vercel Edge CDN
        ▼
 [5. Client Browser Navigation]
           User opens URL → Immediate 200 OK from Edge CDN (FCP < 1.0s)
-          Client-side React rehydrates for interactive filtering & animations
+          Zero Layout Shift using preloaded Product Sans WOFF2
 ```
 
 ---
 
-## 2. Runtime & User Serving Flow
+## 2. Runtime & Routing Architecture
 
 ```
 User visits https://gdgbppimt.vercel.app/
   │
-  ├── 1. Edge CDN serves pre-rendered HTML/CSS + inlined fonts
-  │      └── Browser paints Hero section instantaneously (Zero Layout Shift)
+  ├── 1. Edge CDN serves pre-rendered HTML/CSS with local Product Sans WOFF2
+  │      └── Browser paints canvas instantaneously without FOUT
   │
-  ├── 2. React Rehydration completes in background (<150ms)
-  │      ├── Theme initialized via next-themes (respects OS dark/light preference)
-  │      └── Framer Motion mounts micro-interactions
+  ├── 2. React Rehydration completes in background
+  │      ├── Theme initialized via next-themes (light-first default, clean Google dark mode)
+  │      └── Localhost developer tools (Agentation) mounted strictly if NODE_ENV === 'development'
   │
-  ├── 3. User Interaction Pathways:
-         ├── A. Clicks "Join Community" → Smooth scroll to Community section or opens Join Modal
-         ├── B. Explores "Domains" → Hover on Bento grid displays domain tech stack & workshops
-         ├── C. Browses "Events" → Tabs filter between "Upcoming" and "Past"; click opens official RSVP (Bevy)
-         ├── D. Inspects "Projects" → Filter by domain tag; click opens GitHub / Demo link
-         └── E. Views "Team" → Filter by tier (Leads, Core, Mentors); hover reveals social links
+  ├── 3. Dedicated Route Navigation:
+         ├── A. Navbar "Events" → Navigates to dedicated page /events (not an on-page jump)
+         ├── B. Navbar "Team" → Navigates to dedicated page /team (not an on-page jump)
+         ├── C. Navbar "About" / "Tracks" / "FAQ" → Navigates to /#about, /#tracks, /#faq
+         ├── D. On Dedicated Pages (/events, /team) → "← Back to Home" returns user to /
+         └── E. Home Page (/) → Preserves #events and #team sections for continuous scroll experience
 ```
 
 ---
 
 ## 3. Screen-Level Flow & Layout Hierarchy
 
-### Primary Layout (`/src/app/layout.tsx`)
-- **Top Navigation Bar:**
-  - Left: GDG Brackets Logo + Brand Text `GDG on Campus BPPIMT` (Mandatory).
-  - Center: Desktop Nav Links (`About`, `Domains`, `Events`, `Projects`, `Team`, `FAQ`).
-  - Right: Theme Toggle (Sun/Moon) + Primary CTA Button `Join Us`.
-  - Mobile: Hamburger Drawer with identical options.
-- **Global Footer (`/src/components/footer.tsx`):**
-  - Brand tagline: *"Connect, Learn, Grow with Google Developer Groups on Campus BPPIMT."*
-  - Quick links to chapters, Google Developer Program, college website, and social links.
-  - Copyright: `© 2026 GDG on Campus BPPIMT. An independent community program.`
+### Top Navigation Bar (`/src/components/navbar.tsx`)
+- **Brand Identity:** Authentic GDG 4-color brackets SVG logo + two-tier brand title:
+  - Top Line: **`Google Developer Group`**
+  - Sub-line: **`B.P. Poddar Institute of Management and Technology`**
+- **Navigation Links:**
+  - `About` (`/#about`)
+  - `Tracks` (`/#tracks`)
+  - `Events` (`/events`)
+  - `Team` (`/team`)
+  - `FAQ` (`/#faq`)
+- **Right Actions:**
+  - Clean Theme Switcher (Light / Google Material Dark)
+  - `Join Chapter` external link to official chapter page.
+- **Mobile:** Clean sliding drawer with identical navigation links.
 
----
+### Home Page Sections (`/src/app/page.tsx`)
+1. **Four-Color Accent Line:** 4px Google Quad-Color bar.
+2. **Hero Section (`/src/components/sections/hero.tsx`):**
+   - Clean semantic uppercase tag: `GOOGLE DEVELOPER GROUPS • BPPIMT CHAPTER`
+   - Main Headline: *"Building the developer community at BPPIMT"*
+   - Subtitle: Student-led community to connect, learn, and build with Google technologies.
+   - Primary Action: `View Events →` (Google Blue button navigating to `/events`).
+   - Secondary Action: `Meet the Team →` (Clean text link navigating to `/team`).
+   - Flat stats metrics: Members, Workshops, Hackathons.
+3. **Pillars Section (`/src/components/sections/pillars.tsx`):** Connect, Learn, Grow.
+4. **Tracks Section (`/src/components/sections/tracks.tsx`):** Web & Cloud, AI & ML, Android & Mobile, Open Source & Security.
+5. **Events Preview Section (`/src/components/sections/events.tsx`):** Upcoming events calendar with Gen-Z empty state announcement.
+6. **Team Preview Section (`/src/components/sections/team.tsx`):** Chapter leadership showcase with Gen-Z empty state announcement.
+7. **FAQ Section (`/src/components/sections/faq.tsx`):** Clean expandable accordion.
+8. **Global Footer (`/src/components/footer.tsx`):** Independent student community disclaimer, copyright, and verified social links.
 
-### Home Page Sections Flow (`/src/app/page.tsx`)
-1. **Hero Section (`/src/components/sections/hero.tsx`):**
-   - Active status pill: `Google Developer Groups • BPPIMT Chapter`
-   - Dynamic Heading: *"Empowering Campus Developers to Build the Future"*
-   - Subtitle: Official student community at B.P. Poddar Institute of Management and Technology.
-   - Dual CTAs: `Explore Events` (Primary Google Blue) and `Join Community` (Outline).
-   - Dynamic visual: Interactive animated tech badges (AI/ML, Cloud, Web, Android).
-2. **About & Chapter Impact (`/src/components/sections/about.tsx`):**
-   - Mission Statement & Values: Connect, Learn, Grow.
-   - Metric Badges: `500+ Members`, `25+ Workshops Hosted`, `10+ Hackathon Wins`, `5 Core Tracks`.
-3. **Technology Domains Bento Grid (`/src/components/sections/domains.tsx`):**
-   - 5 Domain cards styled with distinct Google color accents:
-     - Blue: *Web & Cloud Development*
-     - Red: *Artificial Intelligence & Machine Learning*
-     - Yellow: *Android & Mobile Ecosystem*
-     - Green: *Cybersecurity & Open Source*
-4. **Featured Events (`/src/components/sections/events-preview.tsx`):**
-   - Displays next 3 upcoming sessions or highlighted past workshops.
-   - Filter chips: `All`, `Upcoming`, `Past`.
-   - Link to full Events directory.
-5. **Featured Projects (`/src/components/sections/projects-preview.tsx`):**
-   - Showcase cards for top 3 student projects with GitHub stars, tech tags, and demo links.
-6. **Core Team Preview (`/src/components/sections/team-preview.tsx`):**
-   - Organizer, Tech Lead, and Domain Leads cards with LinkedIn, GitHub, and Twitter icons.
-7. **Interactive FAQ (`/src/components/sections/faq.tsx`):**
-   - Expandable Accordion answering common freshman questions.
-8. **Community Gateway / CTA Banner (`/src/components/sections/cta-banner.tsx`):**
-   - Discord and WhatsApp invite cards with live member badges.
+### Dedicated Events Hub (`/src/app/events/page.tsx`)
+- Breadcrumb navigation: `← Back to Home`
+- Complete Events calendar, filter, and official RSVP links.
+
+### Dedicated Team Directory (`/src/app/team/page.tsx`)
+- Breadcrumb navigation: `← Back to Home`
+- Chapter Leads, Core Team, and Domain Mentors with LinkedIn, GitHub, and Twitter links.
 
 ---
 
@@ -112,8 +110,7 @@ User visits https://gdgbppimt.vercel.app/
 
 | Edge Case | Trigger Condition | Handled State & UI Fallback | Reference |
 | :--- | :--- | :--- | :--- |
-| **No Upcoming Events** | `events.json` has 0 items with `status: "upcoming"` | Render a clean "Empty State" card: *"No upcoming events scheduled right now. Join our Discord to get notified first!"* with a direct Discord button. | [Schema.md §2.1](file:///s:/sayim/GDG-web/brain/Schema.md#L30) |
-| **Missing Member Avatar** | Team member `avatarUrl` is empty or 404s | Fallback to initials avatar with Google brand background color matching their domain. | [TRD.md §5](file:///s:/sayim/GDG-web/brain/TRD.md#L80) |
-| **Missing Project Demo Link** | Project only has a GitHub repository | "Live Demo" button is hidden gracefully; "View Code" button expands to full width. | [Schema.md §2.3](file:///s:/sayim/GDG-web/brain/Schema.md#L115) |
-| **Invalid Route (404)** | User enters non-existent URL | Custom `not-found.tsx` page with GDG error badge and a "Return to GDG on Campus BPPIMT Home" button. | [Design.md §5](file:///s:/sayim/GDG-web/brain/Design.md#L110) |
-| **Slow Network Connection** | Low-bandwidth campus connection | Skeleton loaders for event cards and team grid; CSS transitions defer until assets load. | [TRD.md §5](file:///s:/sayim/GDG-web/brain/TRD.md#L85) |
+| **No Upcoming Events** | `events.json` is empty array `[]` | Clean Google-style announcement: *"Something exciting is brewing in the lab. We’re curating hands-on workshops, cloud study jams, and hackathon prep for this semester."* with "Get Official Updates" button. | [Schema.md §2.1](file:///s:/sayim/GDG-web/brain/Schema.md#L30) |
+| **Pending Team Roster** | `team.json` is empty array `[]` | Clean Google-style announcement: *"The crew will arrive soon to your feed. From tech leads building the architecture to domain mentors guiding AI, Cloud & Web..."* with "Connect on LinkedIn" button. | [Schema.md §2.2](file:///s:/sayim/GDG-web/brain/Schema.md#L70) |
+| **Missing Member Avatar** | Team member `avatarUrl` is empty | High-contrast letter monogram fallback with `Product Sans` font. | [Design.md §3](file:///s:/sayim/GDG-web/brain/Design.md#L80) |
+| **Invalid Route (404)** | User enters non-existent URL | Custom `not-found.tsx` with clean GDG error state and direct return to Home. | [Design.md §0](file:///s:/sayim/GDG-web/brain/Design.md#L10) |
