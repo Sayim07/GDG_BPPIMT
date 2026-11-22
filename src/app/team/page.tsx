@@ -17,7 +17,7 @@ export default function TeamPage() {
       {/* Foreground Content Layer */}
       <div className="relative z-10 w-full">
         {/* Main Organizational Tree */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <TeamTree />
         </div>
       </div>

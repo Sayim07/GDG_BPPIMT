@@ -12,7 +12,8 @@
       "email": "bhandaryprotyoy@gmail.com",
       "linkedin": ""
     },
-    "avatarUrl": "/images/team/protyoy-bhandary.jpg"
+    "avatarUrl": "/images/team/protyoy-bhandary.jpg",
+    "gender": "male"
   },
   {
     "id": "sagnik-maitra",
@@ -30,7 +31,8 @@
     "avatarUrl": "/images/team/sagnik-maitra.jpg",
     "funFact": "Video games teach me more about strategy and problem-solving than most textbooks.",
     "motto": "Nothing is True. Everything is Permitted.",
-    "skills": "Full Stack Development, AIML, Public Speaking"
+    "skills": "Full Stack Development, AIML, Public Speaking",
+    "gender": "male"
   },
   {
     "id": "sneha-patra",
@@ -48,7 +50,8 @@
     "avatarUrl": "/images/team/sneha-patra.jpg",
     "funFact": "A techie who prefers plot twists over caffeine;)",
     "motto": "In a loop of self evolution, always.",
-    "skills": "Python, Web Development, Management"
+    "skills": "Python, Web Development, Management",
+    "gender": "female"
   },
   {
     "id": "sayim-mullick",
@@ -66,7 +69,8 @@
     "avatarUrl": "/images/team/sayim-mullick.jpg",
     "funFact": "Zero thoughts during normal human daylight hours, but give me 3:00 AM and a dark room, and my brain suddenly enters quantum computing mode.",
     "motto": "Don't sleep until it ships, don't stop until it scales.",
-    "skills": "Full-Stack Engineering & Scalable Web Architecture (React / Next.js, Node.js, Python / FastAPI)\nApplied AI & Intelligent Agents (Gemini API, ML threat modeling, autonomous multi-agent systems)\nRapid Prototyping & Technical Leadership (Hackathon execution, system design, and developer mentorship)"
+    "skills": "Full-Stack Engineering & Scalable Web Architecture (React / Next.js, Node.js, Python / FastAPI)\nApplied AI & Intelligent Agents (Gemini API, ML threat modeling, autonomous multi-agent systems)\nRapid Prototyping & Technical Leadership (Hackathon execution, system design, and developer mentorship)",
+    "gender": "male"
   },
   {
     "id": "raktik-ghosh",
@@ -84,7 +88,8 @@
     "avatarUrl": "/images/team/raktik-ghosh.jpg",
     "funFact": "My gym membership is the only subscription I actually try to use.",
     "motto": "Until death, all defeat is psychological.",
-    "skills": "AI/ML,Problem Solving,Team Collaboration,Data Structures & Algorithms"
+    "skills": "AI/ML,Problem Solving,Team Collaboration,Data Structures & Algorithms",
+    "gender": "male"
   },
   {
     "id": "aaryan-kumar",
@@ -102,7 +107,8 @@
     "avatarUrl": "/images/team/aaryan-kumar.jpg",
     "funFact": "I can spend 3 hours fixing a bug caused by a missing semicolon and still feel like a genius when it finally works. Btw I don't use Claude Code.",
     "motto": "If it works, don't touch it. If it doesn't, blame the compiler. ( Just turn off the PC and sleep )",
-    "skills": "Python , GCP , Data Warehousing"
+    "skills": "Python , GCP , Data Warehousing",
+    "gender": "male"
   },
   {
     "id": "narayan-kumar-jha",
@@ -120,7 +126,8 @@
     "avatarUrl": "/images/team/narayan-kumar-jha.jpg",
     "funFact": "I spend more time debating between #000000 and slightly lighter shades of dark mode than I care to admit.",
     "motto": "\"Design isn't just what it looks like and feels like—design is how it works.\"",
-    "skills": "UI/UX Design (Figma), Frontend Development (React & Tailwind CSS), Visual & Graphic Design (Illustrator)"
+    "skills": "UI/UX Design (Figma), Frontend Development (React & Tailwind CSS), Visual & Graphic Design (Illustrator)",
+    "gender": "male"
   },
   {
     "id": "aadipto-ghosh",
@@ -138,7 +145,8 @@
     "avatarUrl": "/images/team/aadipto-ghosh.jpg",
     "funFact": "I'm endlessly curious and love learning new things about anything and everything!",
     "motto": "\"Why do we fall? So we can learn to pick ourselves back up?\"",
-    "skills": "Coding, Design, Leadership"
+    "skills": "Coding, Design, Leadership",
+    "gender": "male"
   },
   {
     "id": "satarupa-sarkar",
@@ -156,7 +164,8 @@
     "avatarUrl": "/images/team/satarupa-sarkar-v2.jpg",
     "funFact": "Can switch from coding to choreography to campaign planning faster than my laptop switches tabs.",
     "motto": "Dream without limits, act without hesitation.",
-    "skills": "1. Creative Thinking\n2. Communication\n3. Problem Solving"
+    "skills": "1. Creative Thinking\n2. Communication\n3. Problem Solving",
+    "gender": "female"
   },
   {
     "id": "bikramjit-pakhira",
@@ -174,7 +183,8 @@
     "avatarUrl": "/images/team/bikramjit-pakhira.jpg",
     "funFact": "My Spotify playlist and my browser tabs both compete for who can keep more open at the same time.",
     "motto": "Stay curious, stay consistent, and never stop shipping.",
-    "skills": "Generative AI, Problem Solving (DSA), Full-Stack Development"
+    "skills": "Generative AI, Problem Solving (DSA), Full-Stack Development",
+    "gender": "male"
   },
   {
     "id": "sayantan-pachal",
@@ -192,7 +202,8 @@
     "avatarUrl": "/images/team/sayantan-pachal.jpg",
     "funFact": "My browser tabs have tabs.",
     "motto": "Sometimes you gotta run before you can walk.",
-    "skills": "Full-Stack Development, Team Management & Collaboration"
+    "skills": "Full-Stack Development, Team Management & Collaboration",
+    "gender": "male"
   },
   {
     "id": "mouli-biswas",
@@ -210,7 +221,8 @@
     "avatarUrl": "/images/team/mouli-biswas.jpg",
     "funFact": "I love travelling, exploring new places and documenting every little moment along the way!  🦋",
     "motto": "Make every experience count, whether good or bad",
-    "skills": "1.Web Development\n2.AI/ML\n3.Design"
+    "skills": "1.Web Development\n2.AI/ML\n3.Design",
+    "gender": "female"
   },
   {
     "id": "subhajit-majee",
@@ -228,7 +240,8 @@
     "avatarUrl": "/images/team/subhajit-majee-v2.jpg",
     "funFact": "I walked away from a battlefield to debug semicolons. The semicolons are winning.",
     "motto": "I don’t scatter my effort across backup plans. I pick one, give it everything, and stay on it until it succeeds.",
-    "skills": "MERN Stack, Python ,Tensorflow"
+    "skills": "MERN Stack, Python ,Tensorflow",
+    "gender": "male"
   },
   {
     "id": "larenza-roy",
@@ -246,7 +259,8 @@
     "avatarUrl": "/images/team/larenza-roy.jpg",
     "funFact": "\"My curiosity has more tabs open than my browser, whereas  perfectionism keeps refreshing them. Send help !\"   😂",
     "motto": "\"Progress over perfection, curiosity over comfort.\" ✨",
-    "skills": "GCP , AWS (Currently Learning) , Python"
+    "skills": "GCP , AWS (Currently Learning) , Python",
+    "gender": "female"
   },
   {
     "id": "saurabh-kumar-singh",
@@ -264,7 +278,8 @@
     "avatarUrl": "/images/team/saurabh-kumar-singh.jpg",
     "funFact": "I actually find 2x spicy noodles VERY spicy! 😂",
     "motto": "Always becoming, never settling.",
-    "skills": "Adaptability\nCreative Thinking\nQuick Learning"
+    "skills": "Adaptability\nCreative Thinking\nQuick Learning",
+    "gender": "male"
   },
   {
     "id": "alfia-ashraf",
@@ -282,7 +297,8 @@
     "avatarUrl": "/images/team/alfia-ashraf.jpg",
     "funFact": "Jack of all trades but with adhd;)",
     "motto": "Try for the sky, so you reach the clouds.",
-    "skills": "–Graphic design and digital poster creation.\n—Short-form video editing and visual storytelling.\n—Rapid UI prototyping using prompt-based development tools."
+    "skills": "–Graphic design and digital poster creation.\n—Short-form video editing and visual storytelling.\n—Rapid UI prototyping using prompt-based development tools.",
+    "gender": "female"
   },
   {
     "id": "sagnik-saha",
@@ -300,7 +316,8 @@
     "avatarUrl": "/images/team/sagnik-saha.jpg",
     "funFact": "I can turn almost any conversation into a football discussion.",
     "motto": "Learn. Build. Break. Repeat.",
-    "skills": "UI/UX & Creative Design, Web Development, Figma(UI/UX)"
+    "skills": "UI/UX & Creative Design, Web Development, Figma(UI/UX)",
+    "gender": "male"
   },
   {
     "id": "soham-bandyopadhyay",
@@ -318,7 +335,8 @@
     "avatarUrl": "/images/team/soham-bandyopadhyay.jpg",
     "funFact": "Can debug code, manage events, and somehow still forget why I opened my laptop.",
     "motto": "Dream big, execute bigger.",
-    "skills": "Leadership, Team Work, Web Dev"
+    "skills": "Leadership, Team Work, Web Dev",
+    "gender": "male"
   },
   {
     "id": "sagnik-dutta",
@@ -336,7 +354,8 @@
     "avatarUrl": "/images/team/sagnik-dutta.jpg",
     "funFact": "Powered by caffeine, creativity, and last-minute plans...",
     "motto": "Don't just be a part of something great; be the reason it becomes great.",
-    "skills": "1) Event Planning & Management.\n\n2) Leadership & Team Coordination.\n\n3) Communication & Problem-Solving."
+    "skills": "1) Event Planning & Management.\n\n2) Leadership & Team Coordination.\n\n3) Communication & Problem-Solving.",
+    "gender": "male"
   },
   {
     "id": "sakchham-kapoor",
@@ -354,7 +373,8 @@
     "avatarUrl": "/images/team/sakchham-kapoor.jpg",
     "funFact": "I can go from coding a project to planning a business idea without needing a coffee break!",
     "motto": "The world never hits pause. Neither should your curiosity.",
-    "skills": "1. Creative Problem-Solving\n2. Leadership & Team Coordination\n3. Adaptability & Quick Learning"
+    "skills": "1. Creative Problem-Solving\n2. Leadership & Team Coordination\n3. Adaptability & Quick Learning",
+    "gender": "male"
   },
   {
     "id": "shreyanka-satpathy",
@@ -372,6 +392,7 @@
     "avatarUrl": "/images/team/shreyanka-satpathy.jpg",
     "funFact": "I can turn any random idea into a full-fledged plan (and somehow end up managing everything)",
     "motto": "\"Dream big, stay curious, keep learning, and make things happen.\"",
-    "skills": "Event Management & Coordination\nCommunication & Teamwork\nCreative Thinking & Problem-Solving"
+    "skills": "Event Management & Coordination\nCommunication & Teamwork\nCreative Thinking & Problem-Solving",
+    "gender": "female"
   }
 ]

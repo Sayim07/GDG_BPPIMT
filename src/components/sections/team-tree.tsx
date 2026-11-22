@@ -122,6 +122,15 @@ function renderMemberCard(
   );
 }
 
+const FEMALE_MEMBER_IDS = new Set([
+  "sneha-patra",
+  "satarupa-sarkar",
+  "mouli-biswas",
+  "larenza-roy",
+  "alfia-ashraf",
+  "shreyanka-satpathy"
+]);
+
 interface RetroMessageBoxProps {
   member: TeamMember;
   arrowSide: "left" | "right";
@@ -132,7 +141,15 @@ interface RetroMessageBoxProps {
 function RetroMessageBox({ member, arrowSide, xOffset, isWide = false }: RetroMessageBoxProps) {
   if (!member.bio) return null;
 
-  const isLongBio = member.bio.length > 180;
+  const isLongBio = member.bio.length > 170;
+  const isSuperLong = member.bio.length > 280;
+  const isFemale = member.gender === "female" || FEMALE_MEMBER_IDS.has(member.id);
+  const characterSrc = isFemale
+    ? "/images/characters/gdg-girl.png"
+    : "/images/characters/gdg-boy.png";
+  const characterAlt = isFemale
+    ? `${member.name} GDG 3D Character (Female)`
+    : `${member.name} GDG 3D Character (Male)`;
 
   return (
     <motion.div
@@ -157,46 +174,58 @@ function RetroMessageBox({ member, arrowSide, xOffset, isWide = false }: RetroMe
       }}
       transition={{ type: "spring", stiffness: 420, damping: 28 }}
       className={`absolute z-40 pointer-events-none ${
-        isWide
-          ? "w-[340px] sm:w-[390px] md:w-[405px]"
-          : "w-[300px] sm:w-[320px]"
+        isWide || isLongBio
+          ? "w-[380px] sm:w-[430px] md:w-[455px]"
+          : "w-[360px] sm:w-[410px] md:w-[435px]"
       }`}
       style={{
         left: "50%",
         top: "50%"
       }}
     >
-      <div className="relative rounded-2xl bg-[#FFFDF9] border-[2.5px] border-black p-3.5 sm:p-4 shadow-[6px_6px_0px_0px_#18181b] text-left text-slate-900">
+      <div
+        className={`relative rounded-2xl bg-[#FFFDF9] border-[2.5px] border-black py-3 sm:py-3.5 shadow-[6px_6px_0px_0px_#18181b] text-left text-slate-900 ${
+          arrowSide === "right"
+            ? "pl-24 sm:pl-28 md:pl-32 pr-4 sm:pr-5"
+            : "pr-24 sm:pr-28 md:pr-32 pl-4 sm:pl-5"
+        }`}
+      >
         {/* Retro Header Tag & Role */}
-        <div className="flex items-center justify-between gap-2 mb-1.5 pb-1.5 border-b-2 border-black/10">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] flex-none">
+        <div className="flex items-center justify-between gap-2 mb-1 pb-1 border-b-2 border-black/10">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] flex-none">
               <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-pulse" />
               <span>{member.category === "organizer" ? "Organizer" : "Domain Lead"}</span>
             </span>
-            <span className="text-[11px] font-mono font-bold text-slate-500 uppercase truncate">
+            <span className="text-[10.5px] font-mono font-bold text-slate-500 uppercase truncate">
               {member.role}
             </span>
           </div>
         </div>
 
         {/* Member Name */}
-        <h4 className="font-heading font-black text-slate-950 text-base sm:text-lg tracking-tight mb-1">
+        <h4 className="font-heading font-black text-slate-950 text-sm sm:text-base tracking-tight mb-1">
           {member.name}
         </h4>
 
         {/* Description / Bio */}
-        <p className={`leading-relaxed text-slate-800 font-medium ${
-          isWide || isLongBio ? "text-[11.5px] sm:text-[12px]" : "text-xs sm:text-[13px]"
-        }`}>
+        <p
+          className={`leading-relaxed text-slate-800 font-medium ${
+            isSuperLong
+              ? "text-[11px] sm:text-[11.5px] leading-snug"
+              : isLongBio
+              ? "text-[11.5px] sm:text-[12px] leading-snug"
+              : "text-xs sm:text-[12.5px] leading-relaxed"
+          }`}
+        >
           "{member.bio}"
         </p>
 
         {/* Fun Fact / Extra quote if available */}
         {member.funFact && (
-          <div className="mt-2.5 p-2 sm:p-2.5 rounded-xl border-2 border-black bg-[#FEF3C7] shadow-[2px_2px_0px_0px_#000] text-[11px] font-bold text-amber-950 flex items-start gap-1.5 leading-snug">
+          <div className="mt-2 p-2 sm:p-2.5 rounded-xl border-2 border-black bg-[#FEF3C7] shadow-[2px_2px_0px_0px_#000] text-[10.5px] sm:text-[11px] font-bold text-amber-950 flex items-start gap-1.5 leading-snug">
             <span className="flex-none text-xs">💡</span>
-            <span className="line-clamp-2 sm:line-clamp-3">{member.funFact}</span>
+            <span className="line-clamp-2">{member.funFact}</span>
           </div>
         )}
 
@@ -210,6 +239,22 @@ function RetroMessageBox({ member, arrowSide, xOffset, isWide = false }: RetroMe
             <div className="absolute -top-[8px] -left-[12.5px] w-0 h-0 border-y-[8px] border-y-transparent border-l-[10px] border-l-[#FFFDF9]" />
           </div>
         )}
+      </div>
+
+      {/* 3D GDG Student Mascot Avatar (Male / Female matched with end/start alignment) */}
+      <div
+        className={`absolute -bottom-2.5 z-30 pointer-events-none select-none transition-transform duration-300 ${
+          arrowSide === "right"
+            ? "left-1 sm:left-2"
+            : "right-1 sm:right-2"
+        }`}
+      >
+        <img
+          src={characterSrc}
+          alt={characterAlt}
+          className="w-[80px] h-[119px] sm:w-[94px] sm:h-[140px] md:w-[105px] md:h-[157px] object-contain drop-shadow-[2px_6px_10px_rgba(0,0,0,0.35)]"
+          loading="eager"
+        />
       </div>
     </motion.div>
   );
@@ -269,7 +314,7 @@ function ExpandableTeamTrio({
             setHoveredCard(null);
           }}
           onClick={handleContainerClick}
-          className="relative w-full max-w-6xl mx-auto h-[460px] sm:h-[475px] flex items-center justify-center cursor-pointer select-none"
+          className="relative w-full max-w-7xl mx-auto h-[460px] sm:h-[475px] flex items-center justify-center cursor-pointer select-none"
         >
           {/* 1. LEFT CO-MEMBER CARD */}
           <motion.div
@@ -358,7 +403,7 @@ function ExpandableTeamTrio({
                 key="msg-right"
                 member={rightMember}
                 arrowSide="right"
-                xOffset={-160}
+                xOffset={-280}
               />
             )}
             {isExpanded && hoveredCard === "main" && (
