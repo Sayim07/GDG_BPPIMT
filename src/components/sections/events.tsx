@@ -38,6 +38,9 @@ type Tab = "upcoming" | "past";
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
+// Direct RSVP link provided by you
+const DIRECT_EVENT_RSVP_URL = "https://gdg.community.dev/e/mc349m/";
+
 function parseDate(date?: string): Date | null {
   if (!date) return null;
   const d = new Date(date);
@@ -57,25 +60,23 @@ function isPastEvent(event: EventWithMeta, now: Date): boolean {
 export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const allEvents = (eventsData as unknown as EventWithMeta[]) || [];
   const chapter = chapterConfig as ChapterConfig;
-  const communityLink = chapter.communityUrl || "https://gdg.community.dev/";
+  const communityLink = chapter.communityUrl || DIRECT_EVENT_RSVP_URL;
   const [activeTab, setActiveTab] = useState<Tab>("upcoming");
 
-  const FALLBACK_UPCOMING_EVENTS: EventWithMeta[] = [
-    {
-      id: "android-study-jam-bppimt",
-      title: "Android Study Jam: Build your first app",
-      tag: "Study Jam",
-      description:
-        "Join Google Developer Groups on Campus BPPIMT for an interactive, hands-on session on Kotlin and Jetpack Compose. Build your very first Android application from scratch.",
-      month: "OCT",
-      day: "24",
-      time: "2:00 PM – 5:00 PM",
-      location: "BPPIMT Auditorium",
-      seats: "Limited Seats",
-      rsvpUrl: communityLink,
-      status: "upcoming",
-    },
-  ];
+  const PINNED_EVENT: EventWithMeta = {
+    id: "gdg-bppimt-mc349m",
+    title: "GDG On Campus BPPIMT — Featured Event & Workshop",
+    tag: "RSVP Open",
+    description:
+      "Join Google Developer Groups on Campus BPPIMT for our upcoming community session. Click Register / RSVP to secure your spot directly on the official GDG Community page.",
+    month: "NOV",
+    day: "28",
+    time: "2:00 PM – 5:00 PM",
+    location: "BPPIMT Campus",
+    seats: "Open Registration",
+    rsvpUrl: DIRECT_EVENT_RSVP_URL,
+    status: "upcoming",
+  };
 
   const { upcoming, past } = useMemo(() => {
     const now = new Date();
@@ -88,8 +89,12 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     up.sort((a, b) => time(a) - time(b));
     pa.sort((a, b) => time(b) - time(a));
 
+    // Always include the pinned event with https://gdg.community.dev/e/mc349m/ if not already in events.json
+    const alreadyExists = up.some((e) => e.rsvpUrl === DIRECT_EVENT_RSVP_URL);
+    const finalUpcoming = alreadyExists ? up : [PINNED_EVENT, ...up];
+
     return {
-      upcoming: up.length > 0 ? up : FALLBACK_UPCOMING_EVENTS,
+      upcoming: finalUpcoming,
       past: pa,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,9 +127,11 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
               stagger={0.04}
             />
           </h2>
-          <p className="text-xs sm:text-sm text-text-secondary mt-1.5 max-w-2xl leading-relaxed">
-            Official events, technical workshops, study jams, and hackathons hosted by Google Developer Groups on Campus BPPIMT.
-          </p>
+          {!isCard && (
+            <p className="text-xs sm:text-sm text-text-secondary mt-1.5 max-w-2xl leading-relaxed">
+              Official events, technical workshops, study jams, and hackathons hosted by Google Developer Groups on Campus BPPIMT.
+            </p>
+          )}
         </div>
 
         {chapter.communityUrl && (
@@ -205,16 +212,16 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                     : "We’re curating hands-on workshops, cloud study jams, and hackathon prep for this semester. The lineup will drop right here soon — don’t miss the announcements!"}
                 </p>
 
-                {!isPastTab && chapter.communityUrl && (
+                {!isPastTab && (
                   <div className="mt-5 sm:mt-6">
                     <Link
-                      href={chapter.communityUrl}
+                      href={DIRECT_EVENT_RSVP_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-primary text-white text-xs sm:text-sm font-semibold hover:bg-primary-hover transition-colors"
                     >
                       <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span>Get Official Updates</span>
+                      <span>Register / RSVP Now</span>
                     </Link>
                   </div>
                 )}
@@ -226,12 +233,12 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                 const d = parseDate(event.date);
                 const month = event.month || (d ? MONTHS[d.getMonth()] : undefined);
                 const day = event.day || (d ? String(d.getDate()) : undefined);
-                const rsvpLink = event.rsvpUrl || communityLink;
+                const rsvpLink = event.rsvpUrl || DIRECT_EVENT_RSVP_URL;
 
                 return (
                   <div
                     key={event.id || idx}
-                    className={`bg-surface-card border border-border-subtle hover:border-border-strong rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5 group ${
+                    className={`bg-surface-card border border-border-subtle hover:border-primary/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all shadow-xs hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5 group ${
                       isPastTab ? "opacity-90" : ""
                     }`}
                   >
@@ -260,7 +267,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                       <div>
                         <div className="flex flex-wrap items-center gap-2 mb-1 sm:mb-1.5">
                           {!isPastTab && event.tag && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-subtle border border-border-subtle text-primary text-[11px] sm:text-xs font-semibold">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gdg-blue/10 text-gdg-blue text-[11px] sm:text-xs font-semibold">
                               <Calendar className="w-3 h-3" />
                               {event.tag}
                             </span>
@@ -311,7 +318,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Direct Registration / RSVP Action Button */}
                     {!isPastTab && (
                       <div className="flex-shrink-0 flex items-center md:justify-end">
                         <Link
@@ -320,7 +327,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                           rel="noopener noreferrer"
                           className="w-full md:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                         >
-                          <span>RSVP Now</span>
+                          <span>Register / RSVP</span>
                           <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </Link>
                       </div>
