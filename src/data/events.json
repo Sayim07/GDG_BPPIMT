@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "gdg-bppimt-mc349m",
+    "title": "GDG On Campus BPPIMT — Featured Event & Workshop",
+    "description": "Join Google Developer Groups on Campus BPPIMT for our upcoming community session. Click Register / RSVP to secure your spot directly on the official GDG Community page.",
+    "date": "2026-11-28",
+    "month": "NOV",
+    "day": "28",
+    "location": "BPPIMT Campus",
+    "seats": "Open Registration",
+    "rsvpUrl": "https://gdg.community.dev/e/mc349m/"
+  }
+]
