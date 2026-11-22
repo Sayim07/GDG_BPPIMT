@@ -121,9 +121,11 @@ export function Hero() {
   const femaleBubbleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isDraggingMaleRef = useRef(false);
   const isDraggingFemaleRef = useRef(false);
+  const isHeroVisibleRef = useRef(true);
 
   // Helper to start gentle floating idle bobbing
   const startIdleBobbing = (target: "male" | "female", anchorY: number) => {
+    if (!isHeroVisibleRef.current) return;
     const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
     if (!el) return;
 
@@ -140,6 +142,7 @@ export function Hero() {
 
   // Helper to trigger flight exit in the mascot's flight direction
   const triggerExitFlight = (target: "male" | "female") => {
+    if (!isHeroVisibleRef.current) return;
     const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
     if (!el) return;
 
@@ -170,11 +173,13 @@ export function Hero() {
       duration: 3.4,
       ease: "power1.in",
       onComplete: () => {
+        if (!isHeroVisibleRef.current) return;
         if (target === "male" && isDraggingMaleRef.current) return;
         if (target === "female" && isDraggingFemaleRef.current) return;
 
         // Reappear from top origin after brief off-screen pause
         const timer = setTimeout(() => {
+          if (!isHeroVisibleRef.current) return;
           if (target === "male" && isDraggingMaleRef.current) return;
           if (target === "female" && isDraggingFemaleRef.current) return;
           animateEntranceFromOrigin(target);
@@ -188,6 +193,7 @@ export function Hero() {
 
   // Helper to animate entrance from top origin back to home (0, 0)
   const animateEntranceFromOrigin = (target: "male" | "female") => {
+    if (!isHeroVisibleRef.current) return;
     const el = target === "male" ? mascotMaleRef.current : mascotFemaleRef.current;
     if (!el) return;
 
@@ -220,6 +226,7 @@ export function Hero() {
       duration: 3.0,
       ease: "power2.out",
       onComplete: () => {
+        if (!isHeroVisibleRef.current) return;
         if (target === "male") {
           setMaleBubbleText("Hey Builder! Welcome to GDG 🪂");
           setShowMaleBubble(true);
@@ -244,6 +251,7 @@ export function Hero() {
 
   // Helper to schedule an exit flight after delayMs
   const scheduleExitFlight = (target: "male" | "female", delayMs: number) => {
+    if (!isHeroVisibleRef.current) return;
     if (target === "male") {
       if (maleExitTimerRef.current) clearTimeout(maleExitTimerRef.current);
       maleExitTimerRef.current = setTimeout(() => {
@@ -439,6 +447,9 @@ export function Hero() {
         const scrollY = window.scrollY || window.pageYOffset;
         const windowHeight = window.innerHeight || 800;
 
+        // Skip tram calculations when scrolled completely past hero section
+        if (scrollY > windowHeight * 1.1) return;
+
         // Map progress across hero scroll height (0 to 1) directly via DOM transform (0 React re-renders)
         const progress = Math.min(Math.max(scrollY / (windowHeight * 0.9), 0), 1);
         if (tramRef.current) {
@@ -467,6 +478,48 @@ export function Hero() {
       animateEntranceFromOrigin("female");
     }, (enterDelay + 0.35) * 1000);
 
+    // Sleep mascots & GSAP loops when hero scrolls out of view (saves mobile CPU & eliminates re-renders)
+    const heroEl = heroContainerRef.current;
+    let heroObserver: IntersectionObserver | null = null;
+
+    if (heroEl && typeof IntersectionObserver !== "undefined") {
+      heroObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const isVisible = entry.isIntersecting;
+            isHeroVisibleRef.current = isVisible;
+
+            if (!isVisible) {
+              // Clear pending mascot timers
+              if (maleExitTimerRef.current) clearTimeout(maleExitTimerRef.current);
+              if (femaleExitTimerRef.current) clearTimeout(femaleExitTimerRef.current);
+              if (maleBubbleTimerRef.current) clearTimeout(maleBubbleTimerRef.current);
+              if (femaleBubbleTimerRef.current) clearTimeout(femaleBubbleTimerRef.current);
+
+              // Pause mascot tweens
+              if (mascotMaleRef.current) gsap.killTweensOf(mascotMaleRef.current);
+              if (mascotFemaleRef.current) gsap.killTweensOf(mascotFemaleRef.current);
+
+              setShowMaleBubble(false);
+              setShowFemaleBubble(false);
+            } else {
+              // Resumed: gently restart idle bobbing if not dragging
+              if (!isDraggingMaleRef.current) {
+                startIdleBobbing("male", 0);
+                scheduleExitFlight("male", 8500);
+              }
+              if (!isDraggingFemaleRef.current) {
+                startIdleBobbing("female", 0);
+                scheduleExitFlight("female", 10000);
+              }
+            }
+          }
+        },
+        { threshold: 0.05 }
+      );
+      heroObserver.observe(heroEl);
+    }
+
     return () => {
       cancelAnimationFrame(scrollRaf);
       clearTimeout(maleStartTimer);
@@ -476,6 +529,7 @@ export function Hero() {
       if (maleBubbleTimerRef.current) clearTimeout(maleBubbleTimerRef.current);
       if (femaleBubbleTimerRef.current) clearTimeout(femaleBubbleTimerRef.current);
       window.removeEventListener("scroll", handleScroll);
+      if (heroObserver) heroObserver.disconnect();
     };
   }, []);
 
@@ -557,7 +611,7 @@ export function Hero() {
 
       {/* GDG Female Parachute Mascot (Left side, slightly higher - Drag to move) */}
       <div
-        className="absolute z-[15] left-2 sm:left-6 md:left-10 lg:left-14 xl:left-18 bottom-28 sm:bottom-auto sm:top-[22%] md:top-[24%] lg:top-[26%] pointer-events-none"
+        className="absolute z-[15] left-2 sm:left-6 md:left-10 lg:left-14 xl:left-18 bottom-40 sm:bottom-auto sm:top-[22%] md:top-[24%] lg:top-[26%] pointer-events-none"
       >
         <div
           ref={mascotFemaleRef}
@@ -607,7 +661,7 @@ export function Hero() {
 
       {/* GDG Male Parachute Mascot (Right side, slightly lower - Drag to move) */}
       <div
-        className="absolute z-[15] right-2 sm:right-6 md:right-10 lg:right-14 xl:right-18 bottom-20 sm:bottom-auto sm:top-[30%] md:top-[33%] lg:top-[36%] pointer-events-none"
+        className="absolute z-[15] right-2 sm:right-6 md:right-10 lg:right-14 xl:right-18 bottom-36 sm:bottom-auto sm:top-[30%] md:top-[33%] lg:top-[36%] pointer-events-none"
       >
         <div
           ref={mascotMaleRef}
@@ -665,7 +719,7 @@ export function Hero() {
       />
 
       {/* Main Centered Hero Content */}
-      <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative z-10 w-full flex-1 flex flex-col items-center justify-center -mt-5 sm:mt-0 pt-2 pb-4 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl mx-auto flex flex-col items-center text-center">
           {/* Headline - Unified StrokeText Animation Optimized for Mobile & Desktop */}
           {chapter.headline && (
@@ -699,7 +753,7 @@ export function Hero() {
 
           {/* Subtitle */}
           {chapter.subtitle && (
-            <div className="max-w-3xl mx-auto mt-6 sm:mt-8 text-center">
+            <div className="max-w-3xl mx-auto mt-4 sm:mt-8 text-center">
               <TextType
                 text={chapter.subtitle}
                 as="p"
@@ -719,7 +773,7 @@ export function Hero() {
 
           {/* Action CTAs */}
           {chapter.primaryCtaText && chapter.primaryCtaUrl && (
-            <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 mt-8 sm:mt-10">
+            <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 mt-5 sm:mt-10">
               <Link
                 href={chapter.primaryCtaUrl}
                 className="btn-sweep-blue inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 sm:py-3.5 rounded-full text-sm font-bold shadow-sm cursor-pointer"

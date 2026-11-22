@@ -183,6 +183,11 @@ export const ScrollStack = ({
     let points: number[] = [];
     let reach = 0;
 
+    // Cached layout metrics to prevent forced synchronous reflow during scroll
+    let cachedHeights: number[] = [];
+    let cachedStickyTops: number[] = [];
+    let isMobile = false;
+
     const readScroll = () => (windowed ? window.scrollY : root.scrollTop);
     const maxScroll = () =>
       windowed ? document.documentElement.scrollHeight - window.innerHeight : root.scrollHeight - root.clientHeight;
@@ -198,6 +203,45 @@ export const ScrollStack = ({
       return true;
     };
 
+    // Computes and writes slot sticky top offsets ONLY on resize / mount (0 layout thrashing on scroll)
+    const updateLayoutMetrics = () => {
+      const settings = settingsRef.current;
+      const slots = (Array.from(inner.children) as HTMLElement[]).filter(child =>
+        child.hasAttribute('data-stack-slot')
+      );
+      if (!settings || !slots.length) return;
+
+      const viewHeight = windowed ? window.innerHeight : root.clientHeight;
+      const stackTop = resolveOffset(settings.stackPosition, viewHeight);
+      const offset = settings.itemStackDistance;
+      isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+
+      // Consistent uniform sticky top pinning across all cards
+      const effectiveStackTop = isMobile ? Math.min(stackTop, 68) : stackTop;
+      const effectiveOffset = isMobile ? 12 : offset;
+
+      cachedHeights = slots.map(slot => slot.offsetHeight);
+      cachedStickyTops = cachedHeights.map((_, i) => effectiveStackTop + i * effectiveOffset);
+
+      slots.forEach((slot, i) => {
+        write(`slotTop${i}`, `${cachedStickyTops[i]}px`, value => {
+          slot.style.top = value;
+        });
+      });
+
+      const padTop = windowed ? 0 : effectiveStackTop;
+      const endHeight = windowed
+        ? Math.max(settings.holdDistance, viewHeight * 0.4)
+        : settings.holdDistance + Math.max(0, viewHeight - cachedStickyTops[cachedStickyTops.length - 1] - (cachedHeights[cachedHeights.length - 1] || 0));
+
+      write('padTop', padTop, value => {
+        inner.style.paddingTop = `${value}px`;
+      });
+      write('endHeight', endHeight, value => {
+        end.style.height = `${value}px`;
+      });
+    };
+
     const update = () => {
       frame = 0;
       const settings = settingsRef.current;
@@ -206,62 +250,33 @@ export const ScrollStack = ({
       );
       if (!settings || !slots.length) return;
 
+      if (!cachedHeights.length || cachedHeights.length !== slots.length) {
+        updateLayoutMetrics();
+      }
+
       const viewHeight = windowed ? window.innerHeight : root.clientHeight;
       const viewTop = windowed ? 0 : root.getBoundingClientRect().top + root.clientTop;
-      const stackTop = resolveOffset(settings.stackPosition, viewHeight);
-      const offset = settings.itemStackDistance;
-      const heights = slots.map(slot => slot.offsetHeight);
-      const bottomBreathingRoom = 20;
+      const stackTop = isMobile ? Math.min(resolveOffset(settings.stackPosition, viewHeight), 68) : resolveOffset(settings.stackPosition, viewHeight);
+      const offset = isMobile ? 12 : settings.itemStackDistance;
 
-      // Calculate dynamic sticky top per slot:
-      // On mobile screens, if a card is taller than the viewport, shift upward for scrolling bottom content.
-      // On desktop, preserve the ordered stack cascading so every card pins at its exact stepped basePin (stackTop + i * offset)
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      const stickyTops = heights.map((h, i) => {
-        const basePin = stackTop + i * offset;
-        if (!isMobile) {
-          // On desktop, every card pins at its exact stepped basePin to preserve the stacked shadow layers behind
-          return basePin;
-        }
-        const maxAllowedTop = viewHeight - h - bottomBreathingRoom;
-        return Math.min(basePin, maxAllowedTop);
-      });
-
-      slots.forEach((slot, i) => {
-        write(`slotTop${i}`, `${stickyTops[i]}px`, value => {
-          slot.style.top = value;
-        });
-      });
-
+      // READ PHASE ONLY: Read tops directly without preceding style mutations (zero forced reflow)
       const tops = slots.map(slot => slot.getBoundingClientRect().top);
-      const lastPin = stickyTops[slots.length - 1];
-      const padTop = windowed ? 0 : stackTop;
-      const endHeight = windowed
-        ? Math.max(settings.holdDistance, viewHeight * 0.4)
-        : settings.holdDistance + Math.max(0, viewHeight - lastPin - heights[heights.length - 1]);
 
-      let moved = write('padTop', padTop, value => {
-        inner.style.paddingTop = `${value}px`;
-      });
-      moved =
-        write('endHeight', endHeight, value => {
-          end.style.height = `${value}px`;
-        }) || moved;
-
-      let flow = inner.getBoundingClientRect().top - viewTop + readScroll() + padTop;
-      points = heights.map((height, i) => {
+      let flow = inner.getBoundingClientRect().top - viewTop + readScroll();
+      points = cachedHeights.map((height, i) => {
         const point = flow - stackTop - i * offset;
         flow += height + settings.itemDistance;
         return point;
       });
-      reach = Math.max(40, (heights[0] + settings.itemDistance - offset) / 2);
+      reach = Math.max(40, ((cachedHeights[0] || 400) + settings.itemDistance - offset) / 2);
 
+      // Uniform progressive card stacking: each card enters and stacks identically
       const depths = slots.map(() => 0);
       let lastCover = 0;
       for (let j = 1; j < slots.length; j++) {
-        const pinBefore = viewTop + stickyTops[j - 1];
-        const start = pinBefore + heights[j - 1];
-        const endPin = viewTop + stickyTops[j];
+        const pinBefore = viewTop + cachedStickyTops[j - 1];
+        const start = pinBefore + (cachedHeights[j - 1] || 400);
+        const endPin = viewTop + cachedStickyTops[j];
         const span = Math.max(1, start - endPin);
         const cover = Math.min(1, Math.max(0, (start - tops[j]) / span));
         for (let i = 0; i < j; i++) depths[i] += cover;
@@ -269,28 +284,47 @@ export const ScrollStack = ({
       }
 
       const dimStep = Math.min(Math.max(settings.dimAmount, 0), 1);
+
+      // WRITE PHASE: Apply GPU hardware-accelerated transforms
       slots.forEach((slot, i) => {
         const card = slot.firstElementChild as HTMLElement | null;
         if (!card) return;
         const depth = depths[i];
         const lean = Math.min(depth, 1);
         const scale = Math.max(Math.min(settings.baseScale, 1), 1 - depth * settings.itemScale);
-        const tilt = -lean * settings.tiltAmount;
-        const turn = lean * settings.rotationAmount * (i % 2 ? -1 : 1);
-        const blur = depth * settings.blurAmount;
         const dim = 1 - Math.pow(1 - dimStep, depth);
-        const transform =
-          depth < 0.0005
-            ? ''
-            : `perspective(1200px) rotateX(${tilt.toFixed(2)}deg) rotate(${turn.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
+
+        // Hardware-accelerated 2D transform on mobile or when tilt/rotation is zero
+        let transform = '';
+        if (depth >= 0.0005) {
+          if (isMobile || (settings.tiltAmount === 0 && settings.rotationAmount === 0)) {
+            transform = `translate3d(0, 0, 0) scale(${scale.toFixed(4)})`;
+          } else {
+            const tilt = -lean * settings.tiltAmount;
+            const turn = lean * settings.rotationAmount * (i % 2 ? -1 : 1);
+            transform = `perspective(1200px) rotateX(${tilt.toFixed(2)}deg) rotate(${turn.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
+          }
+        }
+
         write(`transform${i}`, transform, value => {
           card.style.transform = value;
         });
-        write(`filter${i}`, blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : '', value => {
-          card.style.filter = value;
-        });
+
+        if (settings.blurAmount > 0) {
+          const blur = depth * settings.blurAmount;
+          write(`filter${i}`, blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : '', value => {
+            card.style.filter = value;
+          });
+        }
+
         write(`dim${i}`, dim.toFixed(3), value => {
           card.style.setProperty('--scroll-stack-dim', value);
+        });
+
+        // Layer culling: hide cards buried under 2 or more cards to save mobile GPU rasterization
+        const isHidden = depth >= 2.0;
+        write(`vis${i}`, isHidden ? 'hidden' : 'visible', value => {
+          card.style.visibility = value;
         });
       });
 
@@ -299,12 +333,15 @@ export const ScrollStack = ({
         complete = done;
         if (done) settings.onStackComplete?.();
       }
-
-      if (moved) schedule();
     };
 
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    const onResize = () => {
+      updateLayoutMetrics();
+      schedule();
     };
 
     const step = (now: number) => {
@@ -386,7 +423,7 @@ export const ScrollStack = ({
       settleSoon();
     };
 
-    const observer = new ResizeObserver(schedule);
+    const observer = new ResizeObserver(onResize);
     observer.observe(root);
     observer.observe(inner);
     target.addEventListener('scroll', onScroll, { passive: true });
@@ -394,9 +431,9 @@ export const ScrollStack = ({
     target.addEventListener('pointerdown', onPress, { passive: true });
     window.addEventListener('pointerup', onRelease, { passive: true });
     window.addEventListener('pointercancel', onRelease, { passive: true });
-    window.addEventListener('resize', schedule);
-    scheduleRef.current = schedule;
-    update();
+    window.addEventListener('resize', onResize);
+    scheduleRef.current = onResize;
+    onResize();
 
     return () => {
       cancelAnimationFrame(frame);
@@ -408,7 +445,7 @@ export const ScrollStack = ({
       target.removeEventListener('pointerdown', onPress);
       window.removeEventListener('pointerup', onRelease);
       window.removeEventListener('pointercancel', onRelease);
-      window.removeEventListener('resize', schedule);
+      window.removeEventListener('resize', onResize);
       scheduleRef.current = null;
     };
   }, [useWindowScroll]);
