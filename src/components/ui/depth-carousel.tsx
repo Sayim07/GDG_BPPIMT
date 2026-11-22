@@ -759,6 +759,32 @@ export const DepthCarousel = ({
         })}
       </div>
 
+      {/* Floating Description Speech Bubble beside active card (retro paper style) */}
+      {data[active] && data[active].bio && (
+        <div className="hidden lg:flex absolute right-4 xl:right-8 top-1/2 -translate-y-1/2 z-[3000] pointer-events-none w-[260px] sm:w-[290px]">
+          <div className="relative rounded-2xl bg-[#FFFDF9] border-[2.5px] border-black p-4 shadow-[5px_5px_0px_0px_#18181b] text-left text-slate-900 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-1.5 mb-2 pb-2 border-b-2 border-black/10">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase bg-[#FFE600] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                {data[active].category === "organizer" ? "Organizer" : "Domain Lead"}
+              </span>
+              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase truncate">
+                {data[active].role}
+              </span>
+            </div>
+            <h5 className="font-heading font-black text-slate-950 text-sm tracking-tight mb-1">
+              {data[active].name}
+            </h5>
+            <p className="text-xs leading-relaxed text-slate-800 font-medium line-clamp-4">
+              "{data[active].bio}"
+            </p>
+            {/* Retro Speech Bubble Arrow with Black Outline */}
+            <div className="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 border-y-[8px] border-y-transparent border-r-[10px] border-r-black">
+              <div className="absolute -top-[6px] left-[2px] w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#FFFDF9]" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {showControls && count > 1 && (
         <>
           <button

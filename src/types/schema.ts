@@ -68,6 +68,9 @@ export interface TeamMember {
   tagline?: string;
   avatarUrl?: string;
   badgeColor?: "blue" | "red" | "yellow" | "green";
+  funFact?: string;
+  motto?: string;
+  skills?: string;
   socials?: {
     linkedin?: string;
     github?: string;

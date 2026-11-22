@@ -6,7 +6,7 @@
     "domain": "Chapter Leadership",
     "category": "organizer",
     "badgeColor": "blue",
-    "bio": "",
+    "bio": "GDG on Campus Organizer at B.P. Poddar Institute of Management and Technology. Passionate about community leadership, emerging technologies, and empowering students to build impactful software.",
     "socials": {
       "github": "",
       "email": "bhandaryprotyoy@gmail.com",
@@ -21,13 +21,16 @@
     "domain": "Chapter Leadership",
     "category": "organizer",
     "badgeColor": "red",
-    "bio": "",
+    "bio": "Just a passionate CS undergrad building Full Stack apps and loving all things tech.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/HeX-ecutioner",
       "email": "sagnikmaitra01@gmail.com",
-      "linkedin": ""
+      "linkedin": "https://linkedin.com/in/sagnikmaitra"
     },
-    "avatarUrl": "/images/team/sagnik-maitra.jpg"
+    "avatarUrl": "/images/team/sagnik-maitra.jpg",
+    "funFact": "Video games teach me more about strategy and problem-solving than most textbooks.",
+    "motto": "Nothing is True. Everything is Permitted.",
+    "skills": "Full Stack Development, AIML, Public Speaking"
   },
   {
     "id": "sneha-patra",
@@ -36,13 +39,16 @@
     "domain": "Chapter Leadership",
     "category": "organizer",
     "badgeColor": "green",
-    "bio": "",
+    "bio": "Just a curious learner passionate about technology, creativity, and innovation.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/SneJ2703",
       "email": "snehapatra005@gmail.com",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/sneha-patra-9a1922346"
     },
-    "avatarUrl": "/images/team/sneha-patra.jpg"
+    "avatarUrl": "/images/team/sneha-patra.jpg",
+    "funFact": "A techie who prefers plot twists over caffeine;)",
+    "motto": "In a loop of self evolution, always.",
+    "skills": "Python, Web Development, Management"
   },
   {
     "id": "sayim-mullick",
@@ -51,13 +57,16 @@
     "domain": "Web & Architecture",
     "category": "lead",
     "badgeColor": "blue",
-    "bio": "",
+    "bio": "Full-stack developer and AI enthusiast driven by building scalable web architectures and intelligent systems. As GDG Tech Lead, I focus on turning complex technical concepts into hands-on projects, fostering open collaboration, and helping developers bridge the gap from syntax to production-ready software.",
     "socials": {
       "github": "https://github.com/Sayim07",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/sayim-mullick-250722392"
     },
-    "avatarUrl": "/images/team/sayim-mullick.jpg"
+    "avatarUrl": "/images/team/sayim-mullick.jpg",
+    "funFact": "Zero thoughts during normal human daylight hours, but give me 3:00 AM and a dark room, and my brain suddenly enters quantum computing mode.",
+    "motto": "Don't sleep until it ships, don't stop until it scales.",
+    "skills": "Full-Stack Engineering & Scalable Web Architecture (React / Next.js, Node.js, Python / FastAPI)\nApplied AI & Intelligent Agents (Gemini API, ML threat modeling, autonomous multi-agent systems)\nRapid Prototyping & Technical Leadership (Hackathon execution, system design, and developer mentorship)"
   },
   {
     "id": "raktik-ghosh",
@@ -66,13 +75,16 @@
     "domain": "Artificial Intelligence",
     "category": "lead",
     "badgeColor": "red",
-    "bio": "",
+    "bio": "Aspiring Software Development Engineer | AI/ML Enthusiast | Hackathon Winner | In love with solving problems that matter.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/Raktik31",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/raktik-ghosh-b93391329"
     },
-    "avatarUrl": "/images/team/raktik-ghosh.jpg"
+    "avatarUrl": "/images/team/raktik-ghosh.jpg",
+    "funFact": "My gym membership is the only subscription I actually try to use.",
+    "motto": "Until death, all defeat is psychological.",
+    "skills": "AI/ML,Problem Solving,Team Collaboration,Data Structures & Algorithms"
   },
   {
     "id": "aaryan-kumar",
@@ -81,13 +93,16 @@
     "domain": "Cloud Computing",
     "category": "lead",
     "badgeColor": "yellow",
-    "bio": "",
+    "bio": "Part-time bug creator, full-time bug hunter. I like building cool things, breaking them accidentally, and calling it debugging. Into Cloud, AI-ML, coding, and turning random ideas into projects. Currently running on curiosity, Coca-Cola, and code that worked five minutes ago.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/9aaryanCyberH",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/aaryan-k-ba3985246"
     },
-    "avatarUrl": "/images/team/aaryan-kumar.jpg"
+    "avatarUrl": "/images/team/aaryan-kumar.jpg",
+    "funFact": "I can spend 3 hours fixing a bug caused by a missing semicolon and still feel like a genius when it finally works. Btw I don't use Claude Code.",
+    "motto": "If it works, don't touch it. If it doesn't, blame the compiler. ( Just turn off the PC and sleep )",
+    "skills": "Python , GCP , Data Warehousing"
   },
   {
     "id": "narayan-kumar-jha",
@@ -96,13 +111,16 @@
     "domain": "Creative & Branding",
     "category": "lead",
     "badgeColor": "blue",
-    "bio": "",
+    "bio": "Turning ideas into intuitive digital products through prototyping, visual design, and clean frontend architecture. Always experimenting with modern design systems and web tech.",
     "socials": {
       "github": "https://github.com/narayan-nkj",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/narayan-kumar-jha-4bb65638b"
     },
-    "avatarUrl": "/images/team/narayan-kumar-jha.jpg"
+    "avatarUrl": "/images/team/narayan-kumar-jha.jpg",
+    "funFact": "I spend more time debating between #000000 and slightly lighter shades of dark mode than I care to admit.",
+    "motto": "\"Design isn't just what it looks like and feels like—design is how it works.\"",
+    "skills": "UI/UX Design (Figma), Frontend Development (React & Tailwind CSS), Visual & Graphic Design (Illustrator)"
   },
   {
     "id": "aadipto-ghosh",
@@ -111,13 +129,16 @@
     "domain": "Operations & Logistics",
     "category": "lead",
     "badgeColor": "yellow",
-    "bio": "",
+    "bio": "Driven by a management mindset, a coder's logic and a designer's eye, I turn ambitious ideas into high-impact events. Whether orchestrating community initiatives, prototyping hardware or running softwares, I blend multi-disciplinary skills to build and empower tech communities.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/AadiptoGhosh",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://linkedin.com/in/aadipto-ghosh"
     },
-    "avatarUrl": "/images/team/aadipto-ghosh.jpg"
+    "avatarUrl": "/images/team/aadipto-ghosh.jpg",
+    "funFact": "I'm endlessly curious and love learning new things about anything and everything!",
+    "motto": "\"Why do we fall? So we can learn to pick ourselves back up?\"",
+    "skills": "Coding, Design, Leadership"
   },
   {
     "id": "satarupa-sarkar",
@@ -126,13 +147,16 @@
     "domain": "Marketing & Media",
     "category": "lead",
     "badgeColor": "green",
-    "bio": "",
+    "bio": "Just a curious mind with a habit of turning 'what if' into 'what's next?'",
     "socials": {
-      "github": "",
+      "github": "https://github.com/techAeroSatarupa",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/satarupa-sarkar-9b15303ab"
     },
-    "avatarUrl": "/images/team/satarupa-sarkar-v2.jpg"
+    "avatarUrl": "/images/team/satarupa-sarkar-v2.jpg",
+    "funFact": "Can switch from coding to choreography to campaign planning faster than my laptop switches tabs.",
+    "motto": "Dream without limits, act without hesitation.",
+    "skills": "1. Creative Thinking\n2. Communication\n3. Problem Solving"
   },
   {
     "id": "bikramjit-pakhira",
@@ -141,13 +165,16 @@
     "domain": "Web Development",
     "category": "core",
     "badgeColor": "blue",
-    "bio": "3rd Year | Core Team",
+    "bio": "Tech enthusiast and builder passionate about AI, problem-solving, and community driven innovation. Always excited to turn ideas into scalable code and collaborate on impactful projects.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/CodewithBikram2025",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/bikramjit-pakhira-435b7633b"
     },
-    "avatarUrl": "/images/team/bikramjit-pakhira.jpg"
+    "avatarUrl": "/images/team/bikramjit-pakhira.jpg",
+    "funFact": "My Spotify playlist and my browser tabs both compete for who can keep more open at the same time.",
+    "motto": "Stay curious, stay consistent, and never stop shipping.",
+    "skills": "Generative AI, Problem Solving (DSA), Full-Stack Development"
   },
   {
     "id": "sayantan-pachal",
@@ -156,13 +183,16 @@
     "domain": "Web Development",
     "category": "core",
     "badgeColor": "blue",
-    "bio": "2nd Year | Core Team",
+    "bio": "A curious mind who loves exploring ideas, building things, and figuring out how stuff works.",
     "socials": {
       "github": "https://github.com/sayantan-pachal",
       "email": "pachalsayantan@gmail.com",
-      "linkedin": "https://www.linkedin.com/in/sayantan-pachal"
+      "linkedin": "https://linkedin.com/in/sayantan-pachal"
     },
-    "avatarUrl": "/images/team/sayantan-pachal.jpg"
+    "avatarUrl": "/images/team/sayantan-pachal.jpg",
+    "funFact": "My browser tabs have tabs.",
+    "motto": "Sometimes you gotta run before you can walk.",
+    "skills": "Full-Stack Development, Team Management & Collaboration"
   },
   {
     "id": "mouli-biswas",
@@ -171,13 +201,16 @@
     "domain": "Machine Learning",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team",
+    "bio": "Hey! I'm Mouli , a 3rd-year B.Tech Information Technology student passionate about technology, software development and exploring the world of AI/ML",
     "socials": {
-      "github": "",
+      "github": "https://github.com/mouli-tech2025",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/mouli-biswas-2ba777390"
     },
-    "avatarUrl": "/images/team/mouli-biswas.jpg"
+    "avatarUrl": "/images/team/mouli-biswas.jpg",
+    "funFact": "I love travelling, exploring new places and documenting every little moment along the way!  🦋",
+    "motto": "Make every experience count, whether good or bad",
+    "skills": "1.Web Development\n2.AI/ML\n3.Design"
   },
   {
     "id": "subhajit-majee",
@@ -186,13 +219,16 @@
     "domain": "Machine Learning",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team",
+    "bio": "I didn’t plan on tech. Tech didn’t plan on me either. We’re making it work anyway!",
     "socials": {
-      "github": "",
+      "github": "https://github.com/siuubhajit",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/siuubhajit"
     },
-    "avatarUrl": "/images/team/subhajit-majee-v2.jpg"
+    "avatarUrl": "/images/team/subhajit-majee-v2.jpg",
+    "funFact": "I walked away from a battlefield to debug semicolons. The semicolons are winning.",
+    "motto": "I don’t scatter my effort across backup plans. I pick one, give it everything, and stay on it until it succeeds.",
+    "skills": "MERN Stack, Python ,Tensorflow"
   },
   {
     "id": "larenza-roy",
@@ -201,13 +237,16 @@
     "domain": "Cloud Computing",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "2nd Year | Core Team",
+    "bio": "Cloud enthusiast | Tech explorer | Community builder. Passionate about Google Cloud, emerging technologies, and building meaningful connections through collaboration, innovation, and knowledge sharing.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/larenzaroy",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/larenzaroy"
     },
-    "avatarUrl": "/images/team/larenza-roy.jpg"
+    "avatarUrl": "/images/team/larenza-roy.jpg",
+    "funFact": "\"My curiosity has more tabs open than my browser, whereas  perfectionism keeps refreshing them. Send help !\"   😂",
+    "motto": "\"Progress over perfection, curiosity over comfort.\" ✨",
+    "skills": "GCP , AWS (Currently Learning) , Python"
   },
   {
     "id": "saurabh-kumar-singh",
@@ -216,13 +255,16 @@
     "domain": "Cloud Computing",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "3rd Year | Core Team",
+    "bio": "Not an expert yet, just someone who loves figuring things out.",
     "socials": {
       "github": "",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/saurabh-singh-9a228b331"
     },
-    "avatarUrl": "/images/team/saurabh-kumar-singh.jpg"
+    "avatarUrl": "/images/team/saurabh-kumar-singh.jpg",
+    "funFact": "I actually find 2x spicy noodles VERY spicy! 😂",
+    "motto": "Always becoming, never settling.",
+    "skills": "Adaptability\nCreative Thinking\nQuick Learning"
   },
   {
     "id": "alfia-ashraf",
@@ -231,13 +273,16 @@
     "domain": "UI/UX & Graphics",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "2nd Year | Core Team",
+    "bio": "The Sky is the Limit",
     "socials": {
-      "github": "",
+      "github": "https://github.com/alfia-ashraf",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/alfia-ashraf-016593370"
     },
-    "avatarUrl": "/images/team/alfia-ashraf.jpg"
+    "avatarUrl": "/images/team/alfia-ashraf.jpg",
+    "funFact": "Jack of all trades but with adhd;)",
+    "motto": "Try for the sky, so you reach the clouds.",
+    "skills": "–Graphic design and digital poster creation.\n—Short-form video editing and visual storytelling.\n—Rapid UI prototyping using prompt-based development tools."
   },
   {
     "id": "sagnik-saha",
@@ -246,13 +291,16 @@
     "domain": "UI/UX & Graphics",
     "category": "core",
     "badgeColor": "yellow",
-    "bio": "3rd Year | Core Team",
+    "bio": "A little ambition, a lot of imagination, and questionable sleep schedules",
     "socials": {
       "github": "",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/sagnik-saha"
     },
-    "avatarUrl": "/images/team/sagnik-saha.jpg"
+    "avatarUrl": "/images/team/sagnik-saha.jpg",
+    "funFact": "I can turn almost any conversation into a football discussion.",
+    "motto": "Learn. Build. Break. Repeat.",
+    "skills": "UI/UX & Creative Design, Web Development, Figma(UI/UX)"
   },
   {
     "id": "soham-bandyopadhyay",
@@ -261,13 +309,16 @@
     "domain": "Event Planning",
     "category": "core",
     "badgeColor": "green",
-    "bio": "3rd Year | Core Team",
+    "bio": "Powered by coffee, creativity, deadlines, and a little bit of organised chaos.",
     "socials": {
-      "github": "",
+      "github": "https://github.com/soham3121",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/soham-bandyopadhyay-73419234a"
     },
-    "avatarUrl": "/images/team/soham-bandyopadhyay.jpg"
+    "avatarUrl": "/images/team/soham-bandyopadhyay.jpg",
+    "funFact": "Can debug code, manage events, and somehow still forget why I opened my laptop.",
+    "motto": "Dream big, execute bigger.",
+    "skills": "Leadership, Team Work, Web Dev"
   },
   {
     "id": "sagnik-dutta",
@@ -276,13 +327,16 @@
     "domain": "Event Planning",
     "category": "core",
     "badgeColor": "green",
-    "bio": "2nd Year | Core Team",
+    "bio": "Creative, enthusiastic, and passionate about events, people, and bringing ideas to life. Always ready to learn, lead, and make things happen!",
     "socials": {
-      "github": "",
+      "github": "https://github.com/Sagnik2898",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/sagnik-dutta-683a7a2a6"
     },
-    "avatarUrl": "/images/team/sagnik-dutta.jpg"
+    "avatarUrl": "/images/team/sagnik-dutta.jpg",
+    "funFact": "Powered by caffeine, creativity, and last-minute plans...",
+    "motto": "Don't just be a part of something great; be the reason it becomes great.",
+    "skills": "1) Event Planning & Management.\n\n2) Leadership & Team Coordination.\n\n3) Communication & Problem-Solving."
   },
   {
     "id": "sakchham-kapoor",
@@ -291,13 +345,16 @@
     "domain": "Community Outreach",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team",
+    "bio": "An ECE student with a curious mind, an entrepreneurial spirit, and a knack for turning ideas into reality. From experimenting with hardware and exploring AI to building digital experiences and managing creative projects, I love being where technology meets innovation. I believe in learning by doing, thinking beyond the obvious, and creating things that actually make a difference. Always building, always exploring, never settling for ordinary!",
     "socials": {
-      "github": "",
+      "github": "https://github.com/kapoorcore",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://www.linkedin.com/in/sakchham-kapoor-16a922316"
     },
-    "avatarUrl": "/images/team/sakchham-kapoor.jpg"
+    "avatarUrl": "/images/team/sakchham-kapoor.jpg",
+    "funFact": "I can go from coding a project to planning a business idea without needing a coffee break!",
+    "motto": "The world never hits pause. Neither should your curiosity.",
+    "skills": "1. Creative Problem-Solving\n2. Leadership & Team Coordination\n3. Adaptability & Quick Learning"
   },
   {
     "id": "shreyanka-satpathy",
@@ -306,12 +363,15 @@
     "domain": "Community Outreach",
     "category": "core",
     "badgeColor": "red",
-    "bio": "3rd Year | Core Team",
+    "bio": "CSE student | Tech enthusiast | Creative thinker | Passionate about learning, collaborating & growing",
     "socials": {
-      "github": "",
+      "github": "https://github.com/Shreyankasatpathydz",
       "email": "",
-      "linkedin": ""
+      "linkedin": "https://in.linkedin.com/in/shreyanka-satpathy-46570a32b"
     },
-    "avatarUrl": "/images/team/shreyanka-satpathy.jpg"
+    "avatarUrl": "/images/team/shreyanka-satpathy.jpg",
+    "funFact": "I can turn any random idea into a full-fledged plan (and somehow end up managing everything)",
+    "motto": "\"Dream big, stay curious, keep learning, and make things happen.\"",
+    "skills": "Event Management & Coordination\nCommunication & Teamwork\nCreative Thinking & Problem-Solving"
   }
 ]

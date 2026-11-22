@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
-  ShieldCheck
+  ShieldCheck,
+  MessageSquare
 } from "lucide-react";
 import {
   TechDomainIcon,
@@ -121,6 +122,99 @@ function renderMemberCard(
   );
 }
 
+interface RetroMessageBoxProps {
+  member: TeamMember;
+  arrowSide: "left" | "right";
+  xOffset: number;
+  isWide?: boolean;
+}
+
+function RetroMessageBox({ member, arrowSide, xOffset, isWide = false }: RetroMessageBoxProps) {
+  if (!member.bio) return null;
+
+  const isLongBio = member.bio.length > 180;
+
+  return (
+    <motion.div
+      key={member.id}
+      initial={{
+        opacity: 0,
+        scale: 0.9,
+        x: xOffset + (arrowSide === "left" ? 16 : -16),
+        y: "-50%"
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        x: xOffset,
+        y: "-50%"
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.9,
+        x: xOffset + (arrowSide === "left" ? 16 : -16),
+        y: "-50%"
+      }}
+      transition={{ type: "spring", stiffness: 420, damping: 28 }}
+      className={`absolute z-40 pointer-events-none ${
+        isWide
+          ? "w-[340px] sm:w-[390px] md:w-[405px]"
+          : "w-[300px] sm:w-[320px]"
+      }`}
+      style={{
+        left: "50%",
+        top: "50%"
+      }}
+    >
+      <div className="relative rounded-2xl bg-[#FFFDF9] border-[2.5px] border-black p-3.5 sm:p-4 shadow-[6px_6px_0px_0px_#18181b] text-left text-slate-900">
+        {/* Retro Header Tag & Role */}
+        <div className="flex items-center justify-between gap-2 mb-1.5 pb-1.5 border-b-2 border-black/10">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] flex-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-pulse" />
+              <span>{member.category === "organizer" ? "Organizer" : "Domain Lead"}</span>
+            </span>
+            <span className="text-[11px] font-mono font-bold text-slate-500 uppercase truncate">
+              {member.role}
+            </span>
+          </div>
+        </div>
+
+        {/* Member Name */}
+        <h4 className="font-heading font-black text-slate-950 text-base sm:text-lg tracking-tight mb-1">
+          {member.name}
+        </h4>
+
+        {/* Description / Bio */}
+        <p className={`leading-relaxed text-slate-800 font-medium ${
+          isWide || isLongBio ? "text-[11.5px] sm:text-[12px]" : "text-xs sm:text-[13px]"
+        }`}>
+          "{member.bio}"
+        </p>
+
+        {/* Fun Fact / Extra quote if available */}
+        {member.funFact && (
+          <div className="mt-2.5 p-2 sm:p-2.5 rounded-xl border-2 border-black bg-[#FEF3C7] shadow-[2px_2px_0px_0px_#000] text-[11px] font-bold text-amber-950 flex items-start gap-1.5 leading-snug">
+            <span className="flex-none text-xs">💡</span>
+            <span className="line-clamp-2 sm:line-clamp-3">{member.funFact}</span>
+          </div>
+        )}
+
+        {/* Retro Speech Bubble Arrow with Black Outline */}
+        {arrowSide === "left" ? (
+          <div className="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-black">
+            <div className="absolute -top-[8px] left-[2.5px] w-0 h-0 border-y-[8px] border-y-transparent border-r-[10px] border-r-[#FFFDF9]" />
+          </div>
+        ) : (
+          <div className="absolute top-1/2 -translate-y-1/2 -right-3 w-0 h-0 border-y-[10px] border-y-transparent border-l-[12px] border-l-black">
+            <div className="absolute -top-[8px] -left-[12.5px] w-0 h-0 border-y-[8px] border-y-transparent border-l-[10px] border-l-[#FFFDF9]" />
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 /**
  * Expandable 3-Card Cluster Component
  * Completely borderless/card-less background.
@@ -147,6 +241,7 @@ function ExpandableTeamTrio({
   const [isHovered, setIsHovered] = useState(false);
   const [isToggled, setIsToggled] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const [hoveredCard, setHoveredCard] = useState<"left" | "main" | "right" | null>(null);
 
   useEffect(() => {
     const checkWidth = () => {
@@ -169,9 +264,12 @@ function ExpandableTeamTrio({
         /* DESKTOP: Centered flex stage with smooth left and right card fan-out */
         <div
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            setHoveredCard(null);
+          }}
           onClick={handleContainerClick}
-          className="relative w-full max-w-5xl mx-auto h-[460px] sm:h-[475px] flex items-center justify-center cursor-pointer select-none"
+          className="relative w-full max-w-6xl mx-auto h-[460px] sm:h-[475px] flex items-center justify-center cursor-pointer select-none"
         >
           {/* 1. LEFT CO-MEMBER CARD */}
           <motion.div
@@ -179,12 +277,14 @@ function ExpandableTeamTrio({
             style={{
               pointerEvents: isExpanded ? "auto" : "none"
             }}
+            onMouseEnter={() => setHoveredCard("left")}
+            onMouseLeave={() => setHoveredCard(null)}
             animate={{
               x: isExpanded ? -330 : 0,
               y: 0,
-              scale: isExpanded ? 1 : 0.95,
-              opacity: isExpanded ? 1 : 0,
-              zIndex: isExpanded ? 15 : 5,
+              scale: hoveredCard === "left" ? 1.02 : (hoveredCard ? 0.98 : (isExpanded ? 1 : 0.95)),
+              opacity: hoveredCard && hoveredCard !== "left" ? 0.35 : (isExpanded ? 1 : 0),
+              zIndex: hoveredCard === "left" ? 30 : (isExpanded ? 15 : 5),
             }}
             transition={{
               type: "spring",
@@ -199,10 +299,14 @@ function ExpandableTeamTrio({
           {/* 2. CENTER MAIN/LEAD CARD */}
           <motion.div
             className="relative z-20 flex-shrink-0"
+            onMouseEnter={() => setHoveredCard("main")}
+            onMouseLeave={() => setHoveredCard(null)}
             animate={{
               x: 0,
               y: 0,
-              scale: 1,
+              scale: hoveredCard === "main" ? 1.02 : (hoveredCard ? 0.98 : 1),
+              opacity: hoveredCard && hoveredCard !== "main" ? 0.35 : 1,
+              zIndex: hoveredCard === "main" ? 30 : 20,
             }}
             transition={{
               type: "spring",
@@ -220,12 +324,14 @@ function ExpandableTeamTrio({
             style={{
               pointerEvents: isExpanded ? "auto" : "none"
             }}
+            onMouseEnter={() => setHoveredCard("right")}
+            onMouseLeave={() => setHoveredCard(null)}
             animate={{
               x: isExpanded ? 330 : 0,
               y: 0,
-              scale: isExpanded ? 1 : 0.95,
-              opacity: isExpanded ? 1 : 0,
-              zIndex: isExpanded ? 15 : 5,
+              scale: hoveredCard === "right" ? 1.02 : (hoveredCard ? 0.98 : (isExpanded ? 1 : 0.95)),
+              opacity: hoveredCard && hoveredCard !== "right" ? 0.35 : (isExpanded ? 1 : 0),
+              zIndex: hoveredCard === "right" ? 30 : (isExpanded ? 15 : 5),
             }}
             transition={{
               type: "spring",
@@ -236,6 +342,35 @@ function ExpandableTeamTrio({
           >
             {renderMemberCard(rightMember, isOrganizer, false, brandColor)}
           </motion.div>
+
+          {/* RETRO SPEECH BUBBLE MESSAGE BOX (Smart adjacent placement inside the frame) */}
+          <AnimatePresence mode="wait">
+            {isExpanded && hoveredCard === "left" && (
+              <RetroMessageBox
+                key="msg-left"
+                member={leftMember}
+                arrowSide="left"
+                xOffset={-160}
+              />
+            )}
+            {isExpanded && hoveredCard === "right" && (
+              <RetroMessageBox
+                key="msg-right"
+                member={rightMember}
+                arrowSide="right"
+                xOffset={-160}
+              />
+            )}
+            {isExpanded && hoveredCard === "main" && (
+              <RetroMessageBox
+                key="msg-main"
+                member={mainMember}
+                arrowSide="left"
+                xOffset={170}
+                isWide={true}
+              />
+            )}
+          </AnimatePresence>
         </div>
       ) : (
         /* MOBILE (< 768px): Centered single card + tap to view vertical stack */
