@@ -38,7 +38,6 @@ type Tab = "upcoming" | "past";
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-// Direct RSVP link provided by you
 const DIRECT_EVENT_RSVP_URL = "https://gdg.community.dev/e/mc349m/";
 
 function parseDate(date?: string): Date | null {
@@ -57,6 +56,90 @@ function isPastEvent(event: EventWithMeta, now: Date): boolean {
   return event.status === "past";
 }
 
+/* GDG Puzzle & Build. Learn. Connect. Decorative Visual for Featured Card */
+function GdgCommunityArtwork() {
+  return (
+    <div className="relative flex flex-col justify-between rounded-xl border border-border-subtle bg-surface-page/90 backdrop-blur-xs p-3.5 sm:p-4 overflow-hidden select-none">
+      {/* Floating SVG Puzzle Pieces in Background */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 120 120"
+        className="pointer-events-none absolute -right-4 -top-4 w-24 h-24 opacity-20"
+      >
+        <path
+          d="M20 20h30a8 8 0 0 1 16 0h30v30a8 8 0 0 1 0 16v30H66a8 8 0 0 1-16 0H20V66a8 8 0 0 1 0-16V20z"
+          fill="#4285F4"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 100 100"
+        className="pointer-events-none absolute right-14 -bottom-5 w-16 h-16 opacity-20 rotate-12"
+      >
+        <rect x="15" y="15" width="70" height="70" rx="14" fill="#34A853" />
+      </svg>
+
+      {/* Top GDG Bracket + Motto */}
+      <div className="relative z-10 flex items-center justify-between gap-2 mb-2.5">
+        <div className="inline-flex items-center gap-1.5">
+          <span className="inline-flex items-center font-mono text-xs font-extrabold tracking-tighter">
+            <span className="text-[#EA4335]">&lt;</span>
+            <span className="text-[#4285F4]">/</span>
+            <span className="text-[#34A853]">&gt;</span>
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+            GDG On Campus
+          </span>
+        </div>
+
+        {/* 4-Color Google Dots */}
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-[#4285F4]" />
+          <span className="w-2 h-2 rounded-full bg-[#EA4335]" />
+          <span className="w-2 h-2 rounded-full bg-[#FBBC05]" />
+          <span className="w-2 h-2 rounded-full bg-[#34A853]" />
+        </div>
+      </div>
+
+      {/* Poster Typography: BUILD. LEARN. CONNECT. */}
+      <div className="relative z-10 leading-none space-y-0.5 my-1">
+        <div className="font-heading text-base sm:text-lg font-black tracking-tight text-[#4285F4]">
+          BUILD.
+        </div>
+        <div className="font-heading text-base sm:text-lg font-black tracking-tight text-[#EA4335]">
+          LEARN.
+        </div>
+        <div className="font-heading text-base sm:text-lg font-black tracking-tight text-[#34A853]">
+          CONNECT.
+        </div>
+      </div>
+
+      {/* Bottom Tagline + Puzzle Blocks */}
+      <div className="relative z-10 mt-2.5 pt-2 border-t border-border-subtle flex items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold tracking-wide text-text-secondary uppercase">
+          Built by the{" "}
+          <span className="font-bold">
+            <span className="text-[#4285F4]">P</span>
+            <span className="text-[#EA4335]">E</span>
+            <span className="text-[#FBBC05]">O</span>
+            <span className="text-[#34A853]">P</span>
+            <span className="text-[#4285F4]">L</span>
+            <span className="text-[#EA4335]">E</span>
+          </span>
+        </p>
+
+        {/* Mini Puzzle Grid */}
+        <div className="grid grid-cols-2 gap-1">
+          <span className="w-2.5 h-2.5 rounded-[3px] bg-[#4285F4]" />
+          <span className="w-2.5 h-2.5 rounded-[3px] bg-[#EA4335]" />
+          <span className="w-2.5 h-2.5 rounded-[3px] bg-[#34A853]" />
+          <span className="w-2.5 h-2.5 rounded-[3px] bg-[#FBBC05]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const allEvents = (eventsData as unknown as EventWithMeta[]) || [];
   const chapter = chapterConfig as ChapterConfig;
@@ -66,14 +149,14 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const PINNED_EVENT: EventWithMeta = {
     id: "gdg-bppimt-mc349m",
     title: "GDG On Campus BPPIMT — Featured Event & Workshop",
-    tag: "RSVP Open",
+    tag: "Build • Learn • Connect",
     description:
-      "Join Google Developer Groups on Campus BPPIMT for our upcoming community session. Click Register / RSVP to secure your spot directly on the official GDG Community page.",
+      "A community is built by the people in it. Join Google Developer Groups on Campus BPPIMT at C Block and click Register / RSVP to secure your spot directly.",
     date: "2026-11-25",
     month: "NOV",
     day: "25",
     time: "4:00 – 5:00 PM (IST)",
-    location: "BPPIMT Campus",
+    location: "C BLOCK, BPPIMT Campus",
     seats: "Open Registration",
     rsvpUrl: DIRECT_EVENT_RSVP_URL,
     status: "upcoming",
@@ -90,7 +173,6 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     up.sort((a, b) => time(a) - time(b));
     pa.sort((a, b) => time(b) - time(a));
 
-    // Include the pinned event with https://gdg.community.dev/e/mc349m/ if not already in events.json
     const alreadyExists = [...up, ...pa].some((e) => e.rsvpUrl === DIRECT_EVENT_RSVP_URL);
     if (!alreadyExists) {
       if (isPastEvent(PINNED_EVENT, now)) {
@@ -235,24 +317,39 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
               </div>
             </div>
           ) : (
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-4">
               {visibleEvents.map((event, idx) => {
                 const d = parseDate(event.date);
                 const month = event.month || (d ? MONTHS[d.getMonth()] : undefined);
                 const day = event.day || (d ? String(d.getDate()) : undefined);
                 const rsvpLink = event.rsvpUrl || DIRECT_EVENT_RSVP_URL;
+                const isFeatured = !isPastTab && idx === 0;
 
                 return (
                   <div
                     key={event.id || idx}
-                    className={`bg-surface-card border border-border-subtle hover:border-primary/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all shadow-xs hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5 group ${
-                      isPastTab ? "opacity-90" : ""
-                    }`}
+                    className={`relative overflow-hidden bg-surface-card border rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-5 group ${
+                      isFeatured
+                        ? "border-primary/40 shadow-sm hover:shadow-md"
+                        : "border-border-subtle hover:border-border-strong"
+                    } ${isPastTab ? "opacity-90" : ""}`}
                   >
-                    <div className="flex items-start sm:items-center gap-3.5 sm:gap-5">
+                    {/* Subtle GDG 4-Color Top Bar & Background Puzzle Glow on Featured Card */}
+                    {isFeatured && (
+                      <>
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC05] to-[#34A853]" />
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 opacity-[0.04] bg-[radial-gradient(#4285F4_1.5px,transparent_1.5px)] [background-size:18px_18px]"
+                        />
+                      </>
+                    )}
+
+                    {/* Left Side: Date Badge + Event Details */}
+                    <div className="relative z-10 flex items-start sm:items-center gap-3.5 sm:gap-5 flex-1">
                       {/* Date Badge */}
                       {month && day && (
-                        <div className="flex-shrink-0 w-14 sm:w-18 rounded-xl overflow-hidden border border-border-subtle bg-surface-page text-center">
+                        <div className="flex-shrink-0 w-14 sm:w-18 rounded-xl overflow-hidden border border-border-subtle bg-surface-page text-center shadow-xs">
                           <div
                             className={`py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold tracking-wider text-white ${
                               isPastTab
@@ -272,9 +369,9 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
 
                       {/* Details */}
                       <div>
-                        <div className="flex flex-wrap items-center gap-2 mb-1 sm:mb-1.5">
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
                           {!isPastTab && event.tag && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gdg-blue/10 text-gdg-blue text-[11px] sm:text-xs font-semibold">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gdg-blue/10 text-gdg-blue text-[11px] sm:text-xs font-semibold">
                               <Calendar className="w-3 h-3" />
                               {event.tag}
                             </span>
@@ -287,26 +384,26 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                           )}
                           {event.location && (
                             <span className="inline-flex items-center gap-1 text-text-secondary text-[11px] sm:text-xs font-medium">
-                              <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-text-tertiary" />
+                              <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#EA4335]" />
                               {event.location}
                             </span>
                           )}
                           {event.time && (
                             <span className="inline-flex items-center gap-1 text-text-secondary text-[11px] sm:text-xs font-medium before:content-['•'] before:mr-2 before:text-text-tertiary">
-                              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-text-tertiary" />
+                              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FBBC05]" />
                               {event.time}
                             </span>
                           )}
                           {!isPastTab && event.seats && (
                             <span className="inline-flex items-center gap-1 text-text-secondary text-[11px] sm:text-xs font-medium before:content-['•'] before:mr-2 before:text-text-tertiary">
-                              <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-text-tertiary" />
+                              <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#34A853]" />
                               {event.seats}
                             </span>
                           )}
                         </div>
 
                         {event.title && (
-                          <h3 className="font-heading text-sm sm:text-lg font-bold text-text-primary group-hover:text-primary transition-colors">
+                          <h3 className="font-heading text-base sm:text-lg font-bold text-text-primary group-hover:text-primary transition-colors">
                             <Link
                               href={rsvpLink}
                               target="_blank"
@@ -318,40 +415,50 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                           </h3>
                         )}
                         {event.description && (
-                          <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-2xl leading-snug sm:leading-relaxed">
+                          <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-xl leading-snug sm:leading-relaxed">
                             {event.description}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Direct Registration / RSVP Action Button */}
-                    {!isPastTab && (
-                      <div className="flex-shrink-0 flex items-center md:justify-end">
-                        <Link
-                          href={rsvpLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full md:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-                        >
-                          <span>Register / RSVP</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        </Link>
-                      </div>
-                    )}
-                    {isPastTab && event.recapUrl && (
-                      <div className="flex-shrink-0 flex items-center md:justify-end">
+                    {/* Right Side: GDG Build.Learn.Connect Visual Card + Direct RSVP Button */}
+                    <div className="relative z-10 flex flex-col sm:flex-row lg:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 flex-shrink-0">
+                      {isFeatured && (
+                        <div className="w-full sm:w-52">
+                          <GdgCommunityArtwork />
+                        </div>
+                      )}
+
+                      {!isPastTab && (
+                        <div className="flex flex-col items-stretch sm:items-end justify-center gap-1.5">
+                          <Link
+                            href={rsvpLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative w-full sm:w-auto px-5 py-2.5 sm:py-3 rounded-full bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 group/btn"
+                          >
+                            <span>Register / RSVP</span>
+                            <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                          </Link>
+                          <span className="text-[10px] text-text-tertiary text-center sm:text-right">
+                            Your journey starts here →
+                          </span>
+                        </div>
+                      )}
+
+                      {isPastTab && event.recapUrl && (
                         <Link
                           href={event.recapUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full md:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border border-border-subtle text-text-primary hover:bg-surface-subtle text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                          className="w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border border-border-subtle text-text-primary hover:bg-surface-subtle text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                         >
                           <span>View Recap</span>
                           <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </Link>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 );
               })}
