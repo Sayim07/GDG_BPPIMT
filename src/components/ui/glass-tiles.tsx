@@ -241,7 +241,7 @@ export function GlassTiles({
     const m = { x: 0, y: 0, tx: 0, ty: 0, l: 0, tl: 0 };
 
     const size = () => {
-      scale = Math.min(devicePixelRatio || 1, 2) * (coarse ? 0.6 : 0.85);
+      scale = coarse ? 0.75 : Math.min(window.devicePixelRatio || 1, 1.5);
       cv.width = Math.max(1, Math.round(el.clientWidth * scale));
       cv.height = Math.max(1, Math.round(el.clientHeight * scale));
       gl.viewport(0, 0, cv.width, cv.height);
@@ -270,9 +270,11 @@ export function GlassTiles({
     const tick = (now: number) => {
       raf = 0;
       if (!alive || !visible || document.hidden) return;
+      if (coarse) {
+        frame();
+        return;
+      }
       const dt = last ? Math.min(0.1, (now - last) / 1000) : 0.016;
-      if (coarse && now - last < 33)
-        return void (raf = requestAnimationFrame(tick));
       last = now;
       t += dt * speed;
       m.x += (m.tx - m.x) * 0.12;
@@ -280,19 +282,19 @@ export function GlassTiles({
       m.l += (m.tl - m.l) * 0.06;
       frame();
 
-      // Intelligent Idle Sleep: If pointer settled and light rested, sleep
+      // Intelligent Idle Sleep: If pointer settled and light rested, sleep (stops extra background GPU calculation)
       const isMoving =
-        Math.abs(m.tx - m.x) > 0.5 ||
-        Math.abs(m.ty - m.y) > 0.5 ||
-        Math.abs(m.tl - m.l) > 0.01;
+        Math.abs(m.tx - m.x) > 0.4 ||
+        Math.abs(m.ty - m.y) > 0.4 ||
+        Math.abs(m.tl - m.l) > 0.005;
 
-      if (isMoving || m.tl > 0) {
+      if (isMoving) {
         raf = requestAnimationFrame(tick);
       }
     };
 
     const start = () => {
-      if (reduced) return frame();
+      if (reduced || coarse) return frame();
       if (!raf && alive && visible) {
         last = 0;
         raf = requestAnimationFrame(tick);
@@ -340,6 +342,10 @@ export function GlassTiles({
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
       if (visible) start();
+      else if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
     });
     io.observe(el);
 

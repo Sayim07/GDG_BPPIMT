@@ -17,11 +17,16 @@ export function CardsGlassBackground() {
     setMounted(true);
   }, []);
 
-  const isDark = mounted && resolvedTheme === "dark";
+  const isDark = mounted
+    ? typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : resolvedTheme === "dark"
+    : false;
 
   return (
     <div className="w-full h-full">
       <GlassTiles
+        key={isDark ? "dark" : "light"}
         isDark={isDark}
         columns={15}
         speed={0.5}

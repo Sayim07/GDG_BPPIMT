@@ -15,15 +15,15 @@ import { Sparkles, User, ChevronLeft, ChevronRight } from 'lucide-react';
 export type DepthCarouselItem =
   | string
   | {
-      image?: string;
-      alt?: string;
-      name?: string;
-      role?: string;
-      domain?: string;
-      category?: 'organizer' | 'lead' | 'core';
-      badgeColor?: 'blue' | 'red' | 'yellow' | 'green';
-      bio?: string;
-    };
+    image?: string;
+    alt?: string;
+    name?: string;
+    role?: string;
+    domain?: string;
+    category?: 'organizer' | 'lead' | 'core';
+    badgeColor?: 'blue' | 'red' | 'yellow' | 'green';
+    bio?: string;
+  };
 
 type TiltDirection = 'left' | 'right';
 
@@ -323,8 +323,8 @@ export const DepthCarousel = ({
       const cfg = cfgRef.current;
       const proxy = { p: posRef.current };
       const isMobile = isMobileRef.current;
-      const dur = animate && !reducedRef.current ? (isMobile ? 0.42 : cfg.duration / 1000) : 0;
-      const ease = isMobile ? 'power2.out' : cfg.ease;
+      const dur = animate && !reducedRef.current ? (isMobile ? 0.35 : Math.min(cfg.duration / 1000, 0.45)) : 0;
+      const ease = 'power2.out';
       tweenRef.current = gsap.to(proxy, {
         p: target,
         duration: dur,
@@ -659,11 +659,11 @@ export const DepthCarousel = ({
               onClick={() => onCardClick(i)}
             >
               {/* Top Accent Strip with Google Colors */}
-              <div className="absolute top-0 inset-x-0 z-30 h-1.5 w-full grid grid-cols-4">
-                <div className="bg-[#4285F4] h-full" />
-                <div className="bg-[#EA4335] h-full" />
-                <div className="bg-[#FBBC04] h-full" />
-                <div className="bg-[#34A853] h-full" />
+              <div className="absolute top-0 inset-x-0 z-30 h-1.5 w-full grid grid-cols-4"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #4285F4 0%, #4285F4 15%, #EA4335 36%, #EA4335 50%, #FBBC04 66%, #FBBC04 78%, #34A853 92%, #34A853 100%)",
+                }}>
               </div>
 
               {item.image ? (
@@ -702,8 +702,8 @@ export const DepthCarousel = ({
                         {item.category === 'organizer'
                           ? 'Organizer'
                           : item.category === 'lead'
-                          ? `${item.domain || ''} Lead`
-                          : (item.domain || 'Core Team')}
+                            ? `${item.domain || ''} Lead`
+                            : (item.domain || 'Core Team')}
                       </span>
                     </span>
                   </div>
@@ -738,8 +738,8 @@ export const DepthCarousel = ({
                       {item.category === 'organizer'
                         ? 'On-Campus Organizer'
                         : item.category === 'lead'
-                        ? 'Domain Team Lead'
-                        : 'Core Team'}
+                          ? 'Domain Team Lead'
+                          : 'Core Team'}
                     </span>
                   </div>
                 </div>
@@ -747,9 +747,8 @@ export const DepthCarousel = ({
 
               {/* Tint overlay during 3D depth transition */}
               <span
-                className={`pointer-events-none absolute inset-0 opacity-0 ${
-                  !tint ? 'bg-white/25 dark:bg-[#05070c]/45' : ''
-                }`}
+                className={`pointer-events-none absolute inset-0 opacity-0 ${!tint ? 'bg-white/25 dark:bg-[#05070c]/45' : ''
+                  }`}
                 ref={el => {
                   overlayRefs.current[i] = el;
                 }}
@@ -794,9 +793,8 @@ export const DepthCarousel = ({
               role="tab"
               aria-selected={active === i}
               aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
-                active === i ? 'w-6 bg-primary' : 'w-2 bg-text-tertiary/30 hover:bg-text-tertiary/50'
-              }`}
+              className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${active === i ? 'w-6 bg-primary' : 'w-2 bg-text-tertiary/30 hover:bg-text-tertiary/50'
+                }`}
               onClick={() => setFocus(i, true)}
             />
           ))}

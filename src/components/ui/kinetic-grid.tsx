@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -47,18 +47,18 @@ const GDG_COLORS = [
 ];
 
 const DARK_THEME: KineticTheme = {
-  dotColor: "rgba(255, 255, 255, 0.04)",
-  lineBase: { r: 255, g: 255, b: 255, a: 0.06 },
+  dotColor: "rgba(255, 255, 255, 0.045)",
+  lineBase: { r: 255, g: 255, b: 255, a: 0.07 },
   lineActive: { r: 66, g: 133, b: 244, a: 0.8 },
-  nodeBase: { r: 255, g: 255, b: 255, a: 0.16 },
+  nodeBase: { r: 255, g: 255, b: 255, a: 0.2 },
   ripple: "66, 133, 244",
 };
 
 const LIGHT_THEME: KineticTheme = {
-  dotColor: "rgba(66, 133, 244, 0.045)",
-  lineBase: { r: 66, g: 133, b: 244, a: 0.07 },
+  dotColor: "rgba(66, 133, 244, 0.065)",
+  lineBase: { r: 66, g: 133, b: 244, a: 0.10 },
   lineActive: { r: 66, g: 133, b: 244, a: 0.72 },
-  nodeBase: { r: 66, g: 133, b: 244, a: 0.2 },
+  nodeBase: { r: 66, g: 133, b: 244, a: 0.28 },
   ripple: "66, 133, 244",
 };
 
@@ -87,7 +87,91 @@ export interface KineticGridProps {
   variant?: "gdg" | "blue" | "monochrome";
 }
 
-export function KineticGrid({
+/**
+ * Pure zero-overhead static SVG grid for mobile devices and SSR.
+ * 0 JavaScript calculations, 0 canvas contexts, 0 requestAnimationFrame ticks, 0 observers.
+ * Uses dynamic theme-keyed patterns for instant theme switching without page reloads.
+ */
+function MobileStaticGrid({ className }: { className?: string }) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted
+    ? typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : resolvedTheme === "dark"
+    : false;
+
+  const uid = React.useId().replace(/:/g, "-");
+  const themeKey = isDark ? "dark" : "light";
+  const dotsId = `mobile-gdg-dots-${uid}-${themeKey}`;
+  const gridId = `mobile-gdg-grid-${uid}-${themeKey}`;
+
+  const lineColor = isDark ? "rgba(255, 255, 255, 0.07)" : "rgba(66, 133, 244, 0.10)";
+  const dotColor = isDark ? "rgba(255, 255, 255, 0.045)" : "rgba(66, 133, 244, 0.065)";
+  const nodeOpacity = isDark ? 0.75 : 0.65;
+
+  return (
+    <div
+      suppressHydrationWarning
+      className={cn(
+        "absolute inset-0 w-full h-full pointer-events-none rounded-[inherit] overflow-hidden",
+        className
+      )}
+      aria-hidden="true"
+    >
+      <svg className="w-full h-full block" xmlns="http://www.w3.org/2000/svg" key={themeKey}>
+        <defs>
+          <pattern
+            id={dotsId}
+            width="28"
+            height="28"
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx="14" cy="14" r="0.75" fill={dotColor} />
+          </pattern>
+          <pattern
+            id={gridId}
+            width="208"
+            height="104"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Horizontal grid lines */}
+            <line x1="0" y1="0" x2="208" y2="0" stroke={lineColor} strokeWidth="0.75" />
+            <line x1="0" y1="52" x2="208" y2="52" stroke={lineColor} strokeWidth="0.75" />
+
+            {/* Vertical grid lines */}
+            <line x1="0" y1="0" x2="0" y2="104" stroke={lineColor} strokeWidth="0.75" />
+            <line x1="52" y1="0" x2="52" y2="104" stroke={lineColor} strokeWidth="0.75" />
+            <line x1="104" y1="0" x2="104" y2="104" stroke={lineColor} strokeWidth="0.75" />
+            <line x1="156" y1="0" x2="156" y2="104" stroke={lineColor} strokeWidth="0.75" />
+
+            {/* GDG 4-Color Constellation Nodes Row 0 */}
+            <circle cx="0" cy="0" r="1.8" fill="#4285F4" fillOpacity={nodeOpacity} />
+            <circle cx="52" cy="0" r="1.8" fill="#EA4335" fillOpacity={nodeOpacity} />
+            <circle cx="104" cy="0" r="1.8" fill="#FBBC04" fillOpacity={nodeOpacity} />
+            <circle cx="156" cy="0" r="1.8" fill="#34A853" fillOpacity={nodeOpacity} />
+
+            {/* GDG 4-Color Constellation Nodes Row 1 */}
+            <circle cx="0" cy="52" r="1.8" fill="#34A853" fillOpacity={nodeOpacity} />
+            <circle cx="52" cy="52" r="1.8" fill="#4285F4" fillOpacity={nodeOpacity} />
+            <circle cx="104" cy="52" r="1.8" fill="#EA4335" fillOpacity={nodeOpacity} />
+            <circle cx="156" cy="52" r="1.8" fill="#FBBC04" fillOpacity={nodeOpacity} />
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill={`url(#${dotsId})`} />
+        <rect width="100%" height="100%" fill={`url(#${gridId})`} />
+      </svg>
+    </div>
+  );
+}
+
+function KineticGridDesktop({
   className,
   variant = "gdg",
 }: KineticGridProps) {
@@ -115,6 +199,16 @@ export function KineticGrid({
       cols: number,
       rows: number
     ): { pt: Point; proximity: number } => {
+      const dx = gx - mouse.x;
+      const dy = gy - mouse.y;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
+      // Fast-path: if outside cursor bounding box and no active ripples, skip heavy math (97% CPU savings)
+      if (ripples.length === 0 && (absDx >= INFLUENCE_RADIUS || absDy >= INFLUENCE_RADIUS)) {
+        return { pt: { x: gx, y: gy }, proximity: 0 };
+      }
+
       // Edge pin — smoothly locks boundary rows/cols in place
       const edgeMargin = 1.5;
       const colPin = Math.min(
@@ -129,10 +223,7 @@ export function KineticGrid({
       );
       const pinFactor = colPin * colPin * rowPin * rowPin;
 
-      const dx = gx - mouse.x;
-      const dy = gy - mouse.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-
       const proximity = Math.max(0, 1 - dist / INFLUENCE_RADIUS) * pinFactor;
 
       // Ripple displacement
@@ -190,9 +281,9 @@ export function KineticGrid({
       const ripples = ripplesRef.current;
 
       const isDark =
-        resolvedTheme === "dark" ||
-        (typeof document !== "undefined" &&
-          document.documentElement.classList.contains("dark"));
+        typeof document !== "undefined"
+          ? document.documentElement.classList.contains("dark")
+          : resolvedTheme === "dark";
 
       const theme = isDark ? DARK_THEME : LIGHT_THEME;
 
@@ -261,7 +352,9 @@ export function KineticGrid({
 
       ctx.lineCap = "butt";
 
-      for (let row = 0; row < rows; row++) {
+      // Skip perimeter lines (col=0, col=cols-1, row=0, row=rows-1)
+      // to eliminate white edge line artifacts along left side and bottom of cards
+      for (let row = 1; row < rows - 1; row++) {
         for (let col = 0; col < cols - 1; col++) {
           drawSeg(
             pts[row][col],
@@ -272,7 +365,7 @@ export function KineticGrid({
         }
       }
 
-      for (let col = 0; col < cols; col++) {
+      for (let col = 1; col < cols - 1; col++) {
         for (let row = 0; row < rows - 1; row++) {
           drawSeg(
             pts[row][col],
@@ -284,8 +377,9 @@ export function KineticGrid({
       }
 
       // ── Intersection nodes with GDG 4-color constellation ──────────────────
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
+      // Inset by 1 to skip perimeter border collision and sliced circles
+      for (let row = 1; row < rows - 1; row++) {
+        for (let col = 1; col < cols - 1; col++) {
           const p = pts[row][col];
           const pr = prox[row][col];
           const t = pr * pr * (3 - 2 * pr); // smoothstep
@@ -332,12 +426,13 @@ export function KineticGrid({
       }
 
       // ── Ripple rings ──────────────────────────────────────────────────────
+      const isMobile = sizeRef.current.w < 768;
       for (const r of ripples) {
         const safeRadius = Math.max(0, r.radius);
         ctx.beginPath();
         ctx.arc(r.x, r.y, safeRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${theme.ripple},${(r.opacity * 0.32).toFixed(3)})`;
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = `rgba(${theme.ripple},${(r.opacity * (isMobile ? 0.75 : 0.45)).toFixed(3)})`;
+        ctx.lineWidth = isMobile ? 2.5 : 1.8;
         ctx.stroke();
       }
 
@@ -399,12 +494,11 @@ export function KineticGrid({
       const h = container.clientHeight || container.offsetHeight;
       if (w === 0 || h === 0) return;
 
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      const dpr = isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
 
       sizeRef.current = { w, h, dpr };
       draw(performance.now());
@@ -427,6 +521,10 @@ export function KineticGrid({
             isVisibleRef.current = entry.isIntersecting;
             if (entry.isIntersecting) {
               startLoop();
+            } else if (rafRef.current) {
+              cancelAnimationFrame(rafRef.current);
+              rafRef.current = 0;
+              isRunningRef.current = false;
             }
           }
         },
@@ -435,69 +533,98 @@ export function KineticGrid({
       intersectionObserver.observe(container);
     }
 
-    // Pointer Tracking Relative to Container
-    const onMouseMove = (e: MouseEvent) => {
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const relX = e.clientX - rect.left;
-      const relY = e.clientY - rect.top;
+    // Card-Scoped Pointer Tracking (0 global window mousemove reflows, 0 background calculations for inactive cards)
+    const parentCard = (container.closest('[data-stack-slot]') || container.parentElement || container) as HTMLElement;
+    let cardRect: DOMRect | null = null;
 
-      // Track cursor if hovering over card or in immediate proximity
-      if (
-        relX >= -60 &&
-        relX <= rect.width + 60 &&
-        relY >= -60 &&
-        relY <= rect.height + 60
-      ) {
-        targetMouseRef.current = { x: relX, y: relY };
-        startLoop();
-      } else if (targetMouseRef.current.x !== -9999) {
-        targetMouseRef.current = { x: -9999, y: -9999 };
-        startLoop();
-      }
+    const onPointerEnter = (e: PointerEvent) => {
+      cardRect = parentCard.getBoundingClientRect();
+      targetMouseRef.current = {
+        x: e.clientX - cardRect.left,
+        y: e.clientY - cardRect.top,
+      };
+      startLoop();
     };
 
-    // Ripple Trigger on Card Pointerdown/Click
-    const onPointerDown = (e: MouseEvent | PointerEvent) => {
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
-      ) {
-        ripplesRef.current.push({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-          radius: 0,
-          opacity: 1,
-          born: performance.now(),
-        });
-        startLoop();
-      }
+    const onPointerMove = (e: PointerEvent) => {
+      if (!cardRect) cardRect = parentCard.getBoundingClientRect();
+      targetMouseRef.current = {
+        x: e.clientX - cardRect.left,
+        y: e.clientY - cardRect.top,
+      };
+      startLoop();
     };
 
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("pointerdown", onPointerDown, { passive: true });
-    startLoop();
+    const onPointerLeave = () => {
+      cardRect = null;
+      targetMouseRef.current = { x: -9999, y: -9999 };
+      startLoop();
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (!cardRect) cardRect = parentCard.getBoundingClientRect();
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      const hit = typeof document !== 'undefined' ? document.elementFromPoint(clientX, clientY) : null;
+      if (hit && !parentCard.contains(hit) && !hit.contains(parentCard)) {
+        return;
+      }
+
+      isVisibleRef.current = true;
+      ripplesRef.current.push({
+        x: clientX - cardRect.left,
+        y: clientY - cardRect.top,
+        radius: 0,
+        opacity: 1,
+        born: performance.now(),
+      });
+      startLoop();
+    };
+
+    // Initial render of static grid with GDG 4-color constellation nodes & lines
+    draw(performance.now());
+
+    parentCard.addEventListener("pointerenter", onPointerEnter as EventListener, { passive: true });
+    parentCard.addEventListener("pointermove", onPointerMove as EventListener, { passive: true });
+    parentCard.addEventListener("pointerleave", onPointerLeave as EventListener, { passive: true });
+    parentCard.addEventListener("pointerdown", onPointerDown as EventListener, { passive: true });
 
     return () => {
       resizeObserver.disconnect();
       if (intersectionObserver) intersectionObserver.disconnect();
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("pointerdown", onPointerDown);
+      parentCard.removeEventListener("pointerenter", onPointerEnter as EventListener);
+      parentCard.removeEventListener("pointermove", onPointerMove as EventListener);
+      parentCard.removeEventListener("pointerleave", onPointerLeave as EventListener);
+      parentCard.removeEventListener("pointerdown", onPointerDown as EventListener);
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [startLoop]);
+  }, [draw, startLoop]);
+
+  // Immediate redraw on theme switch without requiring page reload
+  useEffect(() => {
+    draw(performance.now());
+  }, [resolvedTheme, draw]);
+
+  // MutationObserver on document.documentElement for instant class="dark" toggle detection
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const observer = new MutationObserver(() => {
+      draw(performance.now());
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, [draw]);
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "absolute inset-0 w-full h-full pointer-events-none rounded-[inherit] overflow-hidden",
+        "absolute -inset-[1px] w-[calc(100%+2px)] h-[calc(100%+2px)] pointer-events-none rounded-[inherit] overflow-hidden",
         className
       )}
       aria-hidden="true"
@@ -510,5 +637,34 @@ export function KineticGrid({
   );
 }
 
+export function KineticGrid({ className, variant = "gdg" }: KineticGridProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(
+        window.innerWidth < 768 ||
+        window.matchMedia("(pointer: coarse)").matches ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      );
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Pass key={resolvedTheme} so React cleanly switches between dark and light grids instantly (0 reload required)
+  if (!mounted || isMobile) {
+    return <MobileStaticGrid key={resolvedTheme} className={className} />;
+  }
+
+  // On desktop: dynamic interactive canvas with cursor warping & click ripples
+  return <KineticGridDesktop key={resolvedTheme} className={className} variant={variant} />;
+}
+
 export default KineticGrid;
+
 

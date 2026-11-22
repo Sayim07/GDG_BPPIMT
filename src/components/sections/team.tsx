@@ -107,26 +107,28 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
         <div className="w-full max-w-4xl">
           <DepthCarousel
             items={carouselItems}
-            cardWidth={280}
-            cardHeight={360}
-            depth={180}
-            spread={80}
-            tilt={16}
+            cardWidth={270}
+            cardHeight={340}
+            depth={160}
+            spread={70}
+            tilt={14}
             visibleCards={3}
             autoplay={true}
-            autoplayDelay={3600}
-            className={isCard ? "h-[385px] sm:h-[400px]" : "h-[405px] sm:h-[425px]"}
+            autoplayDelay={4200}
+            duration={420}
+            showIndicators={false}
+            className={isCard ? "h-[355px] sm:h-[375px]" : "h-[385px] sm:h-[405px]"}
           />
         </div>
 
-        {/* View Full Team CTA Button - Always fully in view */}
-        <div className={`${isCard ? "mt-3 sm:mt-4 mb-0" : "mt-8 sm:mt-10 mb-2"} text-center`}>
+        {/* View Full Team CTA Button - Always fully visible & accessible */}
+        <div className="mt-4 sm:mt-5 pb-2 text-center z-20">
           <Link
             href="/team"
-            className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white hover:bg-primary-hover font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
             <span>View Full Team</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -209,7 +211,7 @@ export function Team({ isCard = false }: { isCard?: boolean } = {}) {
   );
 
   if (isCard) {
-    return <div className="p-4 sm:p-5 sm:pb-4">{content}</div>;
+    return <div className="p-4 sm:p-6 pb-7 sm:pb-8">{content}</div>;
   }
 
   return (

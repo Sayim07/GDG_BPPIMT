@@ -12,7 +12,7 @@ export default function Home() {
     <main className="w-full flex flex-col">
       <Hero />
       {/* Cards Section with Refractive GDG GlassTiles Background */}
-      <section className="relative w-full">
+      <section className="relative w-full bg-surface-page dark:bg-[#12151b]">
         {/* Sticky Background for the Cards Area */}
         <div className="sticky top-0 left-0 w-full h-screen overflow-hidden pointer-events-none z-0">
           <CardsGlassBackground />
