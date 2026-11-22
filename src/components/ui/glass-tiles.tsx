@@ -3,13 +3,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import "./glass-tiles-utils/glass-tiles.css";
 
-/**
- * Glass Tiles with GDG 4-Color Chromatic Refraction
- * A wall of rounded architectural glass tiles with Google brand light beams moving behind it.
- * Each tile refracts the light through its bevel, splitting into authentic GDG colors:
- * Google Blue (#4285F4), Google Red (#EA4335), Google Yellow (#FBBC04), and Google Green (#34A853).
- */
-
 const VERT = `attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }`;
 
 const FRAG = `precision highp float;
@@ -29,47 +22,36 @@ void main(){
   vec2 id = floor(p / size);
   vec2 q = (fract(p / size) - 0.5) * 2.0;
 
-  // Squircle (|x|^9 + |y|^9)^(1/9): refined architectural rounded tiles
   vec2 aq = abs(q);
   float sq = pow(pow(aq.x, 9.0) + pow(aq.y, 9.0), 1.0 / 9.0);
-  float d = sq - 0.975; // Clean hairline grout
+  float d = sq - 0.975;
 
-  // Grout lines
   if (d > 0.0) {
     gl_FragColor = vec4(uGrout, 1.0);
     return;
   }
 
-  // Bevel edge curve: 0.0 at tile interior/center, rising to 1.0 at grout boundary
   float edge = clamp(1.0 + d / 0.42, 0.0, 1.0);
-
-  // Center of the tile is 100% pure uGround (#ffffff in light, deep #12151b in dark)
-  // No gray dish or darkening in the middle
   vec3 col = uGround;
 
-  // Directional lighting: subtle highlight from top-left, delicate soft shadow on bottom-right
   float lightDir = -q.y * 0.707 - q.x * 0.707;
   float specLight = max(0.0, lightDir);
   float shadeLight = max(0.0, -lightDir);
 
   if (uIsDark > 0.5) {
-    // Dark mode: Deep obsidian glass tiles with crisp subtle bevel highlight
     float spec = pow(edge, 3.5) * specLight * 0.14;
     float shade = pow(edge, 2.5) * shadeLight * 0.03;
     col = col - vec3(shade) + vec3(spec);
 
-    // Soft neutral hover sheen
     vec2 m = uMouse / uRes.y;
     float dMouse = length(p - m);
     float hoverGlow = exp(-pow(dMouse / 0.35, 2.0)) * uLamp * 0.10 * pow(edge, 1.5);
     col += vec3(hoverGlow);
   } else {
-    // Light mode: Proper pure white architectural tiles (spotless white center)
     float spec = pow(edge, 4.0) * specLight * 0.12;
     float shade = pow(edge, 2.8) * shadeLight * 0.04;
     col = col - vec3(shade) + vec3(spec);
 
-    // Soft neutral hover sheen
     vec2 m = uMouse / uRes.y;
     float dMouse = length(p - m);
     float hoverGlow = exp(-pow(dMouse / 0.35, 2.0)) * uLamp * 0.06 * pow(edge, 1.5);
@@ -139,9 +121,6 @@ const GT_CSS = `
   width: 100%;
   height: 100%;
 }
-.gt[data-fallback] {
-  background: var(--gt-ground, #f8fafd);
-}
 `;
 
 export type GlassTilesProps = {
@@ -157,8 +136,18 @@ export type GlassTilesProps = {
   children?: ReactNode;
 };
 
+// Reads the actual rendered CSS background color of the host div
+function isElementDark(el: HTMLElement): boolean {
+  const bg = getComputedStyle(el).backgroundColor;
+  const match = bg.match(/\d+/g);
+  if (match && match.length >= 3) {
+    const brightness = (Number(match[0]) + Number(match[1]) + Number(match[2])) / 3;
+    return brightness < 128;
+  }
+  return document.documentElement.classList.contains("dark");
+}
+
 export function GlassTiles({
-  isDark = false,
   palette,
   columns = 15,
   speed = 0.65,
@@ -171,11 +160,6 @@ export function GlassTiles({
 }: GlassTilesProps) {
   const host = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-
-  const finalGround =
-    groundColor || palette?.ground || (isDark ? GDG_DARK_GROUND : GDG_LIGHT_GROUND);
-  const finalGrout =
-    groutColor || palette?.grout || (isDark ? GDG_DARK_GROUT : GDG_LIGHT_GROUT);
 
   useEffect(() => {
     const el = host.current,
@@ -198,19 +182,22 @@ export function GlassTiles({
     };
 
     const pr = gl.createProgram()!;
-    gl.attachShader(pr, mk(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(pr, mk(gl.FRAGMENT_SHADER, FRAG));
+    const vs = mk(gl.VERTEX_SHADER, VERT);
+    const fs = mk(gl.FRAGMENT_SHADER, FRAG);
+    gl.attachShader(pr, vs);
+    gl.attachShader(pr, fs);
     gl.linkProgram(pr);
 
     if (!gl.getProgramParameter(pr, gl.LINK_STATUS))
       return void (el.dataset.fallback = "");
 
     gl.useProgram(pr);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW,
+      gl.STATIC_DRAW
     );
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
@@ -227,18 +214,42 @@ export function GlassTiles({
       grout: U("uGrout"),
     };
 
-    gl.uniform1f(u.isDark, isDark ? 1.0 : 0.0);
-    gl.uniform3f(u.ground, ...rgb(finalGround));
-    gl.uniform3f(u.grout, ...rgb(finalGrout));
-
     let scale = 1,
       raf = 0,
+      themeRaf = 0,
       visible = true,
       alive = true,
       last = 0,
       t = 12;
 
     const m = { x: 0, y: 0, tx: 0, ty: 0, l: 0, tl: 0 };
+
+    const frame = () => {
+      gl.uniform1f(u.time, t);
+      gl.uniform2f(u.mouse, m.x, m.y);
+      gl.uniform1f(u.lamp, m.l);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+
+    // Sync WebGL uniforms directly from the host div's computed Tailwind dark: style
+    const syncThemeFromCSS = () => {
+      if (!alive) return;
+      const dark = isElementDark(el);
+      const ground = groundColor || palette?.ground || (dark ? GDG_DARK_GROUND : GDG_LIGHT_GROUND);
+      const grout = groutColor || palette?.grout || (dark ? GDG_DARK_GROUT : GDG_LIGHT_GROUT);
+
+      gl.useProgram(pr);
+      gl.uniform1f(u.isDark, dark ? 1.0 : 0.0);
+      gl.uniform3f(u.ground, ...rgb(ground));
+      gl.uniform3f(u.grout, ...rgb(grout));
+      frame();
+    };
+
+    const scheduleThemeSync = () => {
+      cancelAnimationFrame(themeRaf);
+      // Wait 1 frame so the browser finishes applying CSS dark: styles first
+      themeRaf = requestAnimationFrame(syncThemeFromCSS);
+    };
 
     const size = () => {
       scale = coarse ? 0.75 : Math.min(window.devicePixelRatio || 1, 1.5);
@@ -247,10 +258,6 @@ export function GlassTiles({
       gl.viewport(0, 0, cv.width, cv.height);
       gl.uniform2f(u.res, cv.width, cv.height);
 
-      // Responsive column count tuned for clean UI proportions:
-      // Mobile (<640px): 8 columns
-      // Tablet (640-1024px): 12 columns
-      // Desktop (>1024px): 15 columns
       let effectiveCols = columns;
       if (el.clientWidth < 640) {
         effectiveCols = Math.max(7, Math.round(columns * 0.55));
@@ -258,13 +265,6 @@ export function GlassTiles({
         effectiveCols = Math.max(10, Math.round(columns * 0.8));
       }
       gl.uniform1f(u.cols, effectiveCols);
-    };
-
-    const frame = () => {
-      gl.uniform1f(u.time, t);
-      gl.uniform2f(u.mouse, m.x, m.y);
-      gl.uniform1f(u.lamp, m.l);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
     const tick = (now: number) => {
@@ -282,7 +282,6 @@ export function GlassTiles({
       m.l += (m.tl - m.l) * 0.06;
       frame();
 
-      // Intelligent Idle Sleep: If pointer settled and light rested, sleep (stops extra background GPU calculation)
       const isMoving =
         Math.abs(m.tx - m.x) > 0.4 ||
         Math.abs(m.ty - m.y) > 0.4 ||
@@ -301,8 +300,21 @@ export function GlassTiles({
       }
     };
 
+    let cachedRect = el.getBoundingClientRect();
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 100);
+    };
+
     const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
+      if (isScrolling) return;
+      const r = cachedRect;
       if (r.width === 0 || r.height === 0) return;
       if (
         e.clientY < r.top ||
@@ -333,7 +345,19 @@ export function GlassTiles({
       }
     };
 
+    // Watch <html> for any theme attribute change (class, data-theme, style)
+    const mo = new MutationObserver(scheduleThemeSync);
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme", "style"],
+    });
+
+    // Also watch OS-level theme changes if user is on "system" theme
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    mql.addEventListener("change", scheduleThemeSync);
+
     const ro = new ResizeObserver(() => {
+      cachedRect = el.getBoundingClientRect();
       size();
       frame();
     });
@@ -351,6 +375,7 @@ export function GlassTiles({
 
     const onVis = () => !document.hidden && start();
     document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     if (!coarse) {
       window.addEventListener("pointermove", onMove, { passive: true });
@@ -358,30 +383,37 @@ export function GlassTiles({
     }
 
     size();
-    frame();
+    syncThemeFromCSS();
     start();
 
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(themeRaf);
+      mo.disconnect();
+      mql.removeEventListener("change", scheduleThemeSync);
       ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("scroll", onScroll);
       if (!coarse) {
         window.removeEventListener("pointermove", onMove);
         document.documentElement.removeEventListener("pointerleave", onLeave);
       }
+      if (pr) {
+        gl.deleteProgram(pr);
+        gl.deleteShader(vs);
+        gl.deleteShader(fs);
+        if (buf) gl.deleteBuffer(buf);
+      }
     };
-  }, [isDark, finalGround, finalGrout, columns, speed, motion]);
+  }, [columns, speed, motion, groundColor, groutColor, palette?.ground, palette?.grout]);
 
   return (
     <div
       ref={host}
-      className={`gt ${className}`}
-      style={{
-        ["--gt-ground" as string]: finalGround,
-        ...style,
-      }}
+      className={`gt bg-[#ffffff] dark:bg-[#12151b] ${className}`}
+      style={style}
     >
       <style>{GT_CSS}</style>
       <canvas ref={canvas} className="gt__canvas" aria-hidden="true" />
