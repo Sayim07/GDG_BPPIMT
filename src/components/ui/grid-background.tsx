@@ -2,17 +2,50 @@ import * as React from "react";
 
 interface GridBackgroundProps {
   className?: string;
-  variant?: "default" | "warm-paper";
+  variant?: "default" | "warm-paper" | "retro-green";
 }
 
 /**
  * Grid Background Component
- * Supports default modern cyber-blue grid or retro warm-paper neo-brutalist grid.
+ * Supports default modern cyber-blue grid, retro warm-paper, or retro-green technical grid.
  */
 export function GridBackground({
   className = "",
   variant = "default",
 }: GridBackgroundProps) {
+  if (variant === "retro-green") {
+    return (
+      <div
+        className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${className}`}
+        aria-hidden="true"
+      >
+        {/* 1. Subtle Greenish Sunbeam / Ambient Glow */}
+        <div className="absolute top-0 inset-x-0 h-[700px] bg-gradient-to-b from-[#34A853]/20 via-[#EEF7EE]/30 to-transparent dark:from-[#34A853]/15 dark:via-transparent pointer-events-none" />
+
+        {/* 2. Full-Height Uniform Greenish Orthogonal Grid */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(52, 168, 83, 0.28) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(52, 168, 83, 0.28) 1px, transparent 1px)
+            `,
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        {/* 3. Subtle micro-point intersection dots for architectural texture */}
+        <div
+          className="absolute inset-0 opacity-35 dark:opacity-20"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(52, 168, 83, 0.55) 1px, transparent 1px)`,
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
+    );
+  }
+
   if (variant === "warm-paper") {
     return (
       <div
