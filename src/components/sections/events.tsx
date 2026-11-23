@@ -264,18 +264,18 @@ export function EventCardBanner({
 function BlankBlinkEventCard({ slotIndex }: { slotIndex: number }) {
   const bannerTint =
     slotIndex % 2 === 0
-      ? "bg-[#81c995]/30 border-b border-dashed border-border-strong"
-      : "bg-[#f28b82]/30 border-b border-dashed border-border-strong";
+      ? "bg-[#e6f4ea] dark:bg-[#1a2e20] border-b-2 border-dashed border-border-strong"
+      : "bg-[#fce8e6] dark:bg-[#2e1a18] border-b-2 border-dashed border-border-strong";
 
   return (
-    <div className="w-[280px] sm:w-[320px] md:w-[335px] flex-shrink-0 snap-start flex flex-col rounded-2xl border-2 border-dashed border-border-strong bg-surface-subtle/40 overflow-hidden select-none">
+    <div className="w-[280px] sm:w-[320px] md:w-[335px] flex-shrink-0 snap-start flex flex-col rounded-2xl border-2 border-dashed border-border-strong bg-surface-card shadow-xs overflow-hidden select-none">
       <div className={`${bannerTint} p-2.5 sm:p-3`}>
-        <div className="h-28 sm:h-32 w-full rounded-xl border border-dashed border-border-strong bg-surface-card/70 flex flex-col items-center justify-center p-3 text-center animate-pulse">
+        <div className="h-28 sm:h-32 w-full rounded-xl border border-dashed border-border-strong bg-surface-card flex flex-col items-center justify-center p-3 text-center animate-pulse">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#4285F4]/70 animate-ping" />
-            <span className="w-2 h-2 rounded-full bg-[#EA4335]/70" />
-            <span className="w-2 h-2 rounded-full bg-[#FBBC05]/70" />
-            <span className="w-2 h-2 rounded-full bg-[#34A853]/70" />
+            <span className="w-2 h-2 rounded-full bg-[#4285F4] animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-[#EA4335]" />
+            <span className="w-2 h-2 rounded-full bg-[#FBBC05]" />
+            <span className="w-2 h-2 rounded-full bg-[#34A853]" />
           </div>
           <p className="font-heading text-xs sm:text-sm font-bold uppercase tracking-wider text-text-secondary">
             Next Event Dropping Soon
@@ -286,7 +286,7 @@ function BlankBlinkEventCard({ slotIndex }: { slotIndex: number }) {
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 justify-between p-3.5 sm:p-4 bg-surface-card/60 animate-pulse">
+      <div className="flex flex-col flex-1 justify-between p-3.5 sm:p-4 bg-surface-card animate-pulse">
         <div className="space-y-2">
           <div className="h-4 w-3/4 rounded-md bg-surface-subtle" />
           <div className="h-3 w-full rounded-md bg-surface-subtle/80" />
@@ -297,7 +297,7 @@ function BlankBlinkEventCard({ slotIndex }: { slotIndex: number }) {
         </div>
 
         <div className="mt-4 pt-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-border-strong bg-surface-subtle/60 text-text-tertiary text-xs font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-dashed border-border-strong bg-surface-subtle text-text-tertiary text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span>Coming Soon...</span>
           </div>

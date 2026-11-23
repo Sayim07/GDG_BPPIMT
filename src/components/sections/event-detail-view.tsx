@@ -64,9 +64,9 @@ export function EventDetailView({ event }: EventDetailViewProps) {
   const visibleTabs = tabs.filter((t) => t.available);
 
   return (
-    <main className="relative w-full min-h-screen py-8 sm:py-14 bg-[#EEF7EE] dark:bg-[#0c140e] text-slate-900 dark:text-zinc-100 transition-colors overflow-hidden">
-      {/* Retro Greenish Technical Graph-Paper Grid Background */}
-      <GridBackground variant="retro-green" />
+    <main className="relative w-full min-h-screen py-8 sm:py-14 bg-[#FDF2F2] dark:bg-[#160c0c] text-slate-900 dark:text-zinc-100 transition-colors overflow-hidden">
+      {/* Retro Reddish Technical Graph-Paper Grid Background */}
+      <GridBackground variant="retro-red" />
 
       {/* Main Container - Full-Page Width with Retro Neo-Brutalist Layout */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
