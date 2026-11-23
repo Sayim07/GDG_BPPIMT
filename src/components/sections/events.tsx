@@ -7,7 +7,6 @@ import {
   MapPin,
   ArrowUpRight,
   Sparkles,
-  History,
   Calendar,
   Clock,
   ChevronDown,
@@ -53,7 +52,7 @@ const BANNER_THEMES = [
   { bg: "bg-[#fdd663]", accent: "#FBBC05" },
 ];
 
-// All 14 Past Events from GDG On Campus BPPIMT
+// All 14 Past Events with their exact individual GDG Community URLs
 const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
   {
     id: "pixel-to-perfection-day-3",
@@ -64,10 +63,11 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     displayDate: "May 30, 2026",
     location: "GDG on Campus BPPIMT - Kolkata, India",
     registrationType: "External registration",
-    tag: "Design Workshop",
+    tag: "Design Workshop • Day 3",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-pixel-to-perfection-mastering-design-with-adobe-photoshop-2026-05-30/",
   },
   {
     id: "pixel-to-perfection-day-2",
@@ -78,10 +78,11 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     displayDate: "May 23, 2026",
     location: "GDG on Campus BPPIMT - Kolkata, India",
     registrationType: "External registration",
-    tag: "Design Workshop",
+    tag: "Design Workshop • Day 2",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-pixel-to-perfection-mastering-design-with-adobe-photoshop-2026-05-23/",
   },
   {
     id: "pixel-to-perfection-day-1",
@@ -92,10 +93,11 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     displayDate: "May 16, 2026",
     location: "GDG on Campus BPPIMT - Kolkata, India",
     registrationType: "External registration",
-    tag: "Design Workshop",
+    tag: "Design Workshop • Day 1",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-pixel-to-perfection-mastering-design-with-adobe-photoshop-2026-05-16/",
   },
   {
     id: "techsprint-wrapup-2026",
@@ -109,7 +111,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "TechSprint Finale",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-techsprint-wrapup-and-winner-declaration/",
   },
   {
     id: "techsprint-improvement-day-2026",
@@ -123,7 +126,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Mentorship",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-techsprint-improvement-day-level-up-your-skills/",
   },
   {
     id: "techsprint-101-2026",
@@ -137,7 +141,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "TechSprint 101",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-techsprint-101-introduction-to-google-technologies/",
   },
   {
     id: "google-cloud-study-jams-wrapup-2025",
@@ -151,7 +156,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Cloud Study Jams",
     bannerStyle: "techsprint",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-google-cloud-study-jams-wrap-up/",
   },
   {
     id: "techstorm-2-25",
@@ -165,7 +171,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Annual TechFest",
     bannerStyle: "techfest",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-techstorm-225/",
   },
   {
     id: "pixel-to-prototype-figma-2025",
@@ -179,7 +186,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Figma Workshop",
     bannerStyle: "design",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-pixel-to-prototype-workshop-on-frontend-design-using-figma/",
   },
   {
     id: "tech-winter-break-2024",
@@ -193,7 +201,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Solution Challenge",
     bannerStyle: "challenge",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-tech-winter-break-b-p-poddar-institute-of-management-and-technology/",
   },
   {
     id: "build-with-ai-genai-2024",
@@ -207,7 +216,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "GenAI Study Jams",
     bannerStyle: "genai",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-build-with-ai/",
   },
   {
     id: "smart-coder-2-24",
@@ -221,7 +231,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Coding Competition",
     bannerStyle: "techfest",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-smart-coder-224/",
   },
   {
     id: "juno-2-24",
@@ -235,7 +246,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Hardware & Arduino",
     bannerStyle: "techfest",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-juno-224/",
   },
   {
     id: "forma-2-24",
@@ -249,7 +261,8 @@ const BPPIMT_PAST_EVENTS: EventWithMeta[] = [
     tag: "Hardware Design",
     bannerStyle: "techfest",
     status: "past",
-    recapUrl: OFFICIAL_BPPIMT_CHAPTER_URL,
+    recapUrl:
+      "https://gdg.community.dev/events/details/google-gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india-presents-forma-224/",
   },
 ];
 
@@ -285,9 +298,7 @@ function EventCardBanner({
   return (
     <div className={`${theme.bg} p-3.5 sm:p-4 border-b border-black/80`}>
       {style === "techsprint" ? (
-        /* Dark TechSprint Globe + GDG Bracket Style (matches 2nd & 3rd screenshots) */
         <div className="relative h-36 sm:h-40 w-full rounded-xl border border-black/80 bg-[#18191c] overflow-hidden flex flex-col items-center justify-between p-3.5 shadow-xs">
-          {/* GDG Colored Bracket Logo */}
           <div className="relative z-10 flex items-center justify-center gap-1.5 mt-1">
             <span className="inline-block w-6 h-2.5 rounded-full bg-[#EA4335] -rotate-35 translate-x-1" />
             <span className="inline-block w-6 h-2.5 rounded-full bg-[#34A853] rotate-35 -translate-x-1" />
@@ -301,7 +312,6 @@ function EventCardBanner({
             {event.tag || "GDG On Campus BPPIMT"}
           </p>
 
-          {/* Blue Wireframe Globe Arc at Bottom */}
           <svg
             aria-hidden="true"
             viewBox="0 0 200 70"
@@ -317,7 +327,6 @@ function EventCardBanner({
           </svg>
         </div>
       ) : style === "techfest" ? (
-        /* Vibrant TechFest / Competition Dark Neon Style */
         <div className="relative h-36 sm:h-40 w-full rounded-xl border border-black/80 bg-gradient-to-br from-[#120c24] via-[#1f1138] to-[#0d192e] overflow-hidden flex flex-col justify-between p-3.5 shadow-xs text-white">
           <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest text-purple-300/90">
             <span>BPPIMT TechForum</span>
@@ -341,7 +350,6 @@ function EventCardBanner({
           </div>
         </div>
       ) : (
-        /* Light GDG Framed Banner Style (Featured Build.Learn.Connect, GenAI, Solution Challenge, Figma) */
         <div className="relative h-36 sm:h-40 w-full rounded-xl border border-black/80 bg-white overflow-hidden flex flex-col justify-between p-3.5 shadow-xs">
           <div
             aria-hidden="true"
@@ -360,7 +368,6 @@ function EventCardBanner({
             <span className="w-1.5 h-1.5 rounded-full bg-[#34A853]" />
           </div>
 
-          {/* Top GDG Header */}
           <div className="relative z-10 flex items-center justify-center gap-1.5 pt-0.5">
             <span className="font-mono text-sm font-black tracking-tighter">
               <span className="text-[#EA4335]">&lt;</span>
@@ -375,7 +382,6 @@ function EventCardBanner({
             </div>
           </div>
 
-          {/* Center Headline */}
           {isFeatured ? (
             <div className="relative z-10 text-center my-auto">
               <p className="text-[10px] font-medium italic text-gray-500 mb-0.5">Get ready to</p>
@@ -405,7 +411,6 @@ function EventCardBanner({
             </div>
           )}
 
-          {/* Bottom Location Pill */}
           <div className="relative z-10 flex items-center justify-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-100 text-[10px] font-semibold text-gray-700">
               <MapPin className="w-2.5 h-2.5 text-[#EA4335]" />
@@ -499,7 +504,6 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     const pa: EventWithMeta[] = [];
     allEvents.forEach((e) => (isPastEvent(e, now) ? pa : up).push(e));
 
-    // Merge hardcoded BPPIMT past events avoiding duplicates by title + date
     BPPIMT_PAST_EVENTS.forEach((pe) => {
       const exists = pa.some(
         (existing) =>
@@ -536,7 +540,6 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
     return showAllPast ? past : past.slice(0, 6);
   }, [isPastTab, upcoming, past, showAllPast]);
 
-  // Fill right-side empty slots on Upcoming tab so 3-column grid stays balanced
   const blankSlotsCount = !isPastTab ? Math.max(0, 3 - visibleEvents.length) : 0;
 
   const tabs: { key: Tab; label: string; count: number }[] = [
@@ -661,7 +664,6 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                   {/* Bottom Content Body */}
                   <div className="flex flex-col flex-1 justify-between p-4 sm:p-5 bg-surface-card">
                     <div>
-                      {/* Date & Registration Type Pill */}
                       <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
                         <span className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary">
                           <Calendar className="w-3.5 h-3.5 text-primary" />
@@ -676,7 +678,14 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
 
                       {event.title && (
                         <h3 className="font-heading text-base sm:text-lg font-bold text-text-primary group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                          {event.title}
+                          <Link
+                            href={actionUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                          >
+                            {event.title}
+                          </Link>
                         </h3>
                       )}
 
@@ -686,7 +695,6 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                         </p>
                       )}
 
-                      {/* Time or Chapter Location */}
                       <div className="mt-3 space-y-1">
                         {event.time ? (
                           <p className="flex items-center gap-1.5 text-[11px] font-medium text-text-secondary">
@@ -704,7 +712,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                       </div>
                     </div>
 
-                    {/* Bottom Action Button */}
+                    {/* Bottom Action Button ("View More" with individual event link) */}
                     <div className="mt-5 pt-1">
                       <Link
                         href={actionUrl}
