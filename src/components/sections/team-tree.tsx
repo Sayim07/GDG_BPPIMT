@@ -321,22 +321,22 @@ export function TeamTree() {
         </h1>
 
         {/* Domain Filter Pills */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto py-1 scrollbar-none mt-2.5">
-          {filterOptions.map(option => (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => setActiveFilter(option.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex-shrink-0 cursor-pointer ${
-                activeFilter === option.id
-                  ? "bg-slate-900 text-white shadow-md shadow-black/15 scale-105"
-                  : "bg-white/85 dark:bg-[#202124] text-slate-800 dark:text-zinc-200 hover:text-black border border-[#ded5be] dark:border-white/10 hover:border-black/30 shadow-sm"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+<div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto px-4 py-2 scrollbar-none mt-2.5">
+  {filterOptions.map(option => (
+    <button
+      key={option.id}
+      type="button"
+      onClick={() => setActiveFilter(option.id)}
+      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex-shrink-0 cursor-pointer ${
+        activeFilter === option.id
+          ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md shadow-black/15 scale-105"
+          : "bg-white/85 dark:bg-[#202124] text-slate-800 dark:text-zinc-200 hover:text-black border border-[#ded5be] dark:border-white/10 hover:border-black/30 shadow-sm"
+      }`}
+    >
+      {option.label}
+    </button>
+  ))}
+</div>
       </div>
 
       {/* 1. On-Campus Organizers */}
