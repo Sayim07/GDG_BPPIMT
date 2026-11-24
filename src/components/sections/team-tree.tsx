@@ -105,6 +105,12 @@ function getMemberById(id: string, fallbackIndex: number): TeamMember {
   return MEMBER_MAP.get(id) || ALL_MEMBERS[fallbackIndex];
 }
 
+function getMemberBadgeLabel(member: TeamMember): string {
+  if (member.category === "organizer") return "Organizer";
+  if (member.category === "lead") return "Domain Lead";
+  return "Core Member";
+}
+
 function renderMemberCard(
   member: TeamMember,
   isOrganizer: boolean,
@@ -151,6 +157,7 @@ function renderMemberCard(
   );
 }
 
+/* DESKTOP RETRO SPEECH BUBBLE (Left / Right floating) */
 interface RetroMessageBoxProps {
   member: TeamMember;
   arrowSide: "left" | "right";
@@ -216,14 +223,11 @@ function RetroMessageBox({
             : "pr-24 sm:pr-28 md:pr-32 pl-4 sm:pl-5"
         }`}
       >
-        {/* Retro Header Tag & Role */}
         <div className="flex items-center justify-between gap-2 mb-1 pb-1 border-b-2 border-black/10">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] flex-none">
               <span className="w-1.5 h-1.5 rounded-full bg-black inline-block animate-pulse" />
-              <span>
-                {member.category === "organizer" ? "Organizer" : "Domain Lead"}
-              </span>
+              <span>{getMemberBadgeLabel(member)}</span>
             </span>
             <span className="text-[10.5px] font-mono font-bold text-slate-500 uppercase truncate">
               {member.role}
@@ -231,12 +235,10 @@ function RetroMessageBox({
           </div>
         </div>
 
-        {/* Member Name */}
         <h4 className="font-heading font-black text-slate-950 text-sm sm:text-base tracking-tight mb-1">
           {member.name}
         </h4>
 
-        {/* Description / Bio */}
         <p
           className={`leading-relaxed text-slate-800 font-medium ${
             isSuperLong
@@ -249,7 +251,6 @@ function RetroMessageBox({
           "{member.bio}"
         </p>
 
-        {/* Fun Fact / Extra quote if available */}
         {member.funFact && (
           <div className="mt-2 p-2 sm:p-2.5 rounded-xl border-2 border-black bg-[#FEF3C7] shadow-[2px_2px_0px_0px_#000] text-[10.5px] sm:text-[11px] font-bold text-amber-950 flex items-start gap-1.5 leading-snug">
             <span className="flex-none text-xs">💡</span>
@@ -257,7 +258,6 @@ function RetroMessageBox({
           </div>
         )}
 
-        {/* Retro Speech Bubble Arrow with Black Outline */}
         {arrowSide === "left" ? (
           <div className="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 border-y-[10px] border-y-transparent border-r-[12px] border-r-black">
             <div className="absolute -top-[8px] left-[2.5px] w-0 h-0 border-y-[8px] border-y-transparent border-r-[10px] border-r-[#FFFDF9]" />
@@ -269,7 +269,6 @@ function RetroMessageBox({
         )}
       </div>
 
-      {/* 3D GDG Student Mascot Avatar */}
       <div
         className={`absolute -bottom-2.5 z-30 pointer-events-none select-none transition-transform duration-300 ${
           arrowSide === "right" ? "left-1 sm:left-2" : "right-1 sm:right-2"
@@ -286,6 +285,76 @@ function RetroMessageBox({
   );
 }
 
+/* MOBILE RETRO SPEECH BUBBLE (Floating overlay, zero layout shift) */
+function MobileRetroMessageBox({ member }: { member: TeamMember }) {
+  if (!member.bio) return null;
+
+  const isFemale =
+    member.gender === "female" || FEMALE_MEMBER_IDS.has(member.id);
+  const characterSrc = isFemale
+    ? "/images/characters/gdg-girl.png"
+    : "/images/characters/gdg-boy.png";
+  const characterAlt = isFemale
+    ? `${member.name} GDG 3D Character (Female)`
+    : `${member.name} GDG 3D Character (Male)`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
+      className="absolute top-full left-0 right-0 mx-auto -mt-40 z-50 w-[min(340px,calc(100vw-24px))] px-2 will-change-transform"
+    >
+      <div className="relative rounded-2xl bg-[#FFFDF9] border-[2.5px] border-black py-3 pl-4 pr-20 shadow-[5px_5px_0px_0px_#18181b] text-left text-slate-900">
+        {/* Upward Speech Bubble Arrow */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-b-[12px] border-b-black">
+          <div className="absolute top-[2.5px] -left-[8px] w-0 h-0 border-x-[8px] border-x-transparent border-b-[10px] border-b-[#FFFDF9]" />
+        </div>
+
+        {/* Retro Header Tag & Role */}
+        <div className="flex items-center gap-1.5 mb-1 pb-1 border-b-2 border-black/10 min-w-0">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] flex-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-black inline-block" />
+            <span>{getMemberBadgeLabel(member)}</span>
+          </span>
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase truncate">
+            {member.role}
+          </span>
+        </div>
+
+        {/* Member Name */}
+        <h4 className="font-heading font-black text-slate-950 text-sm tracking-tight mb-1">
+          {member.name}
+        </h4>
+
+        {/* Bio */}
+        <p className="text-[11.5px] leading-snug text-slate-800 font-medium">
+          "{member.bio}"
+        </p>
+
+        {/* Fun Fact */}
+        {member.funFact && (
+          <div className="mt-2 p-2 rounded-xl border-2 border-black bg-[#FEF3C7] shadow-[2px_2px_0px_0px_#000] text-[10.5px] font-bold text-amber-950 flex items-start gap-1.5 leading-snug">
+            <span className="flex-none text-xs">💡</span>
+            <span>{member.funFact}</span>
+          </div>
+        )}
+
+        {/* Compact 3D Mascot on Bottom-Right */}
+        <div className="absolute -bottom-2 right-1 z-20 pointer-events-none select-none">
+          <img
+            src={characterSrc}
+            alt={characterAlt}
+            className="w-[70px] h-[104px] object-contain drop-shadow-[2px_4px_8px_rgba(0,0,0,0.3)]"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 interface ExpandableTeamTrioProps {
   mainMember: TeamMember;
   leftMember: TeamMember;
@@ -293,6 +362,8 @@ interface ExpandableTeamTrioProps {
   domainName: string;
   brandColor: string;
   isDesktop: boolean;
+  activeMobileMemberId: string | null;
+  onSelectMobileMember: (memberId: string | null) => void;
   isOrganizer?: boolean;
 }
 
@@ -302,6 +373,8 @@ function ExpandableTeamTrio({
   rightMember,
   brandColor,
   isDesktop,
+  activeMobileMemberId,
+  onSelectMobileMember,
   isOrganizer = false
 }: ExpandableTeamTrioProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -313,15 +386,47 @@ function ExpandableTeamTrio({
   const isExpanded = isHovered || isToggled;
 
   const handleContainerClick = () => {
-    setIsToggled(prev => !prev);
+    setIsToggled(prev => {
+      const next = !prev;
+      if (
+        !next &&
+        (activeMobileMemberId === leftMember.id ||
+          activeMobileMemberId === rightMember.id)
+      ) {
+        onSelectMobileMember(null);
+      }
+      return next;
+    });
+  };
+
+  const handleMobileCardClick = (e: React.MouseEvent, memberId: string) => {
+    // Allow social links / buttons inside ProfileCard to work without toggling bio
+    if ((e.target as HTMLElement).closest("a, button")) return;
+    onSelectMobileMember(activeMobileMemberId === memberId ? null : memberId);
   };
 
   if (!isDesktop) {
-    /* MOBILE (< 768px): Lightweight single card + GPU-accelerated expand */
+    /* MOBILE (< 768px): Floating speech bubble with zero layout shift */
     return (
       <div className="w-full flex flex-col items-center">
-        <div className="w-full max-w-[320px] flex justify-center">
-          {renderMemberCard(mainMember, isOrganizer, true, brandColor, false)}
+        {/* MAIN / LEAD CARD */}
+        <div
+          data-mobile-card-zone="true"
+          className={`relative w-full flex flex-col items-center ${
+            activeMobileMemberId === mainMember.id ? "z-40" : "z-10"
+          }`}
+        >
+          <div
+            onClick={e => handleMobileCardClick(e, mainMember.id)}
+            className="w-full max-w-[320px] flex justify-center cursor-pointer"
+          >
+            {renderMemberCard(mainMember, isOrganizer, true, brandColor, false)}
+          </div>
+          <AnimatePresence initial={false}>
+            {activeMobileMemberId === mainMember.id && (
+              <MobileRetroMessageBox member={mainMember} />
+            )}
+          </AnimatePresence>
         </div>
 
         <button
@@ -346,23 +451,56 @@ function ExpandableTeamTrio({
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="w-full flex flex-col items-center gap-6 will-change-transform"
             >
-              <div className="w-full max-w-[320px] flex justify-center">
-                {renderMemberCard(
-                  leftMember,
-                  isOrganizer,
-                  false,
-                  brandColor,
-                  false
-                )}
+              {/* LEFT CO-MEMBER CARD */}
+              <div
+                data-mobile-card-zone="true"
+                className={`relative w-full flex flex-col items-center ${
+                  activeMobileMemberId === leftMember.id ? "z-40" : "z-10"
+                }`}
+              >
+                <div
+                  onClick={e => handleMobileCardClick(e, leftMember.id)}
+                  className="w-full max-w-[320px] flex justify-center cursor-pointer"
+                >
+                  {renderMemberCard(
+                    leftMember,
+                    isOrganizer,
+                    false,
+                    brandColor,
+                    false
+                  )}
+                </div>
+                <AnimatePresence initial={false}>
+                  {activeMobileMemberId === leftMember.id && (
+                    <MobileRetroMessageBox member={leftMember} />
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="w-full max-w-[320px] flex justify-center">
-                {renderMemberCard(
-                  rightMember,
-                  isOrganizer,
-                  false,
-                  brandColor,
-                  false
-                )}
+
+              {/* RIGHT CO-MEMBER CARD */}
+              <div
+                data-mobile-card-zone="true"
+                className={`relative w-full flex flex-col items-center ${
+                  activeMobileMemberId === rightMember.id ? "z-40" : "z-10"
+                }`}
+              >
+                <div
+                  onClick={e => handleMobileCardClick(e, rightMember.id)}
+                  className="w-full max-w-[320px] flex justify-center cursor-pointer"
+                >
+                  {renderMemberCard(
+                    rightMember,
+                    isOrganizer,
+                    false,
+                    brandColor,
+                    false
+                  )}
+                </div>
+                <AnimatePresence initial={false}>
+                  {activeMobileMemberId === rightMember.id && (
+                    <MobileRetroMessageBox member={rightMember} />
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
@@ -515,6 +653,9 @@ function ExpandableTeamTrio({
 export function TeamTree() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [activeMobileMemberId, setActiveMobileMemberId] = useState<
+    string | null
+  >(null);
 
   // Single media query listener for the entire page
   useEffect(() => {
@@ -528,6 +669,26 @@ export function TeamTree() {
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  // Tap outside any mobile card/bubble to dismiss the active bio box
+  useEffect(() => {
+    if (isDesktop || !activeMobileMemberId) return;
+
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest("[data-mobile-card-zone]")) {
+        setActiveMobileMemberId(null);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [isDesktop, activeMobileMemberId]);
+
+  const handleFilterChange = (filterId: string) => {
+    setActiveFilter(filterId);
+    setActiveMobileMemberId(null);
+  };
 
   const protyoy = getMemberById("protyoy-bhandary", 0);
   const sagnik = getMemberById("sagnik-maitra", 1);
@@ -557,7 +718,7 @@ export function TeamTree() {
             <button
               key={option.id}
               type="button"
-              onClick={() => setActiveFilter(option.id)}
+              onClick={() => handleFilterChange(option.id)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex-shrink-0 cursor-pointer ${
                 activeFilter === option.id
                   ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md shadow-black/15 scale-105"
@@ -584,6 +745,8 @@ export function TeamTree() {
             domainName="Chapter Leadership"
             brandColor="#4285F4"
             isDesktop={isDesktop}
+            activeMobileMemberId={activeMobileMemberId}
+            onSelectMobileMember={setActiveMobileMemberId}
             isOrganizer={true}
           />
         </div>
@@ -610,6 +773,8 @@ export function TeamTree() {
                 domainName={domain.name}
                 brandColor={domain.brandColor}
                 isDesktop={isDesktop}
+                activeMobileMemberId={activeMobileMemberId}
+                onSelectMobileMember={setActiveMobileMemberId}
                 isOrganizer={false}
               />
             </div>
