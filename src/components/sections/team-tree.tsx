@@ -550,9 +550,9 @@ function ExpandableTeamTrio({
           }}
           transition={{
             type: "spring",
-            stiffness: 260,
-            damping: 24,
-            mass: 0.8
+            stiffness: 150,
+            damping: 22,
+            mass: 0.9
           }}
         >
           {renderMemberCard(leftMember, isOrganizer, false, brandColor, true)}
@@ -572,9 +572,9 @@ function ExpandableTeamTrio({
           }}
           transition={{
             type: "spring",
-            stiffness: 260,
-            damping: 24,
-            mass: 0.8
+            stiffness: 150,
+            damping: 22,
+            mass: 0.9
           }}
         >
           {renderMemberCard(mainMember, isOrganizer, true, brandColor, true)}
@@ -609,9 +609,9 @@ function ExpandableTeamTrio({
           }}
           transition={{
             type: "spring",
-            stiffness: 260,
-            damping: 24,
-            mass: 0.8
+            stiffness: 150,
+            damping: 22,
+            mass: 0.9
           }}
         >
           {renderMemberCard(rightMember, isOrganizer, false, brandColor, true)}
