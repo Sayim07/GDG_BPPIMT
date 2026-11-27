@@ -47,6 +47,14 @@ export const DEFAULT_GDG_ITEMS: MenuItem[] = [
     hoverStyles: { bgColor: '#EA4335', textColor: '#ffffff' } // Google Red
   },
   {
+    label: 'Certificate',
+    href: '/certificate',
+    ariaLabel: 'Download Event Certificates',
+    rotation: -2,
+    lineColor: '#4285F4',
+    hoverStyles: { bgColor: '#4285F4', textColor: '#ffffff' } // Google Blue
+  },
+  {
     label: 'Team',
     href: '/team',
     ariaLabel: 'Organizers and Leads',

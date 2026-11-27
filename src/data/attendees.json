@@ -1,0 +1,12 @@
+[
+  {
+    "id": "GDG-BPPIMT-2026-DEMO",
+    "name": "Demo Participant",
+    "email": "demo@bppimt.ac.in",
+    "attended": true,
+    "eventId": "gdg-bppimt-mc349m",
+    "eventName": "GDG On Campus BPPIMT — Featured Event & Workshop",
+    "eventDate": "November 25, 2026",
+    "issuedAt": "2026-11-27"
+  }
+]

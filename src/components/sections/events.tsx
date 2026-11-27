@@ -503,11 +503,16 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                           <Calendar className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                           <span className="line-clamp-1">{formattedDate}</span>
                         </span>
-                        {event.registrationType && (
+                        {event.certificateAvailable ? (
+                          <span className="text-[10px] font-bold text-white bg-[#34A853] px-2 py-0.5 rounded-md border border-black/20 flex items-center gap-1 shadow-2xs">
+                            <Award className="w-3 h-3 text-yellow-300" />
+                            <span>Certificates Open</span>
+                          </span>
+                        ) : event.registrationType ? (
                           <span className="text-[10px] font-bold text-text-primary bg-surface-subtle px-1.5 py-0.5 rounded-md border border-border-subtle line-clamp-1">
                             {event.registrationType}
                           </span>
-                        )}
+                        ) : null}
                       </div>
 
                       {event.title && (
@@ -548,14 +553,24 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                         - On Events Page (isCard = false): "About this event" button linking to /events/[id]
                     */}
                     {!isCard && (
-                      <div className="mt-3.5 pt-1">
+                      <div className="mt-3.5 pt-1 flex items-center gap-2">
                         <Link
                           href={`/events/${event.id}`}
-                          className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold transition-colors shadow-xs"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold transition-colors shadow-xs"
                         >
                           <span>About this event</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
+                        {event.certificateAvailable && (
+                          <Link
+                            href={`/certificate?eventId=${event.id}`}
+                            className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-[#34A853] hover:bg-[#2d9249] text-white text-xs sm:text-sm font-semibold transition-colors shadow-xs"
+                            title="Get Your Certificate"
+                          >
+                            <Award className="w-3.5 h-3.5 text-yellow-300" />
+                            <span className="hidden xs:inline">Certificate</span>
+                          </Link>
+                        )}
                       </div>
                     )}
                   </div>

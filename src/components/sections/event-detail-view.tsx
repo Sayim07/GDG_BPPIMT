@@ -15,6 +15,8 @@ import {
   AlertCircle,
   FileText,
   ListChecks,
+  Award,
+  XCircle,
 } from "lucide-react";
 import { DetailedEvent, DIRECT_EVENT_RSVP_URL } from "@/data/all-events";
 import { EventCardBanner } from "@/components/sections/events";
@@ -27,7 +29,9 @@ interface EventDetailViewProps {
 type TabKey = "about" | "highlights" | "prerequisites" | "venue";
 
 export function EventDetailView({ event }: EventDetailViewProps) {
-  const isPast = event.status === "past";
+  const isPast = event.status === "past" || Boolean(event.rsvpClosed);
+  const isRsvpClosed = Boolean(event.rsvpClosed);
+  const hasCertificate = Boolean(event.certificateAvailable);
   const actionUrl = isPast
     ? event.recapUrl || DIRECT_EVENT_RSVP_URL
     : event.rsvpUrl || DIRECT_EVENT_RSVP_URL;
@@ -82,18 +86,27 @@ export function EventDetailView({ event }: EventDetailViewProps) {
             )}
             <span
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-black uppercase border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] ${
-                isPast
+                isRsvpClosed || isPast
                   ? "bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white"
                   : "bg-[#34A853] text-white"
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  isPast ? "bg-zinc-400" : "bg-white animate-pulse"
+                  isRsvpClosed || isPast ? "bg-zinc-400" : "bg-white animate-pulse"
                 }`}
               />
-              <span>{isPast ? "Concluded Event" : "Upcoming Event"}</span>
+              <span>{isRsvpClosed ? "RSVP Closed" : isPast ? "Concluded Event" : "Upcoming Event"}</span>
             </span>
+            {hasCertificate && (
+              <Link
+                href={`/certificate?eventId=${event.id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-black uppercase bg-[#34A853] text-white border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:bg-[#2d9249] transition-colors"
+              >
+                <Award className="w-3.5 h-3.5 text-yellow-300" />
+                <span>Certificates Open</span>
+              </Link>
+            )}
             {event.registrationType && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-bold uppercase bg-[#E8F0FE] dark:bg-blue-950 text-[#1967D2] dark:text-blue-300 border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000]">
                 {event.registrationType}
@@ -352,33 +365,62 @@ export function EventDetailView({ event }: EventDetailViewProps) {
           </div>
         </section>
 
-        {/* Bottom RSVP Action Box */}
+        {/* Bottom RSVP & Certificate Action Box */}
         <div className="pt-2">
-          <div className="p-5 sm:p-8 rounded-2xl border-[2.5px] border-black dark:border-white/90 bg-[#E8F0FE] dark:bg-[#1a2538] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.85)] flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div className="p-5 sm:p-8 rounded-2xl border-[2.5px] border-black dark:border-white/90 bg-[#E8F0FE] dark:bg-[#1a2538] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.85)] flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-black uppercase bg-[#FFE600] text-black border-[1.5px] border-black shadow-[1.5px_1.5px_0px_0px_#000] mb-2">
-                {isPast ? "ARCHIVE STATUS: CONCLUDED" : "STATUS: ACTION REQUIRED"}
+                {isRsvpClosed
+                  ? "RSVP STATUS: CLOSED"
+                  : isPast
+                  ? "ARCHIVE STATUS: CONCLUDED"
+                  : "STATUS: ACTION REQUIRED"}
               </div>
               <h3 className="font-heading text-lg sm:text-2xl font-black text-black dark:text-white uppercase tracking-tight">
-                {isPast ? "Official Event Recap & Details" : "Secure Your Seat Today"}
+                {isRsvpClosed
+                  ? "Event Registrations Closed"
+                  : isPast
+                  ? "Official Event Recap & Details"
+                  : "Secure Your Seat Today"}
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-medium mt-1">
-                {isPast
+              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-medium mt-1 max-w-xl">
+                {hasCertificate
+                  ? "Event has concluded. Attendees who checked in on Bevy can now verify and download their official Event Certificate."
+                  : isPast
                   ? "Explore the official session recap, highlights, and resources on the GDG Community platform."
                   : "Direct RSVP on the official Google Developer Groups Community platform."}
               </p>
             </div>
 
-            <div className="w-full sm:w-auto flex-shrink-0">
-              <Link
-                href={actionUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl border-[2.5px] border-black bg-[#4285F4] hover:bg-[#3367D6] text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
-              >
-                <span>{isPast ? "View Official Recap" : "Register / RSVP Now"}</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
+            <div className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+              {isRsvpClosed ? (
+                <>
+                  {/* RSVP Closed Button */}
+                  <div className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border-[2.5px] border-black bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[3px_3px_0px_0px_#000] cursor-not-allowed select-none">
+                    <XCircle className="w-4 h-4 text-zinc-500" />
+                    <span>RSVP Closed</span>
+                  </div>
+
+                  {/* Get Your Certificate Button right beside it */}
+                  <Link
+                    href={`/certificate?eventId=${event.id}`}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border-[2.5px] border-black bg-[#34A853] hover:bg-[#2d9249] text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                  >
+                    <Award className="w-4 h-4 text-yellow-300 animate-pulse" />
+                    <span>Get Your Certificate</span>
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href={actionUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl border-[2.5px] border-black bg-[#4285F4] hover:bg-[#3367D6] text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                >
+                  <span>{isPast ? "View Official Recap" : "Register / RSVP Now"}</span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
           </div>
         </div>

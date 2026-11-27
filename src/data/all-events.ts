@@ -19,6 +19,8 @@ export interface DetailedEvent {
   tag?: string;
   registrationType?: string;
   bannerStyle?: "featured" | "design" | "challenge" | "genai" | "techfest" | "techsprint";
+  rsvpClosed?: boolean;
+  certificateAvailable?: boolean;
 }
 
 export const DIRECT_EVENT_RSVP_URL = "https://gdg.community.dev/e/mc349m/";
@@ -56,9 +58,11 @@ export const ALL_EVENTS: DetailedEvent[] = [
     time: "4:00 – 5:00 PM (IST)",
     location: "C BLOCK, BPPIMT Campus",
     venue: "C Block Seminar Hall, B.P. Poddar Institute of Management and Technology, Kolkata",
-    seats: "Open Registration",
+    seats: "RSVP Concluded",
     rsvpUrl: DIRECT_EVENT_RSVP_URL,
     status: "upcoming",
+    rsvpClosed: true,
+    certificateAvailable: true,
     tag: "Featured Event & Workshop",
     registrationType: "Free registration",
     bannerStyle: "featured"
