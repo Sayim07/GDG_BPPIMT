@@ -6,6 +6,7 @@ export interface DetailedEvent {
   highlights?: string[];
   prerequisites?: string[];
   date: string;
+  endDate?: string;
   displayDate: string;
   month?: string;
   day?: string;
@@ -435,14 +436,87 @@ export const ALL_EVENTS: DetailedEvent[] = [
   }
 ];
 
+/**
+ * Returns today's date in 'YYYY-MM-DD' formatted in Asia/Kolkata (IST) timezone.
+ * Consistent across server (SSR) and client environments.
+ */
+export function getTodayDateString(timeZone: string = "Asia/Kolkata"): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+  } catch {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+}
+
+/**
+ * Checks whether an event has concluded based on its date / endDate.
+ * Logic: "jis date pe wo event hua uske us din ke baad se wo event past event mai aa jayega"
+ * - On the day of the event: returns false (still active / upcoming)
+ * - From the day after the event date onwards: returns true (past event)
+ */
+export function isEventPast(
+  eventDate: string,
+  endDate?: string,
+  timeZone: string = "Asia/Kolkata"
+): boolean {
+  if (!eventDate) return false;
+  const effectiveEnd = (endDate || eventDate).split("T")[0].trim();
+  const today = getTodayDateString(timeZone);
+  return effectiveEnd < today;
+}
+
+/**
+ * Returns the effective status of an event dynamically.
+ */
+export function getEventEffectiveStatus(
+  event: Pick<DetailedEvent, "date"> & Partial<Pick<DetailedEvent, "endDate" | "status">>
+): "upcoming" | "past" {
+  if (isEventPast(event.date, event.endDate)) {
+    return "past";
+  }
+  return event.status === "past" ? "past" : "upcoming";
+}
+
+/**
+ * Wraps an event with its dynamic status and marks RSVP closed if concluded.
+ */
+export function getEventWithDynamicStatus(event: DetailedEvent): DetailedEvent {
+  const dynamicStatus = getEventEffectiveStatus(event);
+  const isPast = dynamicStatus === "past";
+  return {
+    ...event,
+    status: dynamicStatus,
+    rsvpClosed: isPast ? true : event.rsvpClosed,
+  };
+}
+
+export function getAllEvents(): DetailedEvent[] {
+  return ALL_EVENTS.map(getEventWithDynamicStatus);
+}
+
 export function getEventById(id: string): DetailedEvent | undefined {
-  return ALL_EVENTS.find((e) => e.id.toLowerCase() === id.toLowerCase());
+  const event = ALL_EVENTS.find((e) => e.id.toLowerCase() === id.toLowerCase());
+  if (!event) return undefined;
+  return getEventWithDynamicStatus(event);
 }
 
 export function getUpcomingEvents(): DetailedEvent[] {
-  return ALL_EVENTS.filter((e) => e.status === "upcoming");
+  return getAllEvents()
+    .filter((e) => e.status === "upcoming")
+    .sort((a, b) => a.date.localeCompare(b.date)); // Nearest upcoming first
 }
 
 export function getPastEvents(): DetailedEvent[] {
-  return ALL_EVENTS.filter((e) => e.status === "past");
+  return getAllEvents()
+    .filter((e) => e.status === "past")
+    .sort((a, b) => b.date.localeCompare(a.date)); // Most recent past event first
 }
