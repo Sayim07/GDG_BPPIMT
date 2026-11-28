@@ -31,3 +31,8 @@ Thumbs.db
 # Raw Member Photos (Local camera source files)
 Photos of members/
 
+# Raw event spreadsheets
+*.csv
+*.xlsx
+
+

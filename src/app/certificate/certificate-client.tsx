@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
-  Mail,
+  UserCheck,
 } from "lucide-react";
 
 interface CertificateData {
@@ -30,7 +30,7 @@ export function CertificateClient() {
   const searchParams = useSearchParams();
   const eventIdParam = searchParams.get("eventId") || "";
 
-  const [emailInput, setEmailInput] = useState("");
+  const [queryInput, setQueryInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -131,8 +131,10 @@ export function CertificateClient() {
 
     // 6. Recipient Name (Center, bold, elegant)
     ctx.fillStyle = "#1967D2"; // Google Deep Blue
-    ctx.font = "900 64px system-ui, -apple-system, sans-serif";
-    ctx.fillText(cert.name.toUpperCase(), width / 2, 510);
+    const displayName = cert.name.toUpperCase();
+    const nameFontSize = displayName.length > 25 ? 48 : displayName.length > 18 ? 56 : 64;
+    ctx.font = `900 ${nameFontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.fillText(displayName, width / 2, 510);
 
     // Name underline with center diamond
     ctx.strokeStyle = "#4285F4";
@@ -267,9 +269,9 @@ export function CertificateClient() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = emailInput.trim();
+    const trimmed = queryInput.trim();
     if (!trimmed) {
-      setErrorMsg("Please enter your registered email address.");
+      setErrorMsg("Please enter your registered email address or full name.");
       setErrorCode("EMPTY_INPUT");
       return;
     }
@@ -282,7 +284,12 @@ export function CertificateClient() {
       const res = await fetch("/api/certificate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, eventId: eventIdParam }),
+        body: JSON.stringify({
+          query: trimmed,
+          email: trimmed,
+          name: trimmed,
+          eventId: eventIdParam,
+        }),
       });
 
       const data = await res.json();
@@ -331,7 +338,7 @@ export function CertificateClient() {
     setCertificate(null);
     setErrorMsg(null);
     setErrorCode(null);
-    setEmailInput("");
+    setQueryInput("");
   };
 
   return (
@@ -342,8 +349,8 @@ export function CertificateClient() {
           Download Your Event Certificate
         </h1>
         <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 max-w-2xl font-medium">
-          Enter the registered email address you used to RSVP on the official Bevy community platform.
-          Once verified against attendance check-ins, your official certificate will be generated instantly.
+          Enter your registered email address or your full name as submitted during attendance check-in.
+          Once verified, your official certificate will be generated instantly.
         </p>
       </header>
 
@@ -353,22 +360,22 @@ export function CertificateClient() {
           <form onSubmit={handleVerify} className="space-y-4">
             <div>
               <label
-                htmlFor="registeredEmail"
+                htmlFor="registeredQuery"
                 className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-2"
               >
-                Registered Bevy Email Address
+                Registered Email Address or Full Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
-                  <Mail className="w-5 h-5" />
+                  <UserCheck className="w-5 h-5" />
                 </div>
                 <input
-                  id="registeredEmail"
-                  type="email"
+                  id="registeredQuery"
+                  type="text"
                   required
-                  placeholder="e.g., student@gmail.com or college_id@bppimt.ac.in"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="e.g. Sayim Mullick or sayimmullick2005@gmail.com"
+                  value={queryInput}
+                  onChange={(e) => setQueryInput(e.target.value)}
                   disabled={loading}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-black dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-black dark:text-white font-medium text-sm sm:text-base focus:outline-none focus:border-[#4285F4] focus:ring-2 focus:ring-[#4285F4]/20 transition-all"
                 />
@@ -468,7 +475,7 @@ export function CertificateClient() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-black bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-mono font-bold text-xs uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] hover:bg-zinc-300 transition-all cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Another Email</span>
+                <span>Check Another</span>
               </button>
             </div>
           </div>
