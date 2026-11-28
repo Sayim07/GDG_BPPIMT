@@ -469,28 +469,28 @@ export function CertificateClient() {
                   <div className="space-y-3 flex-1">
                     <h4 className="text-lg sm:text-xl font-bold text-black dark:text-white leading-snug">
                       {errorCode === "NOT_ATTENDED"
-                        ? "Aapki attendance mark nahi hui hai 📋"
+                        ? "Attendance not recorded for this event 📋"
                         : errorCode === "EMPTY_INPUT"
-                        ? "Pehle apna email ya poora naam likhein ✍️"
-                        : "Oops! Ye naam list me nahi mila 😅"}
+                        ? "Please enter your name or email first ✍️"
+                        : "Oops! We couldn't find your name on the list 😅"}
                     </h4>
 
                     <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       {errorCode === "NOT_ATTENDED" ? (
                         <>
-                          Aapka registration toh mil gaya, lekin event ke din physical attendance check-in record nahi hua. Certificates sirf un attendees ke liye hain jo event me physically present the.
+                          Your registration was found, but physical attendance check-in wasn&apos;t marked for this event. Certificates are issued exclusively to attendees who checked in at the venue.
                         </>
                       ) : errorCode === "EMPTY_INPUT" ? (
                         <>
-                          Kripya verification ke liye apna registered email address ya attendance sheet wala poora naam type karein.
+                          Please enter your registered email address or your full name before clicking verify.
                         </>
                       ) : (
                         <>
-                          Humne{" "}
+                          We checked for{" "}
                           <span className="font-semibold text-black dark:text-white bg-zinc-100 dark:bg-zinc-700 px-2.5 py-1 rounded border border-zinc-300 dark:border-zinc-600 break-all">
                             &quot;{lastSearched || queryInput}&quot;
-                          </span>{" "}
-                          ke liye check kiya, lekin is event ki attendance list me ye record nahi mila.
+                          </span>
+                          , but couldn&apos;t find an attendance record for this event.
                         </>
                       )}
                     </p>
@@ -500,17 +500,17 @@ export function CertificateClient() {
                       <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-700 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
                         <p className="font-semibold text-black dark:text-white flex items-center gap-2">
                           <span>💡</span>
-                          <span>Ek baar ye points check kar lijiye:</span>
+                          <span>Quick things to double-check:</span>
                         </p>
                         <ul className="space-y-1.5 pl-6 list-disc">
                           <li>
-                            <strong>Spelling check karein:</strong> Kahin type karte waqt koi letter ya dot miss toh nahi ho gaya?
+                            <strong>Check for typos:</strong> Make sure there are no spelling mistakes or extra spaces in your email.
                           </li>
                           <li>
-                            <strong>Registered email try karein:</strong> Agar aapne college mail ya kisi doosre email se form bhara tha, toh wahi email daal kar check karein.
+                            <strong>Try your registered email:</strong> If you registered with your college email or an alternate ID, try searching with that.
                           </li>
                           <li>
-                            <strong>Poora naam likhein:</strong> Nickname ki jagah apna official poora naam enter karein jo attendance ke waqt likha tha.
+                            <strong>Try your full name:</strong> Enter your real full name as written during the event attendance check-in.
                           </li>
                         </ul>
                       </div>
@@ -522,10 +522,10 @@ export function CertificateClient() {
                 <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
                   <div className="space-y-1">
                     <p className="font-bold text-sm sm:text-base text-black dark:text-white">
-                      &quot;Par mai toh event me present tha!&quot; 🙋‍♂️
+                      &quot;Wait, but I was definitely there!&quot; 🙋‍♂️
                     </p>
                     <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-                      Agar aap sach me event me aaye the aur attendance miss ho gayi hai, toh tension mat lijiye. Hamari team se contact karein, hum verify karke certificate generate kar denge.
+                      If you attended in person and think your attendance was missed, don&apos;t worry! Contact our organizing team and we&apos;ll verify and issue your certificate.
                     </p>
                   </div>
 
