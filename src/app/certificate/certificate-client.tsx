@@ -410,108 +410,107 @@ export function CertificateClient() {
             </div>
           </form>
 
-          {/* Animated Gen-Z Error Message Box */}
+          {/* Friendly Animated Error Message Box */}
           <AnimatePresence>
             {errorMsg && (
               <motion.div
                 key="certificate-error-box"
-                initial={{ opacity: 0, scale: 0.94, y: 15 }}
+                initial={{ opacity: 0, scale: 0.98, y: 12 }}
                 animate={{
                   opacity: 1,
                   scale: 1,
                   y: 0,
-                  x: [0, -10, 10, -8, 8, -4, 4, 0],
+                  x: [0, -6, 6, -4, 4, 0],
                 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
-                className="p-5 sm:p-6 rounded-2xl border-[2.5px] border-[#EA4335] bg-[#FFF5F5] dark:bg-[#200e0e] text-zinc-900 dark:text-zinc-100 shadow-[5px_5px_0px_0px_#EA4335] space-y-4 relative overflow-hidden"
+                exit={{ opacity: 0, scale: 0.98, y: -8 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="p-6 sm:p-7 rounded-2xl border-2 border-black dark:border-white/30 bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] space-y-5"
               >
-                {/* Top Badge & Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-[#EA4335]/30">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EA4335] text-white text-[11px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
+                {/* Top Status Header */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/60 text-xs sm:text-sm font-semibold">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
                     </span>
                     <span>
                       {errorCode === "NOT_ATTENDED"
-                        ? "AFK DETECTED • CAUGHT IN 4K"
+                        ? "Attendance Not Marked"
                         : errorCode === "EMPTY_INPUT"
-                        ? "BRO ENTERED THE VOID"
-                        : "404: BRO IS NOT ON THE GUEST LIST"}
+                        ? "Input Required"
+                        : "Record Not Found"}
                     </span>
                   </div>
 
-                  <span className="text-[11px] font-mono font-bold text-red-600 dark:text-red-400">
-                    [ STATUS: GHOSTED BY DATABASE 💀 ]
+                  <span className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+                    Need help? Check below
                   </span>
                 </div>
 
                 {/* Main Content with Animated Emoji */}
-                <div className="flex items-start gap-4">
-                  {/* Funny Animated Avatar */}
+                <div className="flex items-start gap-4 sm:gap-5">
+                  {/* Friendly Animated Emoji Avatar */}
                   <motion.div
                     animate={{
-                      rotate: [0, -14, 14, -10, 10, 0],
-                      scale: [1, 1.12, 1],
+                      rotate: [0, -10, 10, -6, 6, 0],
+                      scale: [1, 1.08, 1],
                     }}
                     transition={{
-                      duration: 1.2,
+                      duration: 1.5,
                       repeat: Infinity,
-                      repeatDelay: 2.2,
+                      repeatDelay: 3,
                       ease: "easeInOut",
                     }}
-                    className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-950/80 border-2 border-[#EA4335] flex items-center justify-center flex-shrink-0 text-2xl shadow-[2px_2px_0px_0px_#EA4335] select-none"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-700/60 border-2 border-zinc-300 dark:border-zinc-600 flex items-center justify-center flex-shrink-0 text-2xl sm:text-3xl select-none"
                   >
-                    {errorCode === "NOT_ATTENDED" ? "🎮" : errorCode === "EMPTY_INPUT" ? "🌌" : "💀"}
+                    {errorCode === "NOT_ATTENDED" ? "📋" : errorCode === "EMPTY_INPUT" ? "✍️" : "🤔"}
                   </motion.div>
 
-                  <div className="space-y-2 flex-1">
-                    <h4 className="font-heading text-base sm:text-lg font-black text-black dark:text-white leading-tight">
+                  <div className="space-y-3 flex-1">
+                    <h4 className="text-lg sm:text-xl font-bold text-black dark:text-white leading-snug">
                       {errorCode === "NOT_ATTENDED"
-                        ? "Bro registered but went AFK during the event? 🫡"
+                        ? "Aapki attendance mark nahi hui hai 📋"
                         : errorCode === "EMPTY_INPUT"
-                        ? "Don't leave us on read! Type something first 😭"
-                        : "Bruh, our database just hit you with \"New phone, who dis?\" 😭"}
+                        ? "Pehle apna email ya poora naam likhein ✍️"
+                        : "Oops! Ye naam list me nahi mila 😅"}
                     </h4>
 
-                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                    <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       {errorCode === "NOT_ATTENDED" ? (
                         <>
-                          You signed up (respect!), but you ghosted the in-person attendance desk. Certificates are strictly reserved for verified attendees who actually pulled up!
+                          Aapka registration toh mil gaya, lekin event ke din physical attendance check-in record nahi hua. Certificates sirf un attendees ke liye hain jo event me physically present the.
                         </>
                       ) : errorCode === "EMPTY_INPUT" ? (
                         <>
-                          Bro clicked verify on empty air! Please type your registered email address or your real full name to search the roster.
+                          Kripya verification ke liye apna registered email address ya attendance sheet wala poora naam type karein.
                         </>
                       ) : (
                         <>
-                          No cap, we searched every single row in the attendee roster and found{" "}
-                          <span className="font-bold text-[#EA4335]">0 records</span> for{" "}
-                          <span className="inline-block font-mono font-bold text-[#EA4335] bg-red-100 dark:bg-red-950/90 px-2 py-0.5 rounded border border-red-300 dark:border-red-800 break-all">
+                          Humne{" "}
+                          <span className="font-semibold text-black dark:text-white bg-zinc-100 dark:bg-zinc-700 px-2.5 py-1 rounded border border-zinc-300 dark:border-zinc-600 break-all">
                             &quot;{lastSearched || queryInput}&quot;
-                          </span>
-                          .
+                          </span>{" "}
+                          ke liye check kiya, lekin is event ki attendance list me ye record nahi mila.
                         </>
                       )}
                     </p>
 
-                    {/* Pro Tips / Gen-Z Reality Checks */}
+                    {/* Normal, clear helpful checklist */}
                     {errorCode !== "EMPTY_INPUT" && (
-                      <div className="p-3 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-red-200 dark:border-red-900/50 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400">
-                        <p className="font-bold font-mono text-[11px] uppercase tracking-wider text-black dark:text-white flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-[#EA4335]" />
-                          Quick Reality Check:
+                      <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-700 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+                        <p className="font-semibold text-black dark:text-white flex items-center gap-2">
+                          <span>💡</span>
+                          <span>Ek baar ye points check kar lijiye:</span>
                         </p>
-                        <ul className="list-disc list-inside space-y-1 pl-1">
+                        <ul className="space-y-1.5 pl-6 list-disc">
                           <li>
-                            Did you hit us with a typo? Double check spelling fr fr.
+                            <strong>Spelling check karein:</strong> Kahin type karte waqt koi letter ya dot miss toh nahi ho gaya?
                           </li>
                           <li>
-                            Did you use your college mail instead of personal (or vice-versa)?
+                            <strong>Registered email try karein:</strong> Agar aapne college mail ya kisi doosre email se form bhara tha, toh wahi email daal kar check karein.
                           </li>
                           <li>
-                            Enter your real legal name — nicknames like <em>&quot;xX_CodeGod_Xx&quot;</em> aren&apos;t in the roster!
+                            <strong>Poora naam likhein:</strong> Nickname ki jagah apna official poora naam enter karein jo attendance ke waqt likha tha.
                           </li>
                         </ul>
                       </div>
@@ -519,23 +518,23 @@ export function CertificateClient() {
                   </div>
                 </div>
 
-                {/* Funny "Bro I was there" Meme Box */}
-                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl border border-dashed border-[#EA4335]/60 bg-red-50/70 dark:bg-red-950/40 text-xs font-mono">
-                  <div className="space-y-0.5">
-                    <p className="font-bold text-black dark:text-white">
-                      🗣️ &quot;Bro I was literally sitting in the front row eating snacks!&quot;
+                {/* Friendly Help Box */}
+                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
+                  <div className="space-y-1">
+                    <p className="font-bold text-sm sm:text-base text-black dark:text-white">
+                      &quot;Par mai toh event me present tha!&quot; 🙋‍♂️
                     </p>
-                    <p className="text-zinc-600 dark:text-zinc-400 text-[11px]">
-                      If you attended in person and think this is a glitch, don&apos;t rage-quit! Slide into the core team&apos;s DMs.
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                      Agar aap sach me event me aaye the aur attendance miss ho gayi hai, toh tension mat lijiye. Hamari team se contact karein, hum verify karke certificate generate kar denge.
                     </p>
                   </div>
 
                   <Link
                     href="/team"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-black dark:border-white bg-[#EA4335] text-white font-bold text-[11px] uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex-shrink-0"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-black dark:border-white bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-xs sm:text-sm shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex-shrink-0"
                   >
                     <span>Contact Team</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </motion.div>
