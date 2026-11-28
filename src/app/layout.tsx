@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: "%s | GDG BPPIMT",
   },
   description:
-    "Official website of GDG BPPIMT (Google Developer Groups on Campus at B.P. Poddar Institute of Management and Technology, Kolkata). Explore developer workshops, hackathons, open source projects, and tech events.",
+    "Official GDG BPPIMT website (Google Developer Groups on Campus BPPIMT Kolkata). Join workshops, hackathons, open-source projects, and developer events.",
   keywords: [
     "GDG BPPIMT",
     "gdg bppimt",
@@ -180,6 +180,52 @@ const organizationSchema = {
         "contactType": "Community Support",
         "url": "https://gdg.community.dev/gdg-on-campus-b-p-poddar-institute-of-management-and-technology-kolkata-india/",
       },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${SITE_URL}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who can join GDG on Campus BPPIMT?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Any student enrolled at B.P. Poddar Institute of Management and Technology, regardless of their department (CSE, IT, ECE, EE, MCA, BCA) or academic year. Beginners and experienced coders are equally welcome!",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Are the workshops and events free to attend?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, 100% free! All GDG on Campus workshops, hackathons, cloud study jams, and speaker sessions are completely free of cost for our student community.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "How do I earn Google Cloud skill badges and certificates?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When you attend our official Google Cloud Study Jams or hands-on workshops, you receive complimentary access to Google Cloud Skills Boost labs, official digital skill badges, and completion certificates.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "I am a complete beginner in programming. Can I still participate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely! We organize foundational tracks from day zero — including Git/GitHub basics, web fundamentals, and introductory Python/AI — paired with peer mentorship.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "How can I join the Core Team or become a Domain Lead?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Core team recruitments and volunteer calls are announced each semester on our official WhatsApp community and Google chapter page. Active contributors to chapter open-source projects are given priority.",
+          },
+        },
+      ],
     },
   ],
 };
