@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
+  History,
 } from "lucide-react";
 import { FoldText } from "@/components/ui/fold-text";
 import {
@@ -307,8 +308,58 @@ function BlankBlinkEventCard({ slotIndex }: { slotIndex: number }) {
   );
 }
 
+/* Retro Minimalist Vertical Divider Column separating Recent Events from Past Archives */
+function SlimArchiveDivider({
+  label = "PAST ARCHIVE",
+  theme = "yellow",
+}: {
+  label?: string;
+  theme?: "yellow" | "blue" | "green";
+}) {
+  const themeColors = {
+    yellow: "bg-[#FFE600] text-black",
+    blue: "bg-[#4285F4] text-white",
+    green: "bg-[#34A853] text-white",
+  }[theme];
+
+  return (
+    <div
+      className="w-12 sm:w-14 flex-shrink-0 snap-start flex flex-col items-center justify-between py-6 select-none"
+      aria-hidden="true"
+    >
+      {/* Top dashed line */}
+      <div className="flex-1 w-0 border-r-2 border-dashed border-black/30 dark:border-white/20" />
+
+      {/* Center badge */}
+      <div className="my-3 flex flex-col items-center gap-2">
+        <div
+          className={`w-8 h-8 rounded-full border-2 border-black ${themeColors} shadow-[2px_2px_0px_0px_#000] flex items-center justify-center`}
+          title={label}
+        >
+          <History className="w-4 h-4" />
+        </div>
+        <div className="py-2.5 px-1.5 rounded-md bg-white dark:bg-zinc-800 border-2 border-black/80 dark:border-border-strong shadow-[2px_2px_0px_0px_#000] dark:shadow-none flex items-center justify-center">
+          <span className="[writing-mode:vertical-lr] rotate-180 text-[10px] font-mono font-black tracking-widest uppercase text-slate-800 dark:text-zinc-200">
+            {label}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom dashed line */}
+      <div className="flex-1 w-0 border-r-2 border-dashed border-black/30 dark:border-white/20" />
+    </div>
+  );
+}
+
+type PastFilter = "all" | "recent" | "2026" | "2025" | "2024";
+
+type TrackItem =
+  | { type: "event"; event: DetailedEvent; isRecent: boolean; originalIndex: number }
+  | { type: "divider"; key: string; label: string; theme: "yellow" | "blue" | "green" };
+
 export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const [activeTab, setActiveTab] = useState<Tab>("upcoming");
+  const [pastFilter, setPastFilter] = useState<PastFilter>("all");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -317,8 +368,203 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const past = useMemo(() => getPastEvents(), []);
 
   const isPastTab = activeTab === "past";
-  const visibleEvents = isPastTab ? past : upcoming;
-  const blankSlotsCount = !isPastTab ? Math.max(0, 3 - visibleEvents.length) : 0;
+
+  // Segment past events by timeframe
+  const recentPastEvents = useMemo(
+    () => past.filter((e) => e.date >= "2026-10-01"),
+    [past]
+  );
+  const earlier2026Events = useMemo(
+    () => past.filter((e) => e.date.startsWith("2026") && e.date < "2026-10-01"),
+    [past]
+  );
+  const y2025Events = useMemo(
+    () => past.filter((e) => e.date.startsWith("2025")),
+    [past]
+  );
+  const y2024Events = useMemo(
+    () => past.filter((e) => e.date.startsWith("2024")),
+    [past]
+  );
+
+  const pastFilterOptions: { id: PastFilter; label: string; count: number }[] = [
+    { id: "all", label: "All", count: past.length },
+    { id: "recent", label: "Recent", count: recentPastEvents.length },
+    { id: "2026", label: "2026", count: recentPastEvents.length + earlier2026Events.length },
+    { id: "2025", label: "2025", count: y2025Events.length },
+    { id: "2024", label: "2024", count: y2024Events.length },
+  ];
+
+  // Build the track items including the slim vertical divider columns matching the filter options
+  const trackItems: TrackItem[] = useMemo(() => {
+    if (!isPastTab) {
+      return upcoming.map((e, idx) => ({
+        type: "event" as const,
+        event: e,
+        isRecent: false,
+        originalIndex: idx,
+      }));
+    }
+
+    const items: TrackItem[] = [];
+
+    if (pastFilter === "recent") {
+      recentPastEvents.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: true,
+          originalIndex: idx,
+        });
+      });
+      return items;
+    }
+
+    if (pastFilter === "2026") {
+      recentPastEvents.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: true,
+          originalIndex: idx,
+        });
+      });
+      if (recentPastEvents.length > 0 && earlier2026Events.length > 0) {
+        items.push({
+          type: "divider",
+          key: "div-2026",
+          label: "2026 ARCHIVE",
+          theme: "yellow",
+        });
+      }
+      earlier2026Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex: recentPastEvents.length + idx,
+        });
+      });
+      return items;
+    }
+
+    if (pastFilter === "2025") {
+      if (y2025Events.length > 0) {
+        items.push({
+          type: "divider",
+          key: "div-2025",
+          label: "2025 ARCHIVE",
+          theme: "blue",
+        });
+      }
+      y2025Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex: idx,
+        });
+      });
+      return items;
+    }
+
+    if (pastFilter === "2024") {
+      if (y2024Events.length > 0) {
+        items.push({
+          type: "divider",
+          key: "div-2024",
+          label: "2024 ARCHIVE",
+          theme: "green",
+        });
+      }
+      y2024Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex: idx,
+        });
+      });
+      return items;
+    }
+
+    // Default "all" Past timeline: Full chronological flow with slim divider columns marking each era
+    recentPastEvents.forEach((e, idx) => {
+      items.push({
+        type: "event",
+        event: e,
+        isRecent: true,
+        originalIndex: idx,
+      });
+    });
+
+    if (earlier2026Events.length > 0) {
+      items.push({
+        type: "divider",
+        key: "div-2026",
+        label: "2026 ARCHIVE",
+        theme: "yellow",
+      });
+      earlier2026Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex: recentPastEvents.length + idx,
+        });
+      });
+    }
+
+    if (y2025Events.length > 0) {
+      items.push({
+        type: "divider",
+        key: "div-2025",
+        label: "2025 ARCHIVE",
+        theme: "blue",
+      });
+      y2025Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex: recentPastEvents.length + earlier2026Events.length + idx,
+        });
+      });
+    }
+
+    if (y2024Events.length > 0) {
+      items.push({
+        type: "divider",
+        key: "div-2024",
+        label: "2024 ARCHIVE",
+        theme: "green",
+      });
+      y2024Events.forEach((e, idx) => {
+        items.push({
+          type: "event",
+          event: e,
+          isRecent: false,
+          originalIndex:
+            recentPastEvents.length +
+            earlier2026Events.length +
+            y2025Events.length +
+            idx,
+        });
+      });
+    }
+
+    return items;
+  }, [
+    isPastTab,
+    upcoming,
+    pastFilter,
+    recentPastEvents,
+    earlier2026Events,
+    y2025Events,
+    y2024Events,
+  ]);
+
+  const blankSlotsCount = !isPastTab ? Math.max(0, 3 - upcoming.length) : 0;
 
   const tabs: { key: Tab; label: string; count: number }[] = [
     { key: "upcoming", label: "Upcoming", count: upcoming.length },
@@ -328,37 +574,41 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
   const checkScroll = useCallback(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 6);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 12);
   }, []);
 
   const scrollByDirection = (direction: "left" | "right") => {
     const el = scrollContainerRef.current;
     if (!el) return;
-    const step = Math.max(280, el.clientWidth * 0.75);
+    const step = Math.max(300, Math.floor(el.clientWidth * 0.75));
     el.scrollBy({
       left: direction === "left" ? -step : step,
       behavior: "smooth",
     });
+    setTimeout(checkScroll, 320);
   };
 
   useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
     checkScroll();
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    window.addEventListener("resize", checkScroll);
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [checkScroll, activeTab]);
+    const handleResize = () => checkScroll();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [checkScroll]);
 
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
     }
-  }, [activeTab]);
+    checkScroll();
+    const t1 = setTimeout(checkScroll, 60);
+    const t2 = setTimeout(checkScroll, 200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [activeTab, pastFilter, checkScroll, trackItems]);
 
   const content = (
     <div className="w-full">
@@ -400,37 +650,82 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
       </div>
 
       {/* Tabs & Horizontal Navigation Controls */}
-      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
-        <div
-          role="tablist"
-          aria-label="Event type"
-          className="inline-flex p-1 rounded-full bg-surface-subtle border border-border-subtle"
-        >
-          {tabs.map((tab) => {
-            const active = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                  active
-                    ? "bg-primary text-white shadow-xs"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                <span>{tab.label} Events</span>
-                <span
-                  className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full ${
-                    active ? "bg-white/20 text-white" : "bg-surface-card text-text-secondary"
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Main Tablist */}
+          <div
+            role="tablist"
+            aria-label="Event type"
+            className="inline-flex p-1 rounded-full bg-surface-subtle border border-border-subtle"
+          >
+            {tabs.map((tab) => {
+              const active = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => {
+                    setActiveTab(tab.key);
+                    if (tab.key === "upcoming") setPastFilter("all");
+                  }}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                    active
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-text-secondary hover:text-text-primary"
                   }`}
                 >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{tab.label} Events</span>
+                  <span
+                    className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full ${
+                      active ? "bg-white/20 text-white" : "bg-surface-card text-text-secondary"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Past Events Year/Era Filter Pills */}
+          {isPastTab && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.15 }}
+              role="group"
+              aria-label="Filter past events by year"
+              className="inline-flex items-center p-1 rounded-full bg-surface-subtle border border-border-subtle"
+            >
+              {pastFilterOptions.map((opt) => {
+                const active = pastFilter === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setPastFilter(opt.id)}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      active
+                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    <span
+                      className={`text-[10px] font-mono px-1 py-0.2 rounded-full ${
+                        active
+                          ? "bg-white/20 dark:bg-slate-900/20 text-white dark:text-slate-900"
+                          : "text-text-tertiary"
+                      }`}
+                    >
+                      {opt.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
         </div>
 
         {/* Scroll Arrow Buttons for Easy Horizontal Browsing */}
@@ -446,7 +741,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
             onClick={() => scrollByDirection("left")}
             disabled={!canScrollLeft}
             aria-label="Scroll left"
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-black/70 dark:border-border-strong bg-surface-card hover:bg-surface-subtle disabled:opacity-20 disabled:pointer-events-none transition-all shadow-xs"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-black/70 dark:border-border-strong bg-surface-card hover:bg-surface-subtle active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 text-text-primary" />
           </button>
@@ -455,33 +750,37 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
             onClick={() => scrollByDirection("right")}
             disabled={!canScrollRight}
             aria-label="Scroll right"
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-black/70 dark:border-border-strong bg-surface-card hover:bg-surface-subtle disabled:opacity-20 disabled:pointer-events-none transition-all shadow-xs"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-black/70 dark:border-border-strong bg-surface-card hover:bg-surface-subtle active:scale-95 disabled:opacity-25 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
           >
             <ChevronRight className="w-4 h-4 text-text-primary" />
           </button>
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Horizontal Scrolling Track */}
-          <div
-            ref={scrollContainerRef}
-            className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-2.5 pt-1 px-0.5 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-black/25 dark:scrollbar-thumb-white/25 select-none"
-            style={{
-              WebkitOverflowScrolling: "touch",
-              scrollbarWidth: "thin",
-            }}
-          >
-            {visibleEvents.map((event, idx) => {
+      {/* Horizontal Scrolling Track */}
+      <div
+        ref={scrollContainerRef}
+        onScroll={checkScroll}
+        className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-2.5 pt-1 px-0.5 scroll-smooth snap-x snap-mandatory scrollbar-thin scrollbar-thumb-black/25 dark:scrollbar-thumb-white/25 select-none"
+        style={{
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "thin",
+        }}
+      >
+        {trackItems.map((item, idx) => {
+          if (item.type === "divider") {
+            return (
+              <SlimArchiveDivider
+                key={item.key}
+                label={item.label}
+                theme={item.theme}
+              />
+            );
+          }
+
+              const event = item.event;
               const formattedDate = event.displayDate || event.date || "Upcoming";
-              const isFeatured = !isPastTab && idx === 0;
+              const isFeatured = (!isPastTab && idx === 0) || (isPastTab && item.isRecent);
 
               return (
                 <div
@@ -491,13 +790,23 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
                   {/* Top Colored Banner */}
                   <EventCardBanner
                     event={event}
-                    idx={idx}
+                    idx={item.originalIndex}
                     isFeatured={isFeatured}
                   />
 
                   {/* Bottom Content Body */}
                   <div className="flex flex-col flex-1 justify-between p-3.5 sm:p-4 bg-surface-card">
                     <div>
+                      {/* Timeline Era Stamp for Recently Concluded Event */}
+                      {isPastTab && item.isRecent && (
+                        <div className="mb-2">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-black uppercase bg-[#e6f4ea] dark:bg-[#132d18] text-[#137333] dark:text-[#81c995] border border-[#ceead6] dark:border-[#1e4624] shadow-2xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#34A853] animate-pulse" />
+                            <span>⚡ Recently Concluded</span>
+                          </span>
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap items-center justify-between gap-1 mb-1.5">
                         <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-text-secondary">
                           <Calendar className="w-3.5 h-3.5 text-primary flex-shrink-0" />
@@ -582,7 +891,7 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
             {Array.from({ length: blankSlotsCount }).map((_, slotIdx) => (
               <BlankBlinkEventCard
                 key={`blank-slot-${slotIdx}`}
-                slotIndex={visibleEvents.length + slotIdx}
+                slotIndex={upcoming.length + slotIdx}
               />
             ))}
           </div>
@@ -599,10 +908,8 @@ export function Events({ isCard = false }: { isCard?: boolean } = {}) {
               </span>
             )}
           </div>
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
+      </div>
+    );
 
   if (isCard) {
     return <div className="p-4 sm:p-6 lg:p-7">{content}</div>;
