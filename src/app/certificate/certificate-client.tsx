@@ -12,6 +12,9 @@ import {
   AlertCircle,
   RefreshCw,
   UserCheck,
+  Ghost,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 
 interface CertificateData {
@@ -31,6 +34,7 @@ export function CertificateClient() {
   const eventIdParam = searchParams.get("eventId") || "";
 
   const [queryInput, setQueryInput] = useState("");
+  const [lastSearched, setLastSearched] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -271,11 +275,13 @@ export function CertificateClient() {
     e.preventDefault();
     const trimmed = queryInput.trim();
     if (!trimmed) {
+      setLastSearched("");
       setErrorMsg("Please enter your registered email address or full name.");
       setErrorCode("EMPTY_INPUT");
       return;
     }
 
+    setLastSearched(trimmed);
     setLoading(true);
     setErrorMsg(null);
     setErrorCode(null);
@@ -338,6 +344,7 @@ export function CertificateClient() {
     setCertificate(null);
     setErrorMsg(null);
     setErrorCode(null);
+    setLastSearched("");
     setQueryInput("");
   };
 
@@ -403,28 +410,133 @@ export function CertificateClient() {
             </div>
           </form>
 
-          {/* Error Message Box */}
+          {/* Animated Gen-Z Error Message Box */}
           <AnimatePresence>
             {errorMsg && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="p-4 sm:p-5 rounded-xl border-2 border-[#EA4335] bg-[#FDF2F2] dark:bg-[#281313] text-[#B3261E] dark:text-red-200 shadow-[3px_3px_0px_0px_#EA4335] flex items-start gap-3.5"
+                key="certificate-error-box"
+                initial={{ opacity: 0, scale: 0.94, y: 15 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  x: [0, -10, 10, -8, 8, -4, 4, 0],
+                }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className="p-5 sm:p-6 rounded-2xl border-[2.5px] border-[#EA4335] bg-[#FFF5F5] dark:bg-[#200e0e] text-zinc-900 dark:text-zinc-100 shadow-[5px_5px_0px_0px_#EA4335] space-y-4 relative overflow-hidden"
               >
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-[#EA4335]" />
-                <div className="space-y-1.5 text-xs sm:text-sm">
-                  <p className="font-bold uppercase font-mono">
-                    {errorCode === "NOT_ATTENDED"
-                      ? "Attendance Not Recorded"
-                      : errorCode === "DATA_PROCESSING"
-                      ? "Data Upload in Progress"
-                      : "Record Not Found"}
-                  </p>
-                  <p className="leading-relaxed">{errorMsg}</p>
-                  <div className="pt-1 text-[11px] font-mono text-zinc-700 dark:text-zinc-300">
-                    If you attended in-person and think this is an oversight, please reach out to the core team organizers via the WhatsApp community group or team page.
+                {/* Top Badge & Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-[#EA4335]/30">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EA4335] text-white text-[11px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                    </span>
+                    <span>
+                      {errorCode === "NOT_ATTENDED"
+                        ? "AFK DETECTED • CAUGHT IN 4K"
+                        : errorCode === "EMPTY_INPUT"
+                        ? "BRO ENTERED THE VOID"
+                        : "404: BRO IS NOT ON THE GUEST LIST"}
+                    </span>
                   </div>
+
+                  <span className="text-[11px] font-mono font-bold text-red-600 dark:text-red-400">
+                    [ STATUS: GHOSTED BY DATABASE 💀 ]
+                  </span>
+                </div>
+
+                {/* Main Content with Animated Emoji */}
+                <div className="flex items-start gap-4">
+                  {/* Funny Animated Avatar */}
+                  <motion.div
+                    animate={{
+                      rotate: [0, -14, 14, -10, 10, 0],
+                      scale: [1, 1.12, 1],
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      repeatDelay: 2.2,
+                      ease: "easeInOut",
+                    }}
+                    className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-950/80 border-2 border-[#EA4335] flex items-center justify-center flex-shrink-0 text-2xl shadow-[2px_2px_0px_0px_#EA4335] select-none"
+                  >
+                    {errorCode === "NOT_ATTENDED" ? "🎮" : errorCode === "EMPTY_INPUT" ? "🌌" : "💀"}
+                  </motion.div>
+
+                  <div className="space-y-2 flex-1">
+                    <h4 className="font-heading text-base sm:text-lg font-black text-black dark:text-white leading-tight">
+                      {errorCode === "NOT_ATTENDED"
+                        ? "Bro registered but went AFK during the event? 🫡"
+                        : errorCode === "EMPTY_INPUT"
+                        ? "Don't leave us on read! Type something first 😭"
+                        : "Bruh, our database just hit you with \"New phone, who dis?\" 😭"}
+                    </h4>
+
+                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                      {errorCode === "NOT_ATTENDED" ? (
+                        <>
+                          You signed up (respect!), but you ghosted the in-person attendance desk. Certificates are strictly reserved for verified attendees who actually pulled up!
+                        </>
+                      ) : errorCode === "EMPTY_INPUT" ? (
+                        <>
+                          Bro clicked verify on empty air! Please type your registered email address or your real full name to search the roster.
+                        </>
+                      ) : (
+                        <>
+                          No cap, we searched every single row in the attendee roster and found{" "}
+                          <span className="font-bold text-[#EA4335]">0 records</span> for{" "}
+                          <span className="inline-block font-mono font-bold text-[#EA4335] bg-red-100 dark:bg-red-950/90 px-2 py-0.5 rounded border border-red-300 dark:border-red-800 break-all">
+                            &quot;{lastSearched || queryInput}&quot;
+                          </span>
+                          .
+                        </>
+                      )}
+                    </p>
+
+                    {/* Pro Tips / Gen-Z Reality Checks */}
+                    {errorCode !== "EMPTY_INPUT" && (
+                      <div className="p-3 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-red-200 dark:border-red-900/50 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+                        <p className="font-bold font-mono text-[11px] uppercase tracking-wider text-black dark:text-white flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-[#EA4335]" />
+                          Quick Reality Check:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 pl-1">
+                          <li>
+                            Did you hit us with a typo? Double check spelling fr fr.
+                          </li>
+                          <li>
+                            Did you use your college mail instead of personal (or vice-versa)?
+                          </li>
+                          <li>
+                            Enter your real legal name — nicknames like <em>&quot;xX_CodeGod_Xx&quot;</em> aren&apos;t in the roster!
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Funny "Bro I was there" Meme Box */}
+                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl border border-dashed border-[#EA4335]/60 bg-red-50/70 dark:bg-red-950/40 text-xs font-mono">
+                  <div className="space-y-0.5">
+                    <p className="font-bold text-black dark:text-white">
+                      🗣️ &quot;Bro I was literally sitting in the front row eating snacks!&quot;
+                    </p>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-[11px]">
+                      If you attended in person and think this is a glitch, don&apos;t rage-quit! Slide into the core team&apos;s DMs.
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/team"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-black dark:border-white bg-[#EA4335] text-white font-bold text-[11px] uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex-shrink-0"
+                  >
+                    <span>Contact Team</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </motion.div>
             )}
