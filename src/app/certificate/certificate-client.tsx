@@ -14,7 +14,6 @@ import {
   UserCheck,
   Ghost,
   Sparkles,
-  ArrowRight,
 } from "lucide-react";
 
 interface CertificateData {
@@ -519,23 +518,13 @@ export function CertificateClient() {
                 </div>
 
                 {/* Friendly Help Box */}
-                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
-                  <div className="space-y-1">
-                    <p className="font-bold text-sm sm:text-base text-black dark:text-white">
-                      &quot;Wait, but I was definitely there!&quot; 🙋‍♂️
-                    </p>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-                      If you attended in person and think your attendance was missed, don&apos;t worry! Contact our organizing team and we&apos;ll verify and issue your certificate.
-                    </p>
-                  </div>
-
-                  <Link
-                    href="/team"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-black dark:border-white bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-xs sm:text-sm shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex-shrink-0"
-                  >
-                    <span>Contact Team</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 space-y-1">
+                  <p className="font-bold text-sm sm:text-base text-black dark:text-white">
+                    &quot;Wait, but I was definitely there!&quot; 🙋‍♂️
+                  </p>
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                    If you attended in person and think your attendance was missed, don&apos;t worry! Please reach out to our organizing team or community group to get it verified.
+                  </p>
                 </div>
               </motion.div>
             )}
